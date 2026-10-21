@@ -292,6 +292,53 @@ div[data-testid="stHorizontalBlock"]:has(.nfl-ticker-marker) div[data-testid="st
     text-transform: uppercase;
 }
 
+/* Player Pop-Out Dossier Header & Headshot Frame */
+.player-modal-banner {
+    background: linear-gradient(135deg, #0F172A 0%, #162234 60%, #0F2920 100%);
+    border: 1px solid #00FF87;
+    border-left: 5px solid #00FF87;
+    border-radius: 10px;
+    padding: 16px 20px;
+    margin-bottom: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 18px;
+    flex-wrap: wrap;
+}
+.player-modal-left {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+}
+.player-headshot-wrap {
+    position: relative;
+    width: 88px;
+    height: 88px;
+    border-radius: 50%;
+    background: radial-gradient(circle at 50% 35%, #1E293B, #0B0E14);
+    border: 2px solid #00FF87;
+    box-shadow: 0 0 14px rgba(0, 255, 135, 0.22);
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+.player-headshot-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: top center;
+}
+.player-headshot-fallback {
+    font-family: monospace;
+    font-size: 1.35rem;
+    font-weight: 800;
+    color: #94A3B8;
+    letter-spacing: 0.05em;
+}
+
 /* Clean Dot-Indicator Unit Ranking & Status Badges */
 .badge-elite {
     background-color: rgba(0, 255, 135, 0.14);
@@ -531,6 +578,21 @@ OFFENSE_POSITIONS = {"QB", "RB", "FB", "WR", "TE", "OL", "T", "OT", "LT", "RT", 
 DEFENSE_POSITIONS = {"DL", "DE", "DT", "NT", "EDGE", "LB", "ILB", "OLB", "MLB", "DB", "CB", "S", "FS", "SS"}
 SPECIAL_TEAMS_POSITIONS = {"K", "P", "LS"}
 
+PROP_MARKETS = {
+    "Receiving Yards": ("receiving_yards", 54.5, 150.0, 1.0),
+    "Receptions": ("receptions", 4.5, 15.0, 0.5),
+    "Receiving TDs": ("receiving_tds", 0.5, 3.5, 0.5),
+    "Targets": ("targets", 6.5, 18.0, 0.5),
+    "Rushing Yards": ("rushing_yards", 59.5, 160.0, 1.0),
+    "Rush Carries": ("carries", 13.5, 30.0, 0.5),
+    "Anytime TD": ("anytime_td", 0.5, 3.5, 0.5),
+    "Passing Yards": ("passing_yards", 234.5, 400.0, 1.0),
+    "Passing TDs": ("passing_tds", 1.5, 5.5, 0.5),
+    "Interceptions (INT)": ("interceptions", 0.5, 3.5, 0.5),
+    "Pass Completions": ("completions", 20.5, 38.0, 0.5),
+    "Scrimmage Yards (Rush + Rec)": ("scrimmage_yards", 74.5, 180.0, 1.0),
+}
+
 
 def render_html(html_str: str) -> None:
     """
@@ -561,7 +623,7 @@ def render_inline_logo(team_abbr: str, size: int = 20) -> str:
 
 
 def render_team_pill(team_abbr: str, role_tag: str = "", large: bool = False) -> str:
-    """Renders an inline HTML team pill with embedded logo and optional clean H/A tag."""
+    """Renders an inline HTML team pill with embedded logo and optional clean record/role tag."""
     logo = get_team_logo_url(team_abbr)
     cls = "team-pill-lg" if large else "team-pill"
     img_sz = 34 if large else 18
@@ -947,8 +1009,8 @@ def load_season_schedule(season: int) -> pd.DataFrame:
         df["broadcast_slot"] = df.apply(classify_primetime_code, axis=1)
         df["away_logo"] = df["away_team"].apply(get_team_logo_url)
         df["home_logo"] = df["home_team"].apply(get_team_logo_url)
-        df["away_label"] = df["away_team"].astype(str) + " (A)"
-        df["home_label"] = df["home_team"].astype(str) + " (H)"
+        df["away_label"] = df["away_team"].astype(str)
+        df["home_label"] = df["home_team"].astype(str)
 
     return df
 
@@ -1091,6 +1153,108 @@ def load_injuries_csv(season: int) -> tuple[pd.DataFrame, int]:
             except Exception:
                 continue
     return pd.DataFrame(), season
+
+
+@st.cache_data(ttl=3600)
+def load_rosters_headshots_csv(season: int) -> dict[str, dict]:
+    """
+    Fetches official NFL player high-resolution headshot URLs and metadata
+    from nflverse rosters (covering Offense, Defense, and Special Teams).
+    """
+    for yr in [season, season - 1, 2024]:
+        urls = [
+            f"https://github.com/nflverse/nflverse-data/releases/download/rosters/roster_{yr}.csv",
+            f"https://github.com/nflverse/nflverse-data/releases/download/weekly_rosters/roster_weekly_{yr}.csv.gz",
+        ]
+        for url in urls:
+            try:
+                df = pd.read_csv(
+                    url,
+                    usecols=lambda c: c
+                    in [
+                        "full_name",
+                        "player_name",
+                        "team",
+                        "position",
+                        "headshot_url",
+                        "jersey_number",
+                        "college",
+                        "years_exp",
+                    ],
+                    low_memory=False,
+                )
+                if df.empty:
+                    continue
+                name_col = "full_name" if "full_name" in df.columns else "player_name"
+                if name_col not in df.columns:
+                    continue
+
+                lookup: dict[str, dict] = {}
+                for _, r in df.dropna(subset=[name_col]).iterrows():
+                    nm = str(r[name_col]).strip()
+                    clean_nm = nm.lower()
+                    tm = str(r.get("team", "")).strip().upper()
+                    pos = str(r.get("position", "")).strip().upper()
+                    h_url = str(r.get("headshot_url", "")).strip() if pd.notna(r.get("headshot_url")) else ""
+                    jersey = str(r.get("jersey_number", "")).split(".")[0] if pd.notna(r.get("jersey_number")) else ""
+                    college = str(r.get("college", "")).strip() if pd.notna(r.get("college")) else ""
+
+                    info = {
+                        "headshot_url": h_url if h_url.startswith("http") else "",
+                        "team": tm,
+                        "position": pos,
+                        "jersey": jersey,
+                        "college": college,
+                    }
+                    lookup[f"{clean_nm}|{tm}"] = info
+                    if clean_nm not in lookup or not lookup[clean_nm].get("headshot_url"):
+                        lookup[clean_nm] = info
+                return lookup
+            except Exception:
+                continue
+    return {}
+
+
+def build_headshot_lookup(
+    player_df: pd.DataFrame, roster_headshots: dict[str, dict]
+) -> dict[str, dict]:
+    """Combines headshot URLs from weekly player_stats and full team rosters."""
+    combined = dict(roster_headshots) if roster_headshots else {}
+    if not player_df.empty and "headshot_url" in player_df.columns:
+        name_col = "player_display_name" if "player_display_name" in player_df.columns else "player_name"
+        if name_col in player_df.columns:
+            sub = player_df.dropna(subset=[name_col, "headshot_url"]).drop_duplicates(
+                subset=[name_col, "team"], keep="last"
+            )
+            for _, r in sub.iterrows():
+                nm = str(r[name_col]).strip().lower()
+                tm = str(r.get("team", "")).strip().upper()
+                h_url = str(r["headshot_url"]).strip()
+                pos = str(r.get("position", "")).strip().upper()
+                if h_url.startswith("http"):
+                    entry = combined.get(f"{nm}|{tm}", {})
+                    entry["headshot_url"] = h_url
+                    entry["team"] = tm
+                    if pos and pos != "NAN":
+                        entry["position"] = pos
+                    combined[f"{nm}|{tm}"] = entry
+                    if nm not in combined or not combined[nm].get("headshot_url"):
+                        combined[nm] = entry
+    return combined
+
+
+def get_player_headshot_and_meta(
+    player_name: str, team_abbr: str, headshot_lookup: dict[str, dict]
+) -> tuple[str, dict]:
+    """Returns (headshot_url, meta_dict) for a player with graceful fallback."""
+    if not player_name:
+        return "", {}
+    clean_nm = str(player_name).strip().lower()
+    clean_tm = str(team_abbr).strip().upper() if team_abbr else ""
+
+    meta = headshot_lookup.get(f"{clean_nm}|{clean_tm}") or headshot_lookup.get(clean_nm) or {}
+    url = meta.get("headshot_url", "")
+    return url, meta
 
 
 # -----------------------------------------------------------------------------
@@ -1633,6 +1797,7 @@ def build_roster_usage_table(
                         "targets",
                         "receptions",
                         "calc_target_share",
+                        "calc_rush_share",
                         "air_yards",
                         "carries",
                         "touches",
@@ -1672,6 +1837,7 @@ def build_roster_usage_table(
         "targets",
         "receptions",
         "calc_target_share",
+        "calc_rush_share",
         "air_yards",
         "carries",
         "touches",
@@ -1689,6 +1855,7 @@ def build_roster_usage_table(
     merged["unit_group"] = merged.apply(classify_unit_side, axis=1)
     merged["team_logo"] = merged["team"].apply(get_team_logo_url)
     merged["target_share_pct"] = (merged["calc_target_share"] * 100.0).round(1)
+    merged["rush_share_pct"] = (merged["calc_rush_share"] * 100.0).round(1)
     merged["primary_snap_pct"] = merged["primary_snap_pct"].round(1)
     merged["total_epa"] = merged["total_epa"].round(2)
 
@@ -2022,7 +2189,448 @@ def run_season_backtest(
 
 
 # -----------------------------------------------------------------------------
-# 4. SIDEBAR CONTROLS & DYNAMIC CURRENT WEEK DEFAULT
+# 4. INTERACTIVE PLAYER POP-OUT MODAL (HEADSHOT + 2 TABS, STRICT NO-EMOJI)
+# -----------------------------------------------------------------------------
+def trigger_player_popup(
+    player_name: str,
+    team_abbr: str = "",
+    position: str = "",
+) -> None:
+    """Sets st.session_state['active_player'] and opens the player pop-out modal."""
+    if not player_name or "Rotation" in str(player_name):
+        return
+    st.session_state["active_player"] = {
+        "name": str(player_name).strip(),
+        "team": str(team_abbr).strip().upper(),
+        "position": str(position).strip().upper(),
+    }
+    st.session_state["open_player_modal"] = True
+
+
+def render_player_popup_contents(
+    active_info: dict,
+    roster_table: pd.DataFrame,
+    prop_logs: pd.DataFrame,
+    snaps_df: pd.DataFrame,
+    inj_matchup: pd.DataFrame,
+    eff_df: pd.DataFrame,
+    headshot_lookup: dict[str, dict],
+    away_tm: str,
+    home_tm: str,
+    stat_season: int,
+) -> None:
+    """Renders the header (with official headshot + fallback) and 2 tabs inside the player pop-out."""
+    p_name = str(active_info.get("name", "")).strip()
+    p_team = str(active_info.get("team", "")).strip().upper()
+    p_pos = str(active_info.get("position", "")).strip().upper()
+    clean_nm = p_name.lower()
+
+    r_match = pd.DataFrame()
+    if not roster_table.empty and "player_name" in roster_table.columns:
+        r_match = roster_table[
+            roster_table["player_name"].astype(str).str.strip().str.lower() == clean_nm
+        ]
+        if p_team and not r_match.empty and (r_match["team"] == p_team).any():
+            r_match = r_match[r_match["team"] == p_team]
+
+    if not r_match.empty:
+        r_row = r_match.iloc[0]
+        if not p_team:
+            p_team = str(r_row.get("team", "")).strip().upper()
+        if not p_pos or p_pos == "UNK":
+            p_pos = str(r_row.get("position", "UNK")).strip().upper()
+        unit_side = str(r_row.get("unit_group", "Offense"))
+    else:
+        r_row = None
+        unit_side = "Defense" if p_pos in DEFENSE_POSITIONS else "Offense"
+
+    headshot_url, meta_info = get_player_headshot_and_meta(p_name, p_team, headshot_lookup)
+    if not p_team and meta_info.get("team"):
+        p_team = meta_info["team"]
+    if (not p_pos or p_pos == "UNK") and meta_info.get("position"):
+        p_pos = meta_info["position"]
+
+    initials = "".join([part[0].upper() for part in p_name.split()[:2] if part]) or "NFL"
+    jersey_num = meta_info.get("jersey", "")
+    college_str = meta_info.get("college", "")
+    jersey_tag = f"#{jersey_num} • " if jersey_num else ""
+    college_tag = f" • {college_str}" if college_str else ""
+
+    if headshot_url:
+        headshot_html = (
+            f'<div class="player-headshot-wrap">'
+            f'<img src="{headshot_url}" class="player-headshot-img" '
+            f'alt="{p_name}" '
+            f'onerror="this.style.display=\'none\'; this.parentElement.innerHTML=\'<span class=player-headshot-fallback>{initials}</span>\';">'
+            f"</div>"
+        )
+    else:
+        headshot_html = (
+            f'<div class="player-headshot-wrap">'
+            f'<span class="player-headshot-fallback">{initials}</span>'
+            f"</div>"
+        )
+
+    inj_badge_html = '<span class="badge-elite">● [ACTIVE / CLEAN REPORT]</span>'
+    if not inj_matchup.empty and "player_display" in inj_matchup.columns:
+        i_sub = inj_matchup[
+            inj_matchup["player_display"].astype(str).str.strip().str.lower() == clean_nm
+        ]
+        if not i_sub.empty:
+            i_row = i_sub.iloc[0]
+            inj_badge_html = (
+                f'{render_injury_badge(i_row["report_status"])} '
+                f'<span class="badge-bad">[{i_row["primary_injury"]}]</span>'
+            )
+
+    opp_tm = home_tm if p_team == away_tm else away_tm
+    render_html(
+        f"""
+        <div class="player-modal-banner">
+            <div class="player-modal-left">
+                {headshot_html}
+                <div>
+                    <div style="display:flex; align-items:center; flex-wrap:wrap; gap:6px;">
+                        <span style="font-size:1.35rem; font-weight:800; color:#F8FAFC; font-family:monospace;">
+                            {p_name}
+                        </span>
+                        {render_team_pill(p_team) if p_team else ""}
+                        <span class="badge-sage">[{p_pos or "NFL"}]</span>
+                        <span class="badge-mid">[{unit_side.upper()}]</span>
+                    </div>
+                    <div class="metric-subtext" style="margin-top:5px;">
+                        {jersey_tag}{stat_season} Season Dossier • Matchup vs {opp_tm}{college_tag}
+                    </div>
+                    <div style="margin-top:6px;">
+                        {inj_badge_html}
+                    </div>
+                </div>
+            </div>
+        </div>
+        """
+    )
+
+    tab_stats, tab_props = st.tabs(
+        [
+            "Tab 1: Season & Game Stats",
+            "Tab 2: Player Props",
+        ]
+    )
+
+    p_logs = pd.DataFrame()
+    if not prop_logs.empty and "player_label" in prop_logs.columns:
+        p_logs = prop_logs[
+            prop_logs["player_label"].astype(str).str.strip().str.lower() == clean_nm
+        ].sort_values(by="week")
+
+    p_snaps = pd.DataFrame()
+    if not snaps_df.empty and "player" in snaps_df.columns:
+        p_snaps = snaps_df[
+            snaps_df["player"].astype(str).str.strip().str.lower() == clean_nm
+        ].copy()
+        if p_team and not p_snaps.empty and "team" in p_snaps.columns:
+            if (p_snaps["team"] == p_team).any():
+                p_snaps = p_snaps[p_snaps["team"] == p_team]
+        if "week" in p_snaps.columns:
+            p_snaps["week"] = pd.to_numeric(p_snaps["week"], errors="coerce").fillna(1).astype(int)
+            p_snaps = p_snaps.sort_values(by="week")
+
+    # -------------------------------------------------------------------------
+    # TAB 1: SEASON & GAME STATS
+    # -------------------------------------------------------------------------
+    with tab_stats:
+        if r_row is not None:
+            s_games = int(r_row.get("games_played", 1))
+            s_snap_pct = float(r_row.get("primary_snap_pct", 0.0))
+            s_tot_snaps = int(r_row.get("total_snaps", 0))
+            s_tgt_sh = float(r_row.get("target_share_pct", 0.0))
+            s_rush_sh = float(r_row.get("rush_share_pct", 0.0))
+            s_tgts = int(r_row.get("targets", 0))
+            s_recs = int(r_row.get("receptions", 0))
+            s_touches = int(r_row.get("touches", 0))
+            s_scrim = int(r_row.get("scrimmage_yards", 0))
+            s_pass = int(r_row.get("pass_yards", 0))
+            s_tds = int(r_row.get("total_tds", 0))
+            s_epa = float(r_row.get("total_epa", 0.0))
+
+            m1, m2, m3, m4 = st.columns(4)
+            m1.metric("Games Active", f"{s_games} GP", delta=f"{s_tot_snaps} Total Snaps", delta_color="off")
+            m2.metric("Primary Snap Share", f"{s_snap_pct:.1f}%", delta=f"{unit_side} Unit", delta_color="off")
+            if p_pos == "QB":
+                m3.metric("Season Passing Yards", f"{s_pass} Yds", delta=f"{s_scrim} Rush Yds", delta_color="off")
+            elif unit_side == "Defense":
+                def_s = int(r_row.get("def_snaps", s_tot_snaps))
+                st_s = int(r_row.get("st_snaps", 0))
+                m3.metric("Defensive Snaps", f"{def_s}", delta=f"{st_s} Special Teams Snaps", delta_color="off")
+            else:
+                m3.metric(
+                    "Target / Rush Share",
+                    f"{s_tgt_sh:.1f}% Tgt",
+                    delta=f"{s_rush_sh:.1f}% Rush Share ({s_tgts} Tgts)",
+                    delta_color="off",
+                )
+            m4.metric(
+                "Scrimmage & EPA",
+                f"{s_scrim} Yds ({s_tds} TD)",
+                delta=f"{s_epa:+.2f} Total EPA ({s_touches} Touches)",
+                delta_color="normal" if s_epa >= 0 else "inverse",
+            )
+        else:
+            st.caption("Season aggregate summary derived from weekly logs below.")
+
+        if not p_logs.empty:
+            st.markdown(f"##### {stat_season} Week-by-Week Game Logs ({len(p_logs)} Games)")
+            log_disp_cols = [
+                "week",
+                "opp_label",
+                "targets",
+                "receptions",
+                "receiving_yards",
+                "receiving_tds",
+                "carries",
+                "rushing_yards",
+                "rushing_tds",
+                "scrimmage_yards",
+                "anytime_td",
+                "passing_yards",
+                "passing_tds",
+                "interceptions",
+            ]
+            avail_c = [c for c in log_disp_cols if c in p_logs.columns]
+            st.dataframe(
+                p_logs[avail_c].sort_values(by="week", ascending=False),
+                width="stretch",
+                hide_index=True,
+                column_config={
+                    "week": st.column_config.NumberColumn("Week", format="%d"),
+                    "opp_label": "Opponent",
+                    "targets": st.column_config.NumberColumn("Tgts", format="%d"),
+                    "receptions": st.column_config.NumberColumn("Rec", format="%d"),
+                    "receiving_yards": st.column_config.NumberColumn("Rec Yds", format="%.0f"),
+                    "receiving_tds": st.column_config.NumberColumn("Rec TD", format="%.0f"),
+                    "carries": st.column_config.NumberColumn("Carries", format="%d"),
+                    "rushing_yards": st.column_config.NumberColumn("Rush Yds", format="%.0f"),
+                    "rushing_tds": st.column_config.NumberColumn("Rush TD", format="%.0f"),
+                    "scrimmage_yards": st.column_config.NumberColumn("Scrim Yds", format="%.0f"),
+                    "anytime_td": st.column_config.NumberColumn("Total TD", format="%.0f"),
+                    "passing_yards": st.column_config.NumberColumn("Pass Yds", format="%.0f"),
+                    "passing_tds": st.column_config.NumberColumn("Pass TD", format="%.0f"),
+                    "interceptions": st.column_config.NumberColumn("INT", format="%.0f"),
+                },
+            )
+
+        if not p_snaps.empty:
+            st.markdown(f"##### {stat_season} Weekly Snap Count Participation Log")
+            snap_Copy = p_snaps.copy()
+            for pct_c in ["offense_pct", "defense_pct", "st_pct"]:
+                if pct_c in snap_Copy.columns:
+                    snap_Copy[pct_c] = (pd.to_numeric(snap_Copy[pct_c], errors="coerce").fillna(0.0) * 100.0).round(1)
+            snap_cols = [
+                c
+                for c in ["week", "opponent", "offense_snaps", "offense_pct", "defense_snaps", "defense_pct", "st_snaps", "st_pct"]
+                if c in snap_Copy.columns
+            ]
+            st.dataframe(
+                snap_Copy[snap_cols].sort_values(by="week", ascending=False),
+                width="stretch",
+                hide_index=True,
+                column_config={
+                    "week": st.column_config.NumberColumn("Week", format="%d"),
+                    "opponent": "Opponent",
+                    "offense_snaps": st.column_config.NumberColumn("Off Snaps", format="%d"),
+                    "offense_pct": st.column_config.ProgressColumn("Off Snap %", format="%.1f%%", min_value=0, max_value=100),
+                    "defense_snaps": st.column_config.NumberColumn("Def Snaps", format="%d"),
+                    "defense_pct": st.column_config.ProgressColumn("Def Snap %", format="%.1f%%", min_value=0, max_value=100),
+                    "st_snaps": st.column_config.NumberColumn("ST Snaps", format="%d"),
+                    "st_pct": st.column_config.ProgressColumn("ST Snap %", format="%.1f%%", min_value=0, max_value=100),
+                },
+            )
+
+        if p_logs.empty and p_snaps.empty:
+            st.info(f"No weekly stat or snap logs recorded for {p_name} in {stat_season}.")
+
+    # -------------------------------------------------------------------------
+    # TAB 2: PLAYER PROPS
+    # -------------------------------------------------------------------------
+    with tab_props:
+        if p_logs.empty:
+            st.info(
+                f"No offensive/skill prop game logs recorded for {p_name} ({p_pos}). "
+                "Inspect Tab 1 for defensive/snap participation metrics."
+            )
+        else:
+            default_mkt = "Receiving Yards"
+            if p_pos == "QB":
+                default_mkt = "Passing Yards"
+            elif p_pos in ["RB", "FB"]:
+                default_mkt = "Rushing Yards"
+
+            market_keys = list(PROP_MARKETS.keys())
+            default_idx = market_keys.index(default_mkt) if default_mkt in market_keys else 0
+
+            # Multi-Market Hit Rate Summary Table
+            summary_prop_rows = []
+            for m_label, (col_nm, def_line, _, _) in PROP_MARKETS.items():
+                if col_nm not in p_logs.columns:
+                    continue
+                vals = p_logs[col_nm]
+                if vals.max() <= 0 and m_label != default_mkt:
+                    continue
+                is_td_m = col_nm in ["anytime_td", "receiving_tds", "interceptions"]
+                med_line = 0.5 if is_td_m else max(0.5, round(float(vals.median()) * 2) / 2)
+                if med_line <= 0:
+                    med_line = def_line
+                hits_all = int((vals >= med_line).sum())
+                n_all = len(vals)
+                l5_vals = vals.tail(5)
+                hits_l5 = int((l5_vals >= med_line).sum())
+                l3_v = float(vals.tail(3).mean())
+                s_v = float(vals.mean())
+                summary_prop_rows.append(
+                    {
+                        "Prop Market": m_label,
+                        "Active Benchmark Line": med_line,
+                        "Season Avg": round(s_v, 2 if is_td_m else 1),
+                        "L3 Avg": round(l3_v, 2 if is_td_m else 1),
+                        "Season Hit Rate %": round(hits_all / n_all * 100.0, 1) if n_all > 0 else 0.0,
+                        "Season Over Record": f"{hits_all}/{n_all}",
+                        "Last 5 Hit Rate %": round(hits_l5 / len(l5_vals) * 100.0, 1) if len(l5_vals) > 0 else 0.0,
+                    }
+                )
+
+            if summary_prop_rows:
+                st.markdown(f"##### {p_name} — Multi-Market Prop Hit-Rate Summary")
+                st.dataframe(
+                    pd.DataFrame(summary_prop_rows),
+                    width="stretch",
+                    hide_index=True,
+                    column_config={
+                        "Active Benchmark Line": st.column_config.NumberColumn("Line", format="%.1f"),
+                        "Season Hit Rate %": st.column_config.ProgressColumn(
+                            "Season Hit Rate", format="%.1f%%", min_value=0, max_value=100
+                        ),
+                        "Last 5 Hit Rate %": st.column_config.ProgressColumn(
+                            "L5 Hit Rate", format="%.1f%%", min_value=0, max_value=100
+                        ),
+                    },
+                )
+
+            st.divider()
+            mc1, mc2 = st.columns([1.3, 1.3])
+            with mc1:
+                sel_mkt = st.selectbox(
+                    "Select Prop Market to Chart",
+                    options=market_keys,
+                    index=default_idx,
+                    key=f"modal_prop_mkt_{clean_nm}",
+                )
+            stat_col, def_l, max_cap, stp = PROP_MARKETS[sel_mkt]
+            is_td_int = stat_col in ["anytime_td", "receiving_tds", "interceptions"]
+            med_val = float(p_logs[stat_col].median()) if len(p_logs) > 0 else def_l
+            smart_line = 0.5 if is_td_int else (round(med_val * 2) / 2 if med_val > 0 else def_l)
+            dyn_max = float(max(max_cap, p_logs[stat_col].max() * 1.25, 3.5))
+
+            with mc2:
+                modal_line = st.slider(
+                    f"Target Threshold ({sel_mkt})",
+                    min_value=0.5,
+                    max_value=float(round(dyn_max, 0) + 0.5),
+                    value=float(min(max(0.5, smart_line), dyn_max)),
+                    step=float(stp),
+                    key=f"modal_prop_line_{clean_nm}_{stat_col}",
+                )
+
+            s_avg = float(p_logs[stat_col].mean())
+            l3_avg = float(p_logs.tail(3)[stat_col].mean())
+            streak_badge, streak_delta = evaluate_player_streak_badge(
+                s_avg, l3_avg, is_negative_stat=(stat_col == "interceptions")
+            )
+
+            p_logs_chart = p_logs.copy()
+            p_logs_chart["hit"] = p_logs_chart[stat_col] >= modal_line
+            p_logs_chart["bar_color"] = np.where(p_logs_chart["hit"], "#00FF87", "#FF4D6D")
+            p_logs_chart["rolling_avg"] = p_logs_chart[stat_col].expanding().mean()
+
+            hits_n = int(p_logs_chart["hit"].sum())
+            tot_n = len(p_logs_chart)
+            hit_pct = (hits_n / tot_n * 100.0) if tot_n > 0 else 0.0
+
+            opp_def_rk = 16
+            if not eff_df.empty and opp_tm in eff_df.index:
+                is_rush = stat_col in ["rushing_yards", "carries"]
+                opp_def_rk = int(
+                    eff_df.loc[opp_tm, "def_rush_epa_rank" if is_rush else "def_pass_epa_rank"]
+                )
+
+            pk1, pk2, pk3 = st.columns(3)
+            pk1.metric(
+                f"Season Hit Rate (vs {modal_line})",
+                f"{hit_pct:.1f}% ({hits_n}/{tot_n})",
+                delta="Over Trend" if hit_pct >= 55 else "Under Trend",
+                delta_color="normal" if hit_pct >= 55 else "inverse",
+            )
+            pk2.metric(
+                "L3 Form vs Season Avg",
+                f"{l3_avg:.2f} L3" if is_td_int else f"{l3_avg:.1f} L3",
+                delta=streak_delta,
+            )
+            pk3.metric(
+                f"Opposing {opp_tm} Defense Rank",
+                f"Rank #{opp_def_rk}",
+                delta="Smash Spot" if opp_def_rk >= 23 else ("Tough Draw" if opp_def_rk <= 5 else "Neutral"),
+                delta_color="normal" if opp_def_rk >= 23 else ("inverse" if opp_def_rk <= 5 else "off"),
+            )
+
+            render_html(f'<div style="margin:4px 0 8px 0;">{streak_badge}</div>')
+
+            fig_m = go.Figure()
+            fig_m.add_trace(
+                go.Bar(
+                    x=p_logs_chart["game_tag"],
+                    y=p_logs_chart[stat_col],
+                    marker_color=p_logs_chart["bar_color"],
+                    text=[
+                        f"{v:.0f}" if (stp >= 1 or is_td_int) else f"{v:.1f}"
+                        for v in p_logs_chart[stat_col]
+                    ],
+                    textposition="outside",
+                    name=sel_mkt,
+                )
+            )
+            fig_m.add_trace(
+                go.Scatter(
+                    x=p_logs_chart["game_tag"],
+                    y=p_logs_chart["rolling_avg"],
+                    mode="lines+markers",
+                    line=dict(color="#4A90E2", width=2, dash="dot"),
+                    name="Cumulative Avg",
+                )
+            )
+            fig_m.add_hline(
+                y=modal_line,
+                line_width=2,
+                line_dash="dash",
+                line_color="#FFB020",
+                annotation_text=f"Line: {modal_line} ({hit_pct:.0f}% Hit)",
+                annotation_position="top left",
+                annotation_font=dict(color="#FFB020", size=11),
+            )
+            y_max = max(float(p_logs_chart[stat_col].max()), modal_line) * 1.28 + 1.0
+            fig_m.update_layout(
+                paper_bgcolor="#12161F",
+                plot_bgcolor="#12161F",
+                font=dict(color="#E2E8F0"),
+                xaxis=dict(title="Game Week & Opponent", gridcolor="#262D3D"),
+                yaxis=dict(title=sel_mkt, range=[0, y_max], gridcolor="#262D3D"),
+                legend=dict(orientation="h", yanchor="bottom", y=1.02, xanchor="right", x=1),
+                height=340,
+                margin=dict(l=16, r=16, t=36, b=24),
+            )
+            st.plotly_chart(fig_m, width="stretch", key=f"modal_plotly_{clean_nm}_{stat_col}")
+
+
+# -----------------------------------------------------------------------------
+# 5. SIDEBAR CONTROLS & DYNAMIC CURRENT WEEK DEFAULT
 # -----------------------------------------------------------------------------
 st.sidebar.markdown("## Controls")
 
@@ -2044,6 +2652,8 @@ with st.spinner(f"Loading {selected_season} nflverse CSV feeds..."):
     player_df, player_season = load_player_stats_csv(selected_season)
     snaps_df, snaps_season = load_snap_counts_csv(selected_season)
     injuries_df, inj_season = load_injuries_csv(selected_season)
+    roster_headshots_raw = load_rosters_headshots_csv(player_season)
+    headshot_lookup = build_headshot_lookup(player_df, roster_headshots_raw)
 
 if schedule_df.empty:
     st.error("Could not load NFL schedule CSV from nflverse. Please verify your internet connection.")
@@ -2113,7 +2723,7 @@ active_game = week_games.iloc[st.session_state["selected_game_idx"]]
 team_records_map = compute_team_records(schedule_df, through_week=selected_week)
 
 # -----------------------------------------------------------------------------
-# 5. PINNED TOP VIEW: HORIZONTAL SCROLLABLE NFL GAME TICKER
+# 6. PINNED TOP VIEW: HORIZONTAL SCROLLABLE NFL GAME TICKER
 # -----------------------------------------------------------------------------
 mode_tag = (
     f'<span class="badge-amber">● [BACKTEST MODE: {selected_season}]</span>'
@@ -2127,7 +2737,7 @@ render_html(
     f"{render_rank_badge(1, 'Top-5')} "
     f"{render_rank_badge(12, 'Ranks 6-22')} "
     f"{render_rank_badge(28, 'Bottom-10')} "
-    '<span class="badge-sage">● Scroll the horizontal game strip below and click any matchup card to load its analytics</span>'
+    '<span class="badge-sage">● Scroll the horizontal game strip below or click any player button/table row to open the Player Pop-Out Dossier</span>'
 )
 
 ticker_head_col1, ticker_head_col2 = st.columns([1.4, 1])
@@ -2147,7 +2757,7 @@ with ticker_head_col2:
 render_nfl_horizontal_ticker(week_games, team_records_map)
 
 # -----------------------------------------------------------------------------
-# 6. DETAIL VIEW: HIGH-PROMINENCE SELECTED MATCHUP SPOTLIGHT
+# 7. DETAIL VIEW: HIGH-PROMINENCE SELECTED MATCHUP SPOTLIGHT
 # -----------------------------------------------------------------------------
 if eff_df.empty:
     st.info("Efficiency data unavailable for this season.")
@@ -2187,6 +2797,31 @@ inj_matchup = build_injury_impact_report(
     injuries_df, snaps_df, usage_matchup, [away_tm, home_tm], selected_week
 )
 h2h_5yr = get_five_year_h2h_history(master_games_df, away_tm, home_tm, selected_season)
+roster_matchup_table = build_roster_usage_table(snaps_df, usage_matchup, [away_tm, home_tm])
+prop_logs_matchup = prepare_matchup_player_prop_logs(player_df, [away_tm, home_tm])
+
+# Quick-Search Player Inspector Bar in Sidebar (Allows opening any player on the 2 matchup rosters)
+st.sidebar.divider()
+st.sidebar.markdown("### Player Dossier Quick-Launch")
+if not roster_matchup_table.empty:
+    sidebar_player_opts = (
+        roster_matchup_table["player_name"].astype(str)
+        + " ("
+        + roster_matchup_table["team"].astype(str)
+        + " - "
+        + roster_matchup_table["position"].astype(str)
+        + ")"
+    ).tolist()
+    sel_sb_player = st.sidebar.selectbox(
+        "Search Matchup Roster Player",
+        options=sidebar_player_opts,
+        index=0,
+    )
+    if st.sidebar.button("OPEN PLAYER POP-OUT", use_container_width=True, type="primary"):
+        sb_idx = sidebar_player_opts.index(sel_sb_player)
+        sb_row = roster_matchup_table.iloc[sb_idx]
+        trigger_player_popup(sb_row["player_name"], sb_row["team"], sb_row["position"])
+        st.rerun()
 
 
 def get_unit_penalty(tm: str, side: str) -> float:
@@ -2324,6 +2959,14 @@ with subtab_brief:
 
         col_brief_left, col_brief_right = st.columns([1.2, 1])
 
+        top_inj_row = None
+        if not inj_matchup.empty and int(inj_matchup["is_anchor"].sum()) > 0:
+            top_inj_row = inj_matchup[inj_matchup["is_anchor"]].iloc[0]
+
+        top_weapon_row = None
+        if not usage_matchup.empty:
+            top_weapon_row = usage_matchup.sort_values(by="calc_target_share", ascending=False).iloc[0]
+
         with col_brief_left:
             a_pass_rk, a_rush_rk = int(a_eff["off_pass_epa_rank"]), int(a_eff["off_rush_epa_rank"])
             h_pdef_rk, h_rdef_rk = int(h_eff["def_pass_epa_rank"]), int(h_eff["def_rush_epa_rank"])
@@ -2373,12 +3016,11 @@ with subtab_brief:
                     f'<span class="metric-subtext">{stadium_str} ({roof_str})</span>'
                 )
 
-            if not inj_matchup.empty and int(inj_matchup["is_anchor"].sum()) > 0:
-                top_inj = inj_matchup[inj_matchup["is_anchor"]].iloc[0]
+            if top_inj_row is not None:
                 inj_cell_html = (
-                    f'{render_inline_logo(top_inj["team"], 16)}<b>{top_inj["player_display"]}</b> '
-                    f'({top_inj.get("position", "POS")}) {render_injury_badge(top_inj["report_status"])} '
-                    f'<span style="color:#FF4D6D; font-family:monospace; font-weight:700;">-{top_inj["est_epa_penalty"]:.3f} EPA</span>'
+                    f'{render_inline_logo(top_inj_row["team"], 16)}<b>{top_inj_row["player_display"]}</b> '
+                    f'({top_inj_row.get("position", "POS")}) {render_injury_badge(top_inj_row["report_status"])} '
+                    f'<span style="color:#FF4D6D; font-family:monospace; font-weight:700;">-{top_inj_row["est_epa_penalty"]:.3f} EPA</span>'
                 )
             else:
                 inj_cell_html = '<span class="badge-elite">● [FULL STRENGTH]</span> <span class="metric-subtext">0 Anchor Absences</span>'
@@ -2449,6 +3091,18 @@ with subtab_brief:
                 </div>
                 """
             )
+            if top_inj_row is not None:
+                if st.button(
+                    f"INSPECT INJURY ANCHOR: {top_inj_row['player_display']} ({top_inj_row['team']})",
+                    key=f"brief_inj_btn_{top_inj_row['player_display']}",
+                    use_container_width=True,
+                ):
+                    trigger_player_popup(
+                        top_inj_row["player_display"],
+                        top_inj_row["team"],
+                        str(top_inj_row.get("position", "")),
+                    )
+                    st.rerun()
 
         with col_brief_right:
             fav_team = home_tm if (pd.notna(spread_v) and spread_v <= 0) else away_tm
@@ -2463,16 +3117,15 @@ with subtab_brief:
                 int(h_eff["def_pass_epa_rank"]) if fav_team == home_tm else int(a_eff["def_pass_epa_rank"])
             )
 
-            if not usage_matchup.empty:
-                top_w = usage_matchup.sort_values(by="calc_target_share", ascending=False).iloc[0]
-                w_tm = top_w["team"]
+            if top_weapon_row is not None:
+                w_tm = top_weapon_row["team"]
                 opp_tm = home_tm if w_tm == away_tm else away_tm
                 opp_p_rk = int(eff_df.loc[opp_tm, "def_pass_epa_rank"])
-                phase2_badge = f'<span class="badge-amber">● [{top_w["calc_target_share"]*100:.1f}% TARGET SHARE]</span>'
+                phase2_badge = f'<span class="badge-amber">● [{top_weapon_row["calc_target_share"]*100:.1f}% TARGET SHARE]</span>'
                 phase2_body = (
-                    f"{render_inline_logo(w_tm, 16)}<b>{top_w['player_name']}</b> ({top_w['position']}) "
+                    f"{render_inline_logo(w_tm, 16)}<b>{top_weapon_row['player_name']}</b> ({top_weapon_row['position']}) "
                     f"featured vs {render_inline_logo(opp_tm, 16)}{render_rank_badge(opp_p_rk, 'Cov')} "
-                    f"<span class='metric-subtext'>({int(top_w['targets'])} tgts, {int(top_w['air_yards'])} air yds)</span>"
+                    f"<span class='metric-subtext'>({int(top_weapon_row['targets'])} tgts, {int(top_weapon_row['air_yards'])} air yds)</span>"
                 )
             else:
                 phase2_badge = '<span class="badge-mid">● [BALANCED TARGETS]</span>'
@@ -2519,6 +3172,18 @@ with subtab_brief:
                 </div>
                 """
             )
+            if top_weapon_row is not None:
+                if st.button(
+                    f"INSPECT FOCAL TARGET: {top_weapon_row['player_name']} ({top_weapon_row['team']} {top_weapon_row['position']})",
+                    key=f"brief_w_btn_{top_weapon_row['player_name']}",
+                    use_container_width=True,
+                ):
+                    trigger_player_popup(
+                        top_weapon_row["player_name"],
+                        top_weapon_row["team"],
+                        str(top_weapon_row["position"]),
+                    )
+                    st.rerun()
 
         render_html(
             f"<h4 style='margin:14px 0 8px 0;'>"
@@ -2591,7 +3256,7 @@ with subtab_brief:
                 )
 
 # =============================================================================
-# SUB-TAB 2: PLAYER MISMATCHES & INJURIES (WITH DEDICATED CB vs WR SUB-TAB)
+# SUB-TAB 2: PLAYER MISMATCHES & INJURIES (WITH CLICKABLE PLAYER BUTTONS)
 # =============================================================================
 with subtab_players:
     pm_subtab_cbwr, pm_subtab_volume, pm_subtab_injuries = st.tabs(
@@ -2609,8 +3274,7 @@ with subtab_players:
             f"{away_tm} vs {render_inline_logo(home_tm, 24)}{home_tm}</h4>"
         )
         st.caption(
-            "Automatically surfaces top individual WR1/WR2/Slot battles driven by opposing CB defensive snap shares, "
-            "secondary injuries (backup CBs elevated into starting roles), and Last-4-Games (L4) hot/cold streaks."
+            "Click any Wide Receiver or Cornerback button below—or select any row in the summary matrix—to open their Player Pop-Out Dossier."
         )
 
         away_cb_wr_battles = build_cb_wr_matchup_battles(
@@ -2667,7 +3331,7 @@ with subtab_players:
                         f'{render_team_pill(off_tm_i)} <b>Wideouts vs</b> '
                         f'{render_team_pill(def_tm_i)} <b>Cornerbacks</b></div>'
                     )
-                    for b in battle_list:
+                    for b_idx, b in enumerate(battle_list):
                         render_html(
                             f"""
                             <div class="{b['card_style']}">
@@ -2702,7 +3366,26 @@ with subtab_players:
                             </div>
                             """
                         )
+                        btn_c1, btn_c2 = st.columns(2)
+                        with btn_c1:
+                            if st.button(
+                                f"INSPECT WR: {b['wr_name']}",
+                                key=f"cbwr_wr_{off_tm_i}_{b_idx}_{b['wr_name']}",
+                                use_container_width=True,
+                            ):
+                                trigger_player_popup(b["wr_name"], b["off_tm"], "WR")
+                                st.rerun()
+                        with btn_c2:
+                            if st.button(
+                                f"INSPECT CB: {b['cb_name']}",
+                                key=f"cbwr_cb_{def_tm_i}_{b_idx}_{b['cb_name']}",
+                                use_container_width=True,
+                                disabled=("Rotation" in b["cb_name"]),
+                            ):
+                                trigger_player_popup(b["cb_name"], b["def_tm"], b["cb_pos"])
+                                st.rerun()
 
+            sorted_battles = sorted(all_battles, key=lambda x: x["mismatch_score"], reverse=True)
             battle_table_df = pd.DataFrame(
                 [
                     {
@@ -2717,14 +3400,17 @@ with subtab_players:
                         "Mismatch Index": b["mismatch_score"],
                         "Callout Tier": b["tier_plain"],
                     }
-                    for b in sorted(all_battles, key=lambda x: x["mismatch_score"], reverse=True)
+                    for b in sorted_battles
                 ]
             )
-            st.markdown("##### 1-on-1 CB vs. WR Mismatch Summary Matrix")
-            st.dataframe(
+            st.markdown("##### 1-on-1 CB vs. WR Mismatch Summary Matrix (Click Any Row to Open WR Pop-Out)")
+            cbwr_event = st.dataframe(
                 battle_table_df,
                 width="stretch",
                 hide_index=True,
+                on_select="rerun",
+                selection_mode="single-row",
+                key="cbwr_matrix_table",
                 column_config={
                     "Target %": st.column_config.NumberColumn("Target %", format="%.1f%%"),
                     "Season YPG": st.column_config.NumberColumn("Season YPG", format="%.1f"),
@@ -2735,6 +3421,15 @@ with subtab_players:
                     ),
                 },
             )
+            if cbwr_event and cbwr_event.selection and cbwr_event.selection.rows:
+                sel_b_idx = cbwr_event.selection.rows[0]
+                if 0 <= sel_b_idx < len(sorted_battles):
+                    chosen_b = sorted_battles[sel_b_idx]
+                    row_sig = f"cbwr_row_{chosen_b['wr_name']}_{sel_b_idx}"
+                    if st.session_state.get("_last_table_sig") != row_sig:
+                        st.session_state["_last_table_sig"] = row_sig
+                        trigger_player_popup(chosen_b["wr_name"], chosen_b["off_tm"], "WR")
+                        st.rerun()
 
     with pm_subtab_volume:
         render_html(
@@ -2743,7 +3438,7 @@ with subtab_players:
             f"Overall Skill-Player Volume vs. Unit Tiers ({away_tm} @ {home_tm})</h4>"
         )
         st.caption(
-            "Primary offensive skill weapons (WR, RB, TE) cross-referenced against opposing Pass/Rush EPA defensive ranks."
+            "Primary offensive skill weapons (WR, RB, TE) cross-referenced against opposing Pass/Rush EPA defensive ranks. Click any player button to open their Pop-Out Dossier."
         )
 
         if usage_matchup.empty or a_eff is None or h_eff is None:
@@ -2773,7 +3468,7 @@ with subtab_players:
                     )
                     featured = pd.concat([top_receivers, top_rusher]).drop_duplicates(subset=["player_name"])
 
-                    for _, w_row in featured.iterrows():
+                    for w_idx, (_, w_row) in enumerate(featured.iterrows()):
                         is_rec = w_row["calc_target_share"] >= w_row["calc_rush_share"]
                         opp_rk = def_pass_rk if is_rec else def_rush_rk
                         phase_str = f"{def_tm_i} Pass Def" if is_rec else f"{def_tm_i} Rush Def"
@@ -2809,6 +3504,13 @@ with subtab_players:
                             </div>
                             """
                         )
+                        if st.button(
+                            f"INSPECT PLAYER: {w_row['player_name']} ({off_tm_i} {pos_badge})",
+                            key=f"vol_btn_{off_tm_i}_{w_idx}_{w_row['player_name']}",
+                            use_container_width=True,
+                        ):
+                            trigger_player_popup(w_row["player_name"], off_tm_i, pos_badge)
+                            st.rerun()
 
     with pm_subtab_injuries:
         render_html(
@@ -2855,7 +3557,7 @@ with subtab_players:
                         """
                     )
 
-                    for _, r_inj in tm_inj.head(6).iterrows():
+                    for i_idx, (_, r_inj) in enumerate(tm_inj.head(6).iterrows()):
                         badge_html = render_injury_badge(r_inj["report_status"])
                         snap_pct = r_inj["snap_share"] * 100
                         tgt_pct = r_inj["calc_target_share"] * 100
@@ -2880,6 +3582,13 @@ with subtab_players:
                             </div>
                             """
                         )
+                        if st.button(
+                            f"INSPECT INJURED PLAYER: {r_inj['player_display']} ({tm} {pos_str})",
+                            key=f"inj_btn_{tm}_{i_idx}_{r_inj['player_display']}",
+                            use_container_width=True,
+                        ):
+                            trigger_player_popup(r_inj["player_display"], tm, pos_str)
+                            st.rerun()
 
 # =============================================================================
 # SUB-TAB 3: TRENCH & AIR EFFICIENCY
@@ -3040,34 +3749,17 @@ with subtab_props:
         "plus automated Last-3-Games (L3) Hot/Cold streak detection."
     )
 
-    prop_logs = prepare_matchup_player_prop_logs(player_df, [away_tm, home_tm])
-
-    if prop_logs.empty:
+    if prop_logs_matchup.empty:
         st.info(f"No weekly player game logs found for {away_tm} or {home_tm}.")
     else:
-        prop_markets = {
-            "Receiving Yards": ("receiving_yards", 54.5, 150.0, 1.0),
-            "Receptions": ("receptions", 4.5, 15.0, 0.5),
-            "Receiving TDs": ("receiving_tds", 0.5, 3.5, 0.5),
-            "Targets": ("targets", 6.5, 18.0, 0.5),
-            "Rushing Yards": ("rushing_yards", 59.5, 160.0, 1.0),
-            "Rush Carries": ("carries", 13.5, 30.0, 0.5),
-            "Anytime TD": ("anytime_td", 0.5, 3.5, 0.5),
-            "Passing Yards": ("passing_yards", 234.5, 400.0, 1.0),
-            "Passing TDs": ("passing_tds", 1.5, 5.5, 0.5),
-            "Interceptions (INT)": ("interceptions", 0.5, 3.5, 0.5),
-            "Pass Completions": ("completions", 20.5, 38.0, 0.5),
-            "Scrimmage Yards (Rush + Rec)": ("scrimmage_yards", 74.5, 180.0, 1.0),
-        }
-
         ctrl_col1, ctrl_col2, ctrl_col3 = st.columns([1, 1.4, 1.3])
 
         with ctrl_col1:
             allowed_positions = [
-                p for p in ["WR", "RB", "TE", "QB"] if p in prop_logs["pos_clean"].unique()
+                p for p in ["WR", "RB", "TE", "QB"] if p in prop_logs_matchup["pos_clean"].unique()
             ]
             if not allowed_positions:
-                allowed_positions = sorted(prop_logs["pos_clean"].unique().tolist())
+                allowed_positions = sorted(prop_logs_matchup["pos_clean"].unique().tolist())
 
             selected_pos = st.selectbox(
                 "1. Filter Position",
@@ -3076,9 +3768,9 @@ with subtab_props:
             )
 
         pos_filtered_logs = (
-            prop_logs
+            prop_logs_matchup
             if selected_pos == "All Skill Positions"
-            else prop_logs[prop_logs["pos_clean"] == selected_pos]
+            else prop_logs_matchup[prop_logs_matchup["pos_clean"] == selected_pos]
         )
 
         roster_summary = (
@@ -3116,18 +3808,18 @@ with subtab_props:
 
         default_market_idx = 0
         if sel_player_pos == "QB":
-            default_market_idx = list(prop_markets.keys()).index("Passing Yards")
+            default_market_idx = list(PROP_MARKETS.keys()).index("Passing Yards")
         elif sel_player_pos == "RB":
-            default_market_idx = list(prop_markets.keys()).index("Rushing Yards")
+            default_market_idx = list(PROP_MARKETS.keys()).index("Rushing Yards")
 
         with ctrl_col3:
             selected_market_label = st.selectbox(
                 "3. Select Prop Market",
-                options=list(prop_markets.keys()),
+                options=list(PROP_MARKETS.keys()),
                 index=default_market_idx,
             )
 
-        stat_col_name, default_line, max_line_cap, step_val = prop_markets[selected_market_label]
+        stat_col_name, default_line, max_line_cap, step_val = PROP_MARKETS[selected_market_label]
 
         p_log = pos_filtered_logs[
             (pos_filtered_logs["player_label"] == sel_player_name)
@@ -3243,20 +3935,31 @@ with subtab_props:
             )
         )
 
-        render_html(
-            f"""
-            <div class="terminal-card" style="padding:12px; margin-bottom:10px;">
-                <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px;">
-                    <div>
-                        {render_team_pill(sel_player_team)} <b>{sel_player_name}</b>
-                        <span class="badge-sage">[{sel_player_pos}]</span>
-                        {streak_badge_html}
+        p_card_col, p_btn_col = st.columns([3.2, 1])
+        with p_card_col:
+            render_html(
+                f"""
+                <div class="terminal-card" style="padding:12px; margin-bottom:10px;">
+                    <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px;">
+                        <div>
+                            {render_team_pill(sel_player_team)} <b>{sel_player_name}</b>
+                            <span class="badge-sage">[{sel_player_pos}]</span>
+                            {streak_badge_html}
+                        </div>
+                        <div>{hit_badge_html} {opp_badge_html}</div>
                     </div>
-                    <div>{hit_badge_html} {opp_badge_html}</div>
                 </div>
-            </div>
-            """
-        )
+                """
+            )
+        with p_btn_col:
+            if st.button(
+                f"OPEN POP-OUT: {sel_player_name}",
+                key=f"prop_open_modal_{sel_player_name}",
+                type="primary",
+                use_container_width=True,
+            ):
+                trigger_player_popup(sel_player_name, sel_player_team, sel_player_pos)
+                st.rerun()
 
         fig_prop = go.Figure()
 
@@ -3352,7 +4055,7 @@ with subtab_props:
             )
 
 # =============================================================================
-# SUB-TAB 5: TEAM ROSTER & USAGE EXPLORER
+# SUB-TAB 5: TEAM ROSTER & USAGE EXPLORER (CLICK ANY ROW OR LEADER BUTTON)
 # =============================================================================
 with subtab_roster:
     render_html(
@@ -3361,13 +4064,10 @@ with subtab_roster:
         f"Team Roster & Usage Explorer</h4>"
     )
     st.caption(
-        "Filter by **All Offense**, **All Defense**, or **Special Teams** at once, or drill into specific positions "
-        "to inspect Snap %, Total Snaps, Targets, Target Share, Touches, Air Yards, and Total EPA."
+        "Click any player button or select any row in the roster table below to open their interactive Player Pop-Out Dossier with official headshots."
     )
 
-    roster_table = build_roster_usage_table(snaps_df, usage_matchup, [away_tm, home_tm])
-
-    if roster_table.empty:
+    if roster_matchup_table.empty:
         st.info("Active roster and snap usage data unavailable for the selected teams.")
     else:
         r_col1, r_col2, r_col3, r_col4 = st.columns([1.1, 1.3, 1.2, 1.1])
@@ -3384,7 +4084,7 @@ with subtab_roster:
                 horizontal=True,
             )
 
-        filtered_roster = roster_table.copy()
+        filtered_roster = roster_matchup_table.copy()
         if roster_team_filter in [away_tm, home_tm]:
             filtered_roster = filtered_roster[filtered_roster["team"] == roster_team_filter]
 
@@ -3414,7 +4114,7 @@ with subtab_roster:
 
         if roster_pos_filter:
             filtered_roster = filtered_roster[filtered_roster["position"].isin(roster_pos_filter)]
-        filtered_roster = filtered_roster[filtered_roster["primary_snap_pct"] >= min_snap_slider]
+        filtered_roster = filtered_roster[filtered_roster["primary_snap_pct"] >= min_snap_slider].reset_index(drop=True)
 
         if not filtered_roster.empty:
             top_snap_p = filtered_roster.sort_values(by="primary_snap_pct", ascending=False).iloc[0]
@@ -3423,26 +4123,58 @@ with subtab_roster:
             top_air_p = filtered_roster.sort_values(by="air_yards", ascending=False).iloc[0]
 
             rk1, rk2, rk3, rk4 = st.columns(4)
-            rk1.metric(
-                f"{unit_group_filter} Snap Leader",
-                f"{top_snap_p['player_name']} ({top_snap_p['team']})",
-                delta=f"{top_snap_p['primary_snap_pct']:.1f}% Snaps ({int(top_snap_p['total_snaps'])} total)",
-            )
-            rk2.metric(
-                "Target Leader",
-                f"{top_tgt_p['player_name']} ({top_tgt_p['team']})",
-                delta=f"{int(top_tgt_p['targets'])} Tgts ({top_tgt_p['target_share_pct']:.1f}% Share)",
-            )
-            rk3.metric(
-                "Total Touches Leader",
-                f"{top_touch_p['player_name']} ({top_touch_p['team']})",
-                delta=f"{int(top_touch_p['touches'])} Touches ({int(top_touch_p['scrimmage_yards'])} Yds)",
-            )
-            rk4.metric(
-                "Air Yards Leader",
-                f"{top_air_p['player_name']} ({top_air_p['team']})",
-                delta=f"{int(top_air_p['air_yards'])} Air Yards",
-            )
+            with rk1:
+                st.metric(
+                    f"{unit_group_filter} Snap Leader",
+                    f"{top_snap_p['player_name']} ({top_snap_p['team']})",
+                    delta=f"{top_snap_p['primary_snap_pct']:.1f}% Snaps ({int(top_snap_p['total_snaps'])} total)",
+                )
+                if st.button(
+                    f"INSPECT {top_snap_p['player_name']}",
+                    key=f"rost_snap_ldr_{top_snap_p['player_name']}",
+                    use_container_width=True,
+                ):
+                    trigger_player_popup(top_snap_p["player_name"], top_snap_p["team"], top_snap_p["position"])
+                    st.rerun()
+            with rk2:
+                st.metric(
+                    "Target Leader",
+                    f"{top_tgt_p['player_name']} ({top_tgt_p['team']})",
+                    delta=f"{int(top_tgt_p['targets'])} Tgts ({top_tgt_p['target_share_pct']:.1f}% Share)",
+                )
+                if st.button(
+                    f"INSPECT {top_tgt_p['player_name']}",
+                    key=f"rost_tgt_ldr_{top_tgt_p['player_name']}",
+                    use_container_width=True,
+                ):
+                    trigger_player_popup(top_tgt_p["player_name"], top_tgt_p["team"], top_tgt_p["position"])
+                    st.rerun()
+            with rk3:
+                st.metric(
+                    "Total Touches Leader",
+                    f"{top_touch_p['player_name']} ({top_touch_p['team']})",
+                    delta=f"{int(top_touch_p['touches'])} Touches ({int(top_touch_p['scrimmage_yards'])} Yds)",
+                )
+                if st.button(
+                    f"INSPECT {top_touch_p['player_name']}",
+                    key=f"rost_touch_ldr_{top_touch_p['player_name']}",
+                    use_container_width=True,
+                ):
+                    trigger_player_popup(top_touch_p["player_name"], top_touch_p["team"], top_touch_p["position"])
+                    st.rerun()
+            with rk4:
+                st.metric(
+                    "Air Yards Leader",
+                    f"{top_air_p['player_name']} ({top_air_p['team']})",
+                    delta=f"{int(top_air_p['air_yards'])} Air Yards",
+                )
+                if st.button(
+                    f"INSPECT {top_air_p['player_name']}",
+                    key=f"rost_air_ldr_{top_air_p['player_name']}",
+                    use_container_width=True,
+                ):
+                    trigger_player_popup(top_air_p["player_name"], top_air_p["team"], top_air_p["position"])
+                    st.rerun()
 
         roster_disp_cols = [
             "team_logo",
@@ -3465,15 +4197,18 @@ with subtab_roster:
         ]
         avail_r_cols = [c for c in roster_disp_cols if c in filtered_roster.columns]
 
-        st.dataframe(
+        roster_event = st.dataframe(
             filtered_roster[avail_r_cols],
             width="stretch",
             hide_index=True,
+            on_select="rerun",
+            selection_mode="single-row",
+            key="roster_explorer_table",
             column_config={
                 "team_logo": st.column_config.ImageColumn("", width="small"),
                 "team": "Team",
                 "unit_group": "Unit",
-                "player_name": "Player",
+                "player_name": "Player (Click Row to Open Pop-Out)",
                 "position": "Pos",
                 "games_played": st.column_config.NumberColumn("Games", format="%d"),
                 "primary_snap_pct": st.column_config.ProgressColumn(
@@ -3493,6 +4228,19 @@ with subtab_roster:
                 "total_epa": st.column_config.NumberColumn("Total EPA", format="%+.2f"),
             },
         )
+        if roster_event and roster_event.selection and roster_event.selection.rows:
+            sel_r_idx = roster_event.selection.rows[0]
+            if 0 <= sel_r_idx < len(filtered_roster):
+                chosen_p = filtered_roster.iloc[sel_r_idx]
+                row_sig = f"roster_row_{chosen_p['player_name']}_{sel_r_idx}"
+                if st.session_state.get("_last_table_sig") != row_sig:
+                    st.session_state["_last_table_sig"] = row_sig
+                    trigger_player_popup(
+                        chosen_p["player_name"],
+                        chosen_p["team"],
+                        chosen_p["position"],
+                    )
+                    st.rerun()
 
 # =============================================================================
 # SUB-TAB 6: BACKTEST PERFORMANCE
@@ -3633,4 +4381,45 @@ with subtab_backtest:
                     "ATS Cover": st.column_config.CheckboxColumn("ATS Cover"),
                     "Push": st.column_config.CheckboxColumn("Push"),
                 },
+            )
+
+# -----------------------------------------------------------------------------
+# 8. LAUNCH PLAYER POP-OUT MODAL WHEN ACTIVE_PLAYER IS TRIGGERED
+# -----------------------------------------------------------------------------
+if st.session_state.get("open_player_modal") and st.session_state.get("active_player"):
+    st.session_state["open_player_modal"] = False
+    active_p = st.session_state["active_player"]
+
+    if hasattr(st, "dialog"):
+
+        @st.dialog("Player Dossier & Prop Inspector", width="large")
+        def _show_player_modal() -> None:
+            render_player_popup_contents(
+                active_p,
+                roster_matchup_table,
+                prop_logs_matchup,
+                snaps_df,
+                inj_matchup,
+                eff_df,
+                headshot_lookup,
+                away_tm,
+                home_tm,
+                player_season,
+            )
+
+        _show_player_modal()
+    else:
+        with st.container(border=True):
+            st.subheader("Player Dossier & Prop Inspector")
+            render_player_popup_contents(
+                active_p,
+                roster_matchup_table,
+                prop_logs_matchup,
+                snaps_df,
+                inj_matchup,
+                eff_df,
+                headshot_lookup,
+                away_tm,
+                home_tm,
+                player_season,
             )
