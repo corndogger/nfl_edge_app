@@ -45,7 +45,7 @@ st.markdown(
 }
 
 /* ============================================================================
-   1. PURE ST.MARKDOWN FLEXBOX TICKER CONTAINER (Requirement #1)
+   1. PURE ST.MARKDOWN FLEXBOX TICKER CONTAINER
    Uses display: flex; overflow-x: auto; white-space: nowrap;
    ============================================================================ */
 .nfl-ticker-flexbox-container {
@@ -215,8 +215,15 @@ div[data-testid="stHorizontalBlock"]:has(.nfl-ticker-marker) > div[data-testid="
 .ticker-team-left {
     display: flex;
     align-items: center;
-    gap: 6px;
+    gap: 5px;
     white-space: nowrap;
+}
+.ticker-team-record {
+    font-family: monospace;
+    font-size: 0.72rem;
+    font-weight: 600;
+    color: #94A3B8;
+    margin-left: 2px;
 }
 .ticker-score-win {
     font-family: monospace;
@@ -599,7 +606,7 @@ def render_injury_badge(status: str) -> str:
 
 def classify_primetime_code(row: pd.Series) -> str:
     """
-    Detects compact broadcast tags for the NFL.com-style ticker (Requirement #2):
+    Detects compact broadcast tags for the NFL.com-style ticker:
     Returns [TNF], [SNF], [MNF], [SPC], or empty string for standard Sunday daytime games.
     """
     weekday = str(row.get("weekday", "")).strip().lower()
@@ -643,17 +650,66 @@ def render_slot_badge_html(slot_code: str) -> str:
     return '<span class="ticker-score-muted">[SUN]</span>'
 
 
-def select_game_callback(game_id: str, idx: int) -> None:
-    """Updates st.session_state['selected_game'] when a ticker card is clicked."""
-    st.session_state["selected_game"] = game_id
-    st.session_state["selected_game_idx"] = idx
+def compute_team_records(
+    schedule_df: pd.DataFrame, through_week: int | None = None
+) -> dict[str, str]:
+    """
+    Dynamically computes each NFL team's season record (e.g., '4-1' or '3-2-1')
+    from the schedule/results DataFrame up through the selected week.
+    """
+    records: dict[str, list[int]] = {}
+    if schedule_df.empty:
+        return {}
+
+    for col in ["home_team", "away_team"]:
+        if col in schedule_df.columns:
+            for tm in schedule_df[col].dropna().unique():
+                clean_tm = str(tm).strip().upper()
+                if clean_tm not in records:
+                    records[clean_tm] = [0, 0, 0]
+
+    sub = schedule_df.copy()
+    if through_week is not None and "week" in sub.columns:
+        sub = sub[pd.to_numeric(sub["week"], errors="coerce").fillna(999) <= through_week]
+
+    if {"home_score", "away_score"}.issubset(sub.columns):
+        completed = sub[sub["home_score"].notna() & sub["away_score"].notna()]
+        for _, r in completed.iterrows():
+            ht = str(r["home_team"]).strip().upper()
+            at = str(r["away_team"]).strip().upper()
+            hs = float(r["home_score"])
+            as_ = float(r["away_score"])
+
+            if ht not in records:
+                records[ht] = [0, 0, 0]
+            if at not in records:
+                records[at] = [0, 0, 0]
+
+            if hs > as_:
+                records[ht][0] += 1
+                records[at][1] += 1
+            elif as_ > hs:
+                records[at][0] += 1
+                records[ht][1] += 1
+            else:
+                records[ht][2] += 1
+                records[at][2] += 1
+
+    formatted: dict[str, str] = {}
+    for tm, (w, l, t) in records.items():
+        formatted[tm] = f"{w}-{l}-{t}" if t > 0 else f"{w}-{l}"
+
+    return formatted
 
 
-def render_nfl_horizontal_ticker(week_games: pd.DataFrame) -> None:
+def render_nfl_horizontal_ticker(
+    week_games: pd.DataFrame, team_records: dict[str, str]
+) -> None:
     """
     Renders the horizontally scrollable NFL.com-style weekly game strip at the top of the page.
     - Container Layout: Styled with CSS flexbox (`display: flex; overflow-x: auto; white-space: nowrap;`)
-    - Card Content: Away vs. Home shorthand, live/final scores, and [TNF], [SNF], [MNF], or [SPC] tags.
+    - Card Content: Team logos, team shorthand + dynamic season record (e.g., 4-1) with NO Home/Away labels,
+      live/final scores, and [TNF], [SNF], [MNF], or [SPC] tags.
     - State Interactivity: Clicking any game card updates st.session_state['selected_game'] and triggers st.rerun().
     """
     if week_games.empty:
@@ -671,6 +727,9 @@ def render_nfl_horizontal_ticker(week_games: pd.DataFrame) -> None:
         home_tm = str(row["home_team"]).strip().upper()
         away_logo = get_team_logo_url(away_tm)
         home_logo = get_team_logo_url(home_tm)
+
+        away_rec = team_records.get(away_tm, "0-0")
+        home_rec = team_records.get(home_tm, "0-0")
 
         away_pts = row.get("away_score", np.nan)
         home_pts = row.get("home_score", np.nan)
@@ -707,20 +766,19 @@ def render_nfl_horizontal_ticker(week_games: pd.DataFrame) -> None:
                         <span>{status_text}</span>
                         {slot_html}
                     </div>
-                    <div class="ticker-matchup-header">
-                        {away_tm} vs. {home_tm}
-                    </div>
                     <div class="ticker-team-row">
                         <span class="ticker-team-left">
                             <img src="{away_logo}" width="17" height="17" onerror="this.style.display='none'">
-                            {away_tm} (A)
+                            <span>{away_tm}</span>
+                            <span class="ticker-team-record">({away_rec})</span>
                         </span>
                         {a_score_html}
                     </div>
                     <div class="ticker-team-row">
                         <span class="ticker-team-left">
                             <img src="{home_logo}" width="17" height="17" onerror="this.style.display='none'">
-                            {home_tm} (H)
+                            <span>{home_tm}</span>
+                            <span class="ticker-team-record">({home_rec})</span>
                         </span>
                         {h_score_html}
                     </div>
@@ -2038,7 +2096,7 @@ if week_games.empty:
     st.warning("No games found for the selected filter combination.")
     st.stop()
 
-# Synchronize st.session_state['selected_game'] (Requirement #3)
+# Synchronize st.session_state['selected_game']
 valid_game_ids = week_games["game_id"].astype(str).tolist()
 if (
     "selected_game" not in st.session_state
@@ -2052,9 +2110,10 @@ else:
     )
 
 active_game = week_games.iloc[st.session_state["selected_game_idx"]]
+team_records_map = compute_team_records(schedule_df, through_week=selected_week)
 
 # -----------------------------------------------------------------------------
-# 5. PINNED TOP VIEW: HORIZONTAL SCROLLABLE NFL GAME TICKER (Reqs #1-#3)
+# 5. PINNED TOP VIEW: HORIZONTAL SCROLLABLE NFL GAME TICKER
 # -----------------------------------------------------------------------------
 mode_tag = (
     f'<span class="badge-amber">● [BACKTEST MODE: {selected_season}]</span>'
@@ -2078,14 +2137,14 @@ with ticker_head_col2:
     render_html(
         f'<div style="text-align:right; padding-top:10px;">'
         f'<span class="active-lock-pill">● SELECTED GAME: {st.session_state["selected_game"]}</span> '
-        f'{render_team_pill(active_game["away_team"], "A")} '
+        f'{render_team_pill(active_game["away_team"])} '
         f'<span style="color:#94A3B8; font-weight:700;">@</span> '
-        f'{render_team_pill(active_game["home_team"], "H")}'
+        f'{render_team_pill(active_game["home_team"])}'
         f"</div>"
     )
 
-# Render Pinned Horizontal Scrollable Game Ticker (Replaces Old Schedule Table Entirely)
-render_nfl_horizontal_ticker(week_games)
+# Render Pinned Horizontal Scrollable Game Ticker (With Season Records & No H/A Labels)
+render_nfl_horizontal_ticker(week_games, team_records_map)
 
 # -----------------------------------------------------------------------------
 # 6. DETAIL VIEW: HIGH-PROMINENCE SELECTED MATCHUP SPOTLIGHT
@@ -2147,6 +2206,9 @@ a_def_badge = render_rank_badge(int(a_eff["def_epa_rank"]), f"{away_tm} Def") if
 h_ovr_badge = render_rank_badge(int(h_eff["off_epa_rank"]), f"{home_tm} Off") if h_eff is not None else ""
 h_def_badge = render_rank_badge(int(h_eff["def_epa_rank"]), f"{home_tm} Def") if h_eff is not None else ""
 
+away_rec_str = team_records_map.get(str(away_tm).strip().upper(), "0-0")
+home_rec_str = team_records_map.get(str(home_tm).strip().upper(), "0-0")
+
 render_html(
     f"""
     <div class="active-game-spotlight">
@@ -2157,9 +2219,9 @@ render_html(
                     <span class="metric-subtext" style="margin-left:8px;">{selected_season} WEEK {selected_week} • {stadium_str} ({roof_str})</span>
                 </div>
                 <div style="display:flex; align-items:center; flex-wrap:wrap; gap:10px; margin:8px 0;">
-                    {render_team_pill(away_tm, "A", large=True)}
+                    {render_team_pill(away_tm, away_rec_str, large=True)}
                     <span style="font-size:1.35rem; font-weight:800; color:#64748B; font-family:monospace;">AT</span>
-                    {render_team_pill(home_tm, "H", large=True)}
+                    {render_team_pill(home_tm, home_rec_str, large=True)}
                 </div>
                 <div style="margin-top:8px;">
                     {a_ovr_badge} {a_def_badge}
@@ -2331,7 +2393,7 @@ with subtab_brief:
                     <div class="brief-grid">
                         <div class="unit-pillar">
                             <div class="unit-pillar-header">
-                                <span>{render_inline_logo(away_tm, 20)}{away_tm} Possession (A)</span>
+                                <span>{render_inline_logo(away_tm, 20)}{away_tm} Possession ({away_rec_str})</span>
                                 <span class="metric-subtext">vs {home_tm} Def</span>
                             </div>
                             <div class="unit-tier-row">
@@ -2353,7 +2415,7 @@ with subtab_brief:
                         </div>
                         <div class="unit-pillar">
                             <div class="unit-pillar-header">
-                                <span>{render_inline_logo(home_tm, 20)}{home_tm} Possession (H)</span>
+                                <span>{render_inline_logo(home_tm, 20)}{home_tm} Possession ({home_rec_str})</span>
                                 <span class="metric-subtext">vs {away_tm} Def</span>
                             </div>
                             <div class="unit-tier-row">
@@ -2544,7 +2606,7 @@ with subtab_players:
         render_html(
             f"<h4 style='margin:0 0 4px 0;'>"
             f"{render_inline_logo(away_tm, 24)}1-on-1 Cornerback vs. Wide Receiver Mismatch Analyzer — "
-            f"{away_tm} (A) vs {render_inline_logo(home_tm, 24)}{home_tm} (H)</h4>"
+            f"{away_tm} vs {render_inline_logo(home_tm, 24)}{home_tm}</h4>"
         )
         st.caption(
             "Automatically surfaces top individual WR1/WR2/Slot battles driven by opposing CB defensive snap shares, "
@@ -2595,14 +2657,14 @@ with subtab_players:
 
             cb_col1, cb_col2 = st.columns(2)
 
-            for col_ui, (off_tm_i, def_tm_i, role_str, battle_list) in [
-                (cb_col1, (away_tm, home_tm, "A", away_cb_wr_battles)),
-                (cb_col2, (home_tm, away_tm, "H", home_cb_wr_battles)),
+            for col_ui, (off_tm_i, def_tm_i, battle_list) in [
+                (cb_col1, (away_tm, home_tm, away_cb_wr_battles)),
+                (cb_col2, (home_tm, away_tm, home_cb_wr_battles)),
             ]:
                 with col_ui:
                     render_html(
                         f'<div style="margin-bottom:10px;">'
-                        f'{render_team_pill(off_tm_i, role_str)} <b>Wideouts vs</b> '
+                        f'{render_team_pill(off_tm_i)} <b>Wideouts vs</b> '
                         f'{render_team_pill(def_tm_i)} <b>Cornerbacks</b></div>'
                     )
                     for b in battle_list:
@@ -2689,14 +2751,14 @@ with subtab_players:
         else:
             p_col1, p_col2 = st.columns(2)
 
-            for col_ui, (off_tm_i, def_tm_i, role_str) in [
-                (p_col1, (away_tm, home_tm, "A")),
-                (p_col2, (home_tm, away_tm, "H")),
+            for col_ui, (off_tm_i, def_tm_i) in [
+                (p_col1, (away_tm, home_tm)),
+                (p_col2, (home_tm, away_tm)),
             ]:
                 with col_ui:
                     render_html(
                         f'<div style="margin-bottom:10px;">'
-                        f'{render_team_pill(off_tm_i, role_str)} <b>Playmakers vs</b> '
+                        f'{render_team_pill(off_tm_i)} <b>Playmakers vs</b> '
                         f'{render_team_pill(def_tm_i)} <b>Defense</b></div>'
                     )
                     tm_weapons = usage_matchup[usage_matchup["team"] == off_tm_i].copy()
@@ -2769,7 +2831,7 @@ with subtab_players:
         else:
             col_away_inj, col_home_inj = st.columns(2)
 
-            for col_obj, (tm, role_str) in [(col_away_inj, (away_tm, "A")), (col_home_inj, (home_tm, "H"))]:
+            for col_obj, tm in [(col_away_inj, away_tm), (col_home_inj, home_tm)]:
                 with col_obj:
                     tm_inj = inj_matchup[inj_matchup["team"] == tm].copy()
                     total_off_drop = tm_inj[tm_inj["unit_side"] == "Offense"]["est_epa_penalty"].sum()
@@ -2782,7 +2844,7 @@ with subtab_players:
                         f"""
                         <div class="{card_cls}">
                             <div style="display:flex; justify-content:space-between; align-items:center;">
-                                <h4 style="margin:0;">{render_inline_logo(tm, 22)}{tm} ({role_str}) Injury Impact</h4>
+                                <h4 style="margin:0;">{render_inline_logo(tm, 22)}{tm} Injury Impact</h4>
                                 <span class="{badge_cls}">● [{anchor_count} ANCHORS FLAGGED]</span>
                             </div>
                             <p style="margin:8px 0 0 0;" class="metric-subtext">
@@ -2871,8 +2933,6 @@ with subtab_trench:
         def render_possession_block(
             off_tm: str,
             def_tm: str,
-            off_role: str,
-            def_role: str,
             o_row: pd.Series,
             d_row: pd.Series,
             off_pen: float,
@@ -2880,8 +2940,8 @@ with subtab_trench:
         ):
             render_html(
                 f"<h4 style='margin:12px 0 8px 0;'>"
-                f"Possession Matchup: {render_team_pill(off_tm, off_role)} Offense vs "
-                f"{render_team_pill(def_tm, def_role)} Defense</h4>"
+                f"Possession Matchup: {render_team_pill(off_tm)} Offense vs "
+                f"{render_team_pill(def_tm)} Defense</h4>"
             )
             c1, c2, c3 = st.columns(3)
 
@@ -2962,9 +3022,9 @@ with subtab_trench:
                         f"| **{def_tm}** {d_row['def_sr']*100:.1f}% (#{int(d_row['def_sr_rank'])})"
                     )
 
-        render_possession_block(away_tm, home_tm, "A", "H", a_eff, h_eff, away_off_pen, home_def_pen)
+        render_possession_block(away_tm, home_tm, a_eff, h_eff, away_off_pen, home_def_pen)
         st.write("")
-        render_possession_block(home_tm, away_tm, "H", "A", h_eff, a_eff, home_off_pen, away_def_pen)
+        render_possession_block(home_tm, away_tm, h_eff, a_eff, home_off_pen, away_def_pen)
 
 # =============================================================================
 # SUB-TAB 4: PLAYER PROP TREND EXPLORER
