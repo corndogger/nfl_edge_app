@@ -3,6 +3,7 @@ import numpy as np
 import pandas as pd
 import plotly.graph_objects as go
 import streamlit as st
+import streamlit.components.v1 as components
 
 # -----------------------------------------------------------------------------
 # 1. PAGE CONFIGURATION & TERMINAL CSS THEME (STRICT NO-EMOJI UI)
@@ -45,12 +46,12 @@ st.markdown(
     color: #E2E8F0;
 }
 
-/* Inline Hyperlinked Player Names (No Bulky Buttons) */
+/* Inline Hyperlinked Player Names (HTML <a> and Streamlit Tertiary Buttons) */
 a.player-name-link {
     color: #F8FAFC !important;
     font-weight: 800;
     text-decoration: underline;
-    text-decoration-color: rgba(0, 255, 135, 0.55);
+    text-decoration-color: rgba(0, 255, 135, 0.65);
     text-underline-offset: 3px;
     cursor: pointer;
     transition: color 0.14s ease, text-decoration-color 0.14s ease;
@@ -58,6 +59,43 @@ a.player-name-link {
 a.player-name-link:hover {
     color: #00FF87 !important;
     text-decoration-color: #00FF87;
+}
+
+/* Style Streamlit tertiary buttons to look like clean inline hyperlinked player names */
+button[kind="tertiary"] {
+    background: transparent !important;
+    border: none !important;
+    box-shadow: none !important;
+    padding: 0px 2px !important;
+    margin: 0px !important;
+    min-height: unset !important;
+    height: auto !important;
+    color: #F8FAFC !important;
+    font-family: monospace !important;
+    font-weight: 800 !important;
+    font-size: 0.92rem !important;
+    text-decoration: underline !important;
+    text-decoration-color: rgba(0, 255, 135, 0.65) !important;
+    text-underline-offset: 3px !important;
+    line-height: 1.3 !important;
+    display: inline-flex !important;
+    align-items: center !important;
+}
+button[kind="tertiary"]:hover {
+    color: #00FF87 !important;
+    text-decoration-color: #00FF87 !important;
+    background: rgba(0, 255, 135, 0.08) !important;
+    border-radius: 3px !important;
+}
+button[kind="tertiary"] p {
+    font-family: monospace !important;
+    font-weight: 800 !important;
+    font-size: 0.92rem !important;
+    color: inherit !important;
+    margin: 0 !important;
+    text-decoration: underline !important;
+    text-decoration-color: rgba(0, 255, 135, 0.65) !important;
+    text-underline-offset: 3px !important;
 }
 
 /* ============================================================================
@@ -166,15 +204,6 @@ div[data-testid="stHorizontalBlock"]:has(.nfl-ticker-marker) > div[data-testid="
     margin-bottom: 5px;
     padding-bottom: 4px;
     border-bottom: 1px solid #1E293B;
-    white-space: nowrap;
-}
-.ticker-matchup-header {
-    font-family: monospace;
-    font-size: 0.72rem;
-    font-weight: 800;
-    color: #CBD5E1;
-    letter-spacing: 0.03em;
-    margin-bottom: 5px;
     white-space: nowrap;
 }
 .ticker-slot-tag-tnf {
@@ -609,6 +638,35 @@ div[data-testid="stHorizontalBlock"]:has(.nfl-ticker-marker) div[data-testid="st
     unsafe_allow_html=True,
 )
 
+# Zero-reload JavaScript interceptor for any inline <a class="player-name-link"> tags
+# Uses history.pushState + PopStateEvent on window.parent so Streamlit's SPA router
+# picks up the query params in-place without reloading the browser tab.
+components.html(
+    """
+    <script>
+    (function() {
+        const parentDoc = window.parent.document;
+        if (!parentDoc._playerLinkListenerAttached) {
+            parentDoc._playerLinkListenerAttached = true;
+            parentDoc.addEventListener('click', function(e) {
+                const link = e.target.closest('a.player-name-link');
+                if (link && link.getAttribute('href')) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    const href = link.getAttribute('href');
+                    const url = new URL(href, window.parent.location.origin + window.parent.location.pathname);
+                    window.parent.history.pushState({}, '', url.toString());
+                    window.parent.dispatchEvent(new PopStateEvent('popstate'));
+                }
+            }, true);
+        }
+    })();
+    </script>
+    """,
+    height=0,
+    width=0,
+)
+
 OFFENSE_POSITIONS = {"QB", "RB", "FB", "WR", "TE", "OL", "T", "OT", "LT", "RT", "G", "OG", "LG", "RG", "C"}
 DEFENSE_POSITIONS = {"DL", "DE", "DT", "NT", "EDGE", "LB", "ILB", "OLB", "MLB", "DB", "CB", "S", "FS", "SS"}
 SPECIAL_TEAMS_POSITIONS = {"K", "P", "LS"}
@@ -638,20 +696,65 @@ def render_html(html_str: str) -> None:
     st.markdown(cleaned, unsafe_allow_html=True)
 
 
+def trigger_player_popup(
+    player_name: str,
+    team_abbr: str = "",
+    position: str = "",
+) -> None:
+    """Sets st.session_state['active_player'] and opens the player pop-out modal."""
+    clean_p = str(player_name).strip()
+    if not clean_p or "Rotation" in clean_p:
+        return
+    st.session_state["active_player"] = {
+        "name": clean_p,
+        "team": str(team_abbr).strip().upper(),
+        "position": str(position).strip().upper(),
+    }
+    st.session_state["open_player_modal"] = True
+
+
 def render_player_link(player_name: str, team_abbr: str = "", pos: str = "") -> str:
     """
     Renders a clean inline hyperlinked player name inside HTML cards.
-    Clicking the link sets query parameters that trigger the Player Pop-Out Dossier.
+    Preserves active game/season/week in query params and works with the zero-reload JS bridge.
     """
     clean_p = str(player_name).strip()
     if not clean_p or "Rotation" in clean_p:
         return f"<b>{clean_p}</b>"
+    active_gid = str(st.session_state.get("selected_game", ""))
     href = (
         f"?inspect_player={quote(clean_p)}"
         f"&inspect_team={quote(str(team_abbr).strip().upper())}"
         f"&inspect_pos={quote(str(pos).strip().upper())}"
+        f"&game_id={quote(active_gid)}"
     )
     return f'<a class="player-name-link" href="{href}" target="_self">{clean_p}</a>'
+
+
+def render_inline_player_trigger(
+    player_name: str,
+    team_abbr: str,
+    pos: str,
+    key_suffix: str,
+    extra_label: str = "",
+) -> None:
+    """
+    Renders a native Streamlit tertiary button styled as an underlined inline text link.
+    Clicking the player's name directly updates st.session_state['active_player']
+    and opens the pop-out dossier in-place without any page reload.
+    """
+    clean_p = str(player_name).strip()
+    if not clean_p or "Rotation" in clean_p:
+        st.markdown(f"**{clean_p}** {extra_label}")
+        return
+    disp_text = f"{clean_p} {extra_label}".strip()
+    if st.button(
+        disp_text,
+        key=f" inline_plr_{key_suffix}_{clean_p}_{team_abbr}",
+        type="tertiary",
+    ):
+        trigger_player_popup(clean_p, team_abbr, pos)
+        st.rerun()
 
 
 def get_team_logo_url(team_abbr: str) -> str:
@@ -2242,27 +2345,14 @@ def run_season_backtest(
 # -----------------------------------------------------------------------------
 # 4. INTERACTIVE PLAYER POP-OUT MODAL (FLUSH HEADSHOT + 2 TABS, NO EMOJIS)
 # -----------------------------------------------------------------------------
-def trigger_player_popup(
-    player_name: str,
-    team_abbr: str = "",
-    position: str = "",
-) -> None:
-    """Sets st.session_state['active_player'] and opens the player pop-out modal."""
-    if not player_name or "Rotation" in str(player_name):
-        return
-    st.session_state["active_player"] = {
-        "name": str(player_name).strip(),
-        "team": str(team_abbr).strip().upper(),
-        "position": str(position).strip().upper(),
-    }
-    st.session_state["open_player_modal"] = True
-
-
 # Intercept clicked inline player name links (?inspect_player=...)
 if "inspect_player" in st.query_params:
     qp_name = st.query_params.get("inspect_player", "")
     qp_team = st.query_params.get("inspect_team", "")
     qp_pos = st.query_params.get("inspect_pos", "")
+    qp_gid = st.query_params.get("game_id", "")
+    if qp_gid:
+        st.session_state["selected_game"] = qp_gid
     st.query_params.clear()
     if qp_name:
         trigger_player_popup(qp_name, qp_team, qp_pos)
@@ -3278,7 +3368,7 @@ with subtab_brief:
                 )
 
 # =============================================================================
-# SUB-TAB 2: PLAYER MISMATCHES & INJURIES (INLINE HYPERLINKED PLAYER NAMES)
+# SUB-TAB 2: PLAYER MISMATCHES & INJURIES (DIRECT HYPERLINKED PLAYER NAMES)
 # =============================================================================
 with subtab_players:
     pm_subtab_cbwr, pm_subtab_volume, pm_subtab_injuries = st.tabs(
@@ -3296,7 +3386,7 @@ with subtab_players:
             f"{away_tm} vs {render_inline_logo(home_tm, 24)}{home_tm}</h4>"
         )
         st.caption(
-            "Click any underlined Wide Receiver or Cornerback name directly inside the cards—or select any row in the summary matrix—to open their Player Pop-Out Dossier."
+            "Click any underlined Wide Receiver or Cornerback name directly—or select any row in the summary matrix—to open their Player Pop-Out Dossier."
         )
 
         away_cb_wr_battles = build_cb_wr_matchup_battles(
@@ -3353,43 +3443,54 @@ with subtab_players:
                         f'{render_team_pill(off_tm_i)} <b>Wideouts vs</b> '
                         f'{render_team_pill(def_tm_i)} <b>Cornerbacks</b></div>'
                     )
-                    for b in battle_list:
-                        wr_link = render_player_link(b["wr_name"], b["off_tm"], "WR")
-                        cb_link = render_player_link(b["cb_name"], b["def_tm"], b["cb_pos"])
-                        render_html(
-                            f"""
-                            <div class="{b['card_style']}">
-                                <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:6px;">
+                    for b_idx, b in enumerate(battle_list):
+                        with st.container(border=True):
+                            render_html(
+                                f"""
+                                <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:6px; margin-bottom:4px;">
                                     <span class="metric-subtext">{b['alignment']} • Mismatch Index: <b>{b['mismatch_score']:.0f}/100</b></span>
                                     {b['tier_badge']}
                                 </div>
-                                <div class="cb-wr-vs-row">
-                                    <div>
-                                        {render_inline_logo(b['off_tm'], 18)}{wr_link}
-                                        <span class="badge-sage">[WR]</span><br>
-                                        <span class="metric-subtext">
-                                            Tgt Share: <b>{b['wr_tgt_sh']:.1f}%</b> | Air Share: <b>{b['wr_air_sh']:.1f}%</b> | <b>{b['wr_ypg']:.1f} YPG</b>
-                                        </span>
-                                    </div>
-                                    <div style="font-family:monospace; font-weight:800; color:#64748B; padding:0 8px;">VS</div>
-                                    <div style="text-align:right;">
-                                        {render_inline_logo(b['def_tm'], 18)}{cb_link}
-                                        <span class="badge-mid">[{b['cb_pos']}]</span><br>
-                                        <span class="metric-subtext">
-                                            Def Snaps: <b>{b['cb_snap_pct']:.0f}%</b> | Pass Def: <b>#{b['def_pass_rk']} NFL</b>
-                                        </span>
-                                    </div>
-                                </div>
-                                <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:4px; margin-bottom:6px;">
+                                """
+                            )
+                            vs_c1, vs_mid, vs_c2 = st.columns([1.45, 0.25, 1.45])
+                            with vs_c1:
+                                render_inline_player_trigger(
+                                    b["wr_name"],
+                                    b["off_tm"],
+                                    "WR",
+                                    f"cbwr_w_{off_tm_i}_{b_idx}",
+                                    f"[{b['off_tm']} WR]",
+                                )
+                                render_html(
+                                    f'<span class="metric-subtext">Tgt: <b>{b["wr_tgt_sh"]:.1f}%</b> | Air: <b>{b["wr_air_sh"]:.1f}%</b> | <b>{b["wr_ypg"]:.1f} YPG</b></span>'
+                                )
+                            with vs_mid:
+                                render_html(
+                                    '<div style="text-align:center; padding-top:10px; font-family:monospace; font-weight:800; color:#64748B;">VS</div>'
+                                )
+                            with vs_c2:
+                                render_inline_player_trigger(
+                                    b["cb_name"],
+                                    b["def_tm"],
+                                    b["cb_pos"],
+                                    f"cbwr_c_{def_tm_i}_{b_idx}",
+                                    f"[{b['def_tm']} {b['cb_pos']}]",
+                                )
+                                render_html(
+                                    f'<span class="metric-subtext">Def Snaps: <b>{b["cb_snap_pct"]:.0f}%</b> | Pass Def: <b>#{b["def_pass_rk"]} NFL</b></span>'
+                                )
+                            render_html(
+                                f"""
+                                <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:4px; margin:6px 0 4px 0;">
                                     {b['wr_streak_badge']}
                                     {b['cb_status_badge']}
                                 </div>
                                 <div class="metric-subtext" style="color:#CBD5E1;">
                                     <b>Trigger:</b> {b['trigger_note']}
                                 </div>
-                            </div>
-                            """
-                        )
+                                """
+                            )
 
             sorted_battles = sorted(all_battles, key=lambda x: x["mismatch_score"], reverse=True)
             battle_table_df = pd.DataFrame(
@@ -3474,7 +3575,7 @@ with subtab_players:
                     )
                     featured = pd.concat([top_receivers, top_rusher]).drop_duplicates(subset=["player_name"])
 
-                    for _, w_row in featured.iterrows():
+                    for w_idx, (_, w_row) in enumerate(featured.iterrows()):
                         is_rec = w_row["calc_target_share"] >= w_row["calc_rush_share"]
                         opp_rk = def_pass_rk if is_rec else def_rush_rk
                         phase_str = f"{def_tm_i} Pass Def" if is_rec else f"{def_tm_i} Rush Def"
@@ -3485,32 +3586,29 @@ with subtab_players:
                         )
 
                         opp_unit_badge = render_rank_badge(opp_rk, f"vs {phase_str}")
-                        box_cls = (
-                            "terminal-card-elite"
-                            if opp_rk >= 23
-                            else ("terminal-card-vuln" if opp_rk <= 5 else "terminal-card")
-                        )
                         pos_badge = str(w_row.get("position", "POS"))
                         scrim_yds = int(w_row["scrimmage_yards"])
-                        w_link = render_player_link(w_row["player_name"], off_tm_i, pos_badge)
 
-                        render_html(
-                            f"""
-                            <div class="{box_cls}">
-                                <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap;">
-                                    <div>
-                                        {render_inline_logo(off_tm_i, 18)}{w_link}
-                                        <span class="badge-sage">[{pos_badge}]</span>
-                                    </div>
-                                    <div>{opp_unit_badge}</div>
-                                </div>
-                                <div class="metric-subtext" style="margin-top:6px;">
+                        with st.container(border=True):
+                            top_c1, top_c2 = st.columns([1.4, 1])
+                            with top_c1:
+                                render_inline_player_trigger(
+                                    w_row["player_name"],
+                                    off_tm_i,
+                                    pos_badge,
+                                    f"vol_{off_tm_i}_{w_idx}",
+                                    f"[{off_tm_i} {pos_badge}]",
+                                )
+                            with top_c2:
+                                render_html(f'<div style="text-align:right;">{opp_unit_badge}</div>')
+                            render_html(
+                                f"""
+                                <div class="metric-subtext" style="margin-top:4px;">
                                     {share_lbl} | Total EPA: <b>{w_row['total_epa']:+.1f}</b> |
                                     Scrimmage: <b>{scrim_yds} yds ({int(w_row['total_tds'])} TD)</b>
                                 </div>
-                            </div>
-                            """
-                        )
+                                """
+                            )
 
     with pm_subtab_injuries:
         render_html(
@@ -3558,32 +3656,32 @@ with subtab_players:
                         """
                     )
 
-                    for _, r_inj in tm_inj.head(6).iterrows():
+                    for i_idx, (_, r_inj) in enumerate(tm_inj.head(6).iterrows()):
                         badge_html = render_injury_badge(r_inj["report_status"])
                         snap_pct = r_inj["snap_share"] * 100
                         tgt_pct = r_inj["calc_target_share"] * 100
                         pos_str = str(r_inj.get("position", "POS"))
-                        inj_p_link = render_player_link(r_inj["player_display"], tm, pos_str)
-                        render_html(
-                            f"""
-                            <div class="terminal-card" style="padding:12px; margin-bottom:8px;">
-                                <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap;">
-                                    <div>
-                                        {render_inline_logo(tm, 16)}{inj_p_link}
-                                        <span class="badge-sage">[{pos_str}]</span>
-                                        <span class="metric-subtext">{r_inj['role_tier']}</span>
-                                    </div>
-                                    <div>{badge_html}</div>
-                                </div>
-                                <div class="metric-subtext" style="margin-top:6px;">
-                                    Injury: <b>{r_inj['primary_injury']}</b> |
-                                    Snaps: <b>{snap_pct:.0f}%</b> |
-                                    Target Share: <b>{tgt_pct:.1f}%</b> |
+                        with st.container(border=True):
+                            ic1, ic2 = st.columns([1.6, 1])
+                            with ic1:
+                                render_inline_player_trigger(
+                                    r_inj["player_display"],
+                                    tm,
+                                    pos_str,
+                                    f"inj_{tm}_{i_idx}",
+                                    f"[{tm} {pos_str}]",
+                                )
+                            with ic2:
+                                render_html(f'<div style="text-align:right;">{badge_html}</div>')
+                            render_html(
+                                f"""
+                                <div class="metric-subtext" style="margin-top:4px;">
+                                    {r_inj['role_tier']} | Injury: <b>{r_inj['primary_injury']}</b> |
+                                    Snaps: <b>{snap_pct:.0f}%</b> | Tgt Share: <b>{tgt_pct:.1f}%</b> |
                                     EPA Impact: <span style="color:#FF4D6D; font-weight:700;">-{r_inj['est_epa_penalty']:.3f}/play</span>
                                 </div>
-                            </div>
-                            """
-                        )
+                                """
+                            )
 
 # =============================================================================
 # SUB-TAB 3: TRENCH & AIR EFFICIENCY
@@ -3930,21 +4028,18 @@ with subtab_props:
             )
         )
 
-        prop_player_link = render_player_link(sel_player_name, sel_player_team, sel_player_pos)
-        render_html(
-            f"""
-            <div class="terminal-card" style="padding:12px; margin-bottom:10px;">
-                <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px;">
-                    <div>
-                        {render_team_pill(sel_player_team)} {prop_player_link}
-                        <span class="badge-sage">[{sel_player_pos}]</span>
-                        {streak_badge_html}
-                    </div>
-                    <div>{hit_badge_html} {opp_badge_html}</div>
-                </div>
-            </div>
-            """
-        )
+        with st.container(border=True):
+            pc1, pc2 = st.columns([1.5, 1.5])
+            with pc1:
+                render_inline_player_trigger(
+                    sel_player_name,
+                    sel_player_team,
+                    sel_player_pos,
+                    "prop_hdr",
+                    f"[{sel_player_team} {sel_player_pos}]",
+                )
+            with pc2:
+                render_html(f'<div style="text-align:right;">{streak_badge_html} {hit_badge_html} {opp_badge_html}</div>')
 
         fig_prop = go.Figure()
 
@@ -4109,69 +4204,57 @@ with subtab_roster:
 
             rk1, rk2, rk3, rk4 = st.columns(4)
             with rk1:
-                render_html(
-                    f"""
-                    <div class="terminal-card" style="padding:12px;">
-                        <div class="context-cell-title">{unit_group_filter} Snap Leader</div>
-                        <div style="font-size:1.05rem; margin:4px 0;">
-                            {render_inline_logo(top_snap_p['team'], 16)}
-                            {render_player_link(top_snap_p['player_name'], top_snap_p['team'], top_snap_p['position'])}
-                            <span class="badge-mid">[{top_snap_p['team']}]</span>
-                        </div>
-                        <div class="metric-subtext" style="color:#00FF87;">
-                            {top_snap_p['primary_snap_pct']:.1f}% Snaps ({int(top_snap_p['total_snaps'])} total)
-                        </div>
-                    </div>
-                    """
-                )
+                with st.container(border=True):
+                    render_html(f'<div class="context-cell-title">{unit_group_filter} Snap Leader</div>')
+                    render_inline_player_trigger(
+                        top_snap_p["player_name"],
+                        top_snap_p["team"],
+                        top_snap_p["position"],
+                        "ldr_snap",
+                        f"({top_snap_p['team']})",
+                    )
+                    render_html(
+                        f'<div class="metric-subtext" style="color:#00FF87;">{top_snap_p["primary_snap_pct"]:.1f}% Snaps ({int(top_snap_p["total_snaps"])} total)</div>'
+                    )
             with rk2:
-                render_html(
-                    f"""
-                    <div class="terminal-card" style="padding:12px;">
-                        <div class="context-cell-title">Target Leader</div>
-                        <div style="font-size:1.05rem; margin:4px 0;">
-                            {render_inline_logo(top_tgt_p['team'], 16)}
-                            {render_player_link(top_tgt_p['player_name'], top_tgt_p['team'], top_tgt_p['position'])}
-                            <span class="badge-mid">[{top_tgt_p['team']}]</span>
-                        </div>
-                        <div class="metric-subtext" style="color:#00FF87;">
-                            {int(top_tgt_p['targets'])} Tgts ({top_tgt_p['target_share_pct']:.1f}% Share)
-                        </div>
-                    </div>
-                    """
-                )
+                with st.container(border=True):
+                    render_html('<div class="context-cell-title">Target Leader</div>')
+                    render_inline_player_trigger(
+                        top_tgt_p["player_name"],
+                        top_tgt_p["team"],
+                        top_tgt_p["position"],
+                        "ldr_tgt",
+                        f"({top_tgt_p['team']})",
+                    )
+                    render_html(
+                        f'<div class="metric-subtext" style="color:#00FF87;">{int(top_tgt_p["targets"])} Tgts ({top_tgt_p["target_share_pct"]:.1f}% Share)</div>'
+                    )
             with rk3:
-                render_html(
-                    f"""
-                    <div class="terminal-card" style="padding:12px;">
-                        <div class="context-cell-title">Total Touches Leader</div>
-                        <div style="font-size:1.05rem; margin:4px 0;">
-                            {render_inline_logo(top_touch_p['team'], 16)}
-                            {render_player_link(top_touch_p['player_name'], top_touch_p['team'], top_touch_p['position'])}
-                            <span class="badge-mid">[{top_touch_p['team']}]</span>
-                        </div>
-                        <div class="metric-subtext" style="color:#00FF87;">
-                            {int(top_touch_p['touches'])} Touches ({int(top_touch_p['scrimmage_yards'])} Yds)
-                        </div>
-                    </div>
-                    """
-                )
+                with st.container(border=True):
+                    render_html('<div class="context-cell-title">Total Touches Leader</div>')
+                    render_inline_player_trigger(
+                        top_touch_p["player_name"],
+                        top_touch_p["team"],
+                        top_touch_p["position"],
+                        "ldr_tch",
+                        f"({top_touch_p['team']})",
+                    )
+                    render_html(
+                        f'<div class="metric-subtext" style="color:#00FF87;">{int(top_touch_p["touches"])} Touches ({int(top_touch_p["scrimmage_yards"])} Yds)</div>'
+                    )
             with rk4:
-                render_html(
-                    f"""
-                    <div class="terminal-card" style="padding:12px;">
-                        <div class="context-cell-title">Air Yards Leader</div>
-                        <div style="font-size:1.05rem; margin:4px 0;">
-                            {render_inline_logo(top_air_p['team'], 16)}
-                            {render_player_link(top_air_p['player_name'], top_air_p['team'], top_air_p['position'])}
-                            <span class="badge-mid">[{top_air_p['team']}]</span>
-                        </div>
-                        <div class="metric-subtext" style="color:#00FF87;">
-                            {int(top_air_p['air_yards'])} Air Yards
-                        </div>
-                    </div>
-                    """
-                )
+                with st.container(border=True):
+                    render_html('<div class="context-cell-title">Air Yards Leader</div>')
+                    render_inline_player_trigger(
+                        top_air_p["player_name"],
+                        top_air_p["team"],
+                        top_air_p["position"],
+                        "ldr_air",
+                        f"({top_air_p['team']})",
+                    )
+                    render_html(
+                        f'<div class="metric-subtext" style="color:#00FF87;">{int(top_air_p["air_yards"])} Air Yards</div>'
+                    )
 
         roster_disp_cols = [
             "team_logo",
