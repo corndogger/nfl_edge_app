@@ -45,9 +45,42 @@ st.markdown(
 }
 
 /* ============================================================================
-   NFL.COM STYLE HORIZONTAL SCROLLABLE GAME TICKER (PINNED TOP CONTAINER)
+   1. PURE ST.MARKDOWN FLEXBOX TICKER CONTAINER (Requirement #1)
+   Uses display: flex; overflow-x: auto; white-space: nowrap;
+   ============================================================================ */
+.nfl-ticker-flexbox-container {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    overflow-y: hidden;
+    white-space: nowrap;
+    gap: 10px;
+    padding: 10px 10px 12px 10px;
+    margin-bottom: 8px;
+    background-color: #0B0E14;
+    border: 1px solid #1E293B;
+    border-radius: 10px;
+    scrollbar-width: thin;
+    scrollbar-color: #334155 #0B0E14;
+    -webkit-overflow-scrolling: touch;
+}
+.nfl-ticker-flexbox-container::-webkit-scrollbar {
+    height: 8px;
+}
+.nfl-ticker-flexbox-container::-webkit-scrollbar-track {
+    background: #0B0E14;
+    border-radius: 4px;
+}
+.nfl-ticker-flexbox-container::-webkit-scrollbar-thumb {
+    background-color: #334155;
+    border-radius: 4px;
+}
+
+/* ============================================================================
+   2. STREAMLIT HORIZONTAL BLOCK TICKER OVERRIDE (Interactive Button Strip)
    Forces Streamlit's column row containing .nfl-ticker-marker into a single
-   non-wrapping horizontal scroll strip with compact 195px game cards.
+   non-wrapping horizontal scroll strip with compact 196px game cards.
    ============================================================================ */
 div[data-testid="stHorizontalBlock"]:has(.nfl-ticker-marker) {
     display: flex !important;
@@ -55,14 +88,16 @@ div[data-testid="stHorizontalBlock"]:has(.nfl-ticker-marker) {
     flex-wrap: nowrap !important;
     overflow-x: auto !important;
     overflow-y: hidden !important;
+    white-space: nowrap !important;
     gap: 10px !important;
-    padding: 6px 4px 14px 4px !important;
-    margin-bottom: 6px !important;
-    background: #0B0E14;
-    border: 1px solid #1E293B;
-    border-radius: 10px;
+    padding: 8px 8px 14px 8px !important;
+    margin-bottom: 10px !important;
+    background: #0B0E14 !important;
+    border: 1px solid #1E293B !important;
+    border-radius: 10px !important;
     scrollbar-width: thin;
     scrollbar-color: #334155 #0B0E14;
+    -webkit-overflow-scrolling: touch;
 }
 div[data-testid="stHorizontalBlock"]:has(.nfl-ticker-marker)::-webkit-scrollbar {
     height: 8px;
@@ -75,11 +110,13 @@ div[data-testid="stHorizontalBlock"]:has(.nfl-ticker-marker)::-webkit-scrollbar-
     background-color: #334155;
     border-radius: 4px;
 }
-div[data-testid="stHorizontalBlock"]:has(.nfl-ticker-marker) > div[data-testid="stColumn"] {
-    flex: 0 0 192px !important;
-    min-width: 192px !important;
-    max-width: 192px !important;
-    width: 192px !important;
+div[data-testid="stHorizontalBlock"]:has(.nfl-ticker-marker) > div[data-testid="stColumn"],
+div[data-testid="stHorizontalBlock"]:has(.nfl-ticker-marker) > div[data-testid="column"] {
+    flex: 0 0 196px !important;
+    min-width: 196px !important;
+    max-width: 196px !important;
+    width: 196px !important;
+    white-space: nowrap !important;
 }
 
 /* Individual Ticker Card Visuals */
@@ -90,6 +127,7 @@ div[data-testid="stHorizontalBlock"]:has(.nfl-ticker-marker) > div[data-testid="
     border-radius: 7px 7px 0 0;
     padding: 8px 10px;
     margin-bottom: -14px;
+    white-space: nowrap;
     transition: all 0.14s ease-in-out;
 }
 .ticker-card-active {
@@ -100,6 +138,7 @@ div[data-testid="stHorizontalBlock"]:has(.nfl-ticker-marker) > div[data-testid="
     border-radius: 7px 7px 0 0;
     padding: 8px 10px;
     margin-bottom: -14px;
+    white-space: nowrap;
 }
 .ticker-top-bar {
     display: flex;
@@ -108,18 +147,27 @@ div[data-testid="stHorizontalBlock"]:has(.nfl-ticker-marker) > div[data-testid="
     font-size: 0.67rem;
     font-family: monospace;
     color: #94A3B8;
-    margin-bottom: 6px;
+    margin-bottom: 5px;
     padding-bottom: 4px;
     border-bottom: 1px solid #1E293B;
     white-space: nowrap;
 }
-.ticker-slot-tag {
+.ticker-matchup-header {
+    font-family: monospace;
+    font-size: 0.72rem;
+    font-weight: 800;
+    color: #CBD5E1;
+    letter-spacing: 0.03em;
+    margin-bottom: 5px;
+    white-space: nowrap;
+}
+.ticker-slot-tag-tnf {
     background-color: rgba(255, 176, 32, 0.16);
     color: #FFB020;
     border: 1px solid #FFB020;
     padding: 0px 5px;
     border-radius: 3px;
-    font-size: 0.64rem;
+    font-size: 0.63rem;
     font-weight: 800;
     font-family: monospace;
 }
@@ -129,7 +177,27 @@ div[data-testid="stHorizontalBlock"]:has(.nfl-ticker-marker) > div[data-testid="
     border: 1px solid #00FF87;
     padding: 0px 5px;
     border-radius: 3px;
-    font-size: 0.64rem;
+    font-size: 0.63rem;
+    font-weight: 800;
+    font-family: monospace;
+}
+.ticker-slot-tag-mnf {
+    background-color: rgba(56, 189, 248, 0.16);
+    color: #38BDF8;
+    border: 1px solid #38BDF8;
+    padding: 0px 5px;
+    border-radius: 3px;
+    font-size: 0.63rem;
+    font-weight: 800;
+    font-family: monospace;
+}
+.ticker-slot-tag-spc {
+    background-color: rgba(192, 132, 252, 0.16);
+    color: #C084FC;
+    border: 1px solid #C084FC;
+    padding: 0px 5px;
+    border-radius: 3px;
+    font-size: 0.63rem;
     font-weight: 800;
     font-family: monospace;
 }
@@ -137,16 +205,18 @@ div[data-testid="stHorizontalBlock"]:has(.nfl-ticker-marker) > div[data-testid="
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin: 4px 0;
+    margin: 3px 0;
     font-family: monospace;
-    font-size: 0.85rem;
+    font-size: 0.84rem;
     font-weight: 700;
     color: #F8FAFC;
+    white-space: nowrap;
 }
 .ticker-team-left {
     display: flex;
     align-items: center;
     gap: 6px;
+    white-space: nowrap;
 }
 .ticker-score-win {
     font-family: monospace;
@@ -162,7 +232,7 @@ div[data-testid="stHorizontalBlock"]:has(.nfl-ticker-marker) > div[data-testid="
 }
 .ticker-score-muted {
     font-family: monospace;
-    font-size: 0.76rem;
+    font-size: 0.75rem;
     color: #64748B;
 }
 .ticker-footer {
@@ -172,21 +242,23 @@ div[data-testid="stHorizontalBlock"]:has(.nfl-ticker-marker) > div[data-testid="
     margin-top: 6px;
     padding-top: 4px;
     border-top: 1px dashed #263042;
-    font-size: 0.67rem;
+    font-size: 0.66rem;
     font-family: monospace;
     color: #94A3B8;
+    white-space: nowrap;
 }
 
 /* Style the action button docked seamlessly at the bottom of each ticker card */
 div[data-testid="stHorizontalBlock"]:has(.nfl-ticker-marker) div[data-testid="stButton"] > button {
     border-radius: 0 0 7px 7px !important;
     font-family: monospace !important;
-    font-size: 0.72rem !important;
+    font-size: 0.71rem !important;
     font-weight: 700 !important;
     height: 28px !important;
     min-height: 28px !important;
     padding: 0 8px !important;
     margin-top: 0 !important;
+    white-space: nowrap !important;
 }
 
 /* High-Visibility Active Game Selection Banner */
@@ -528,7 +600,7 @@ def render_injury_badge(status: str) -> str:
 def classify_primetime_code(row: pd.Series) -> str:
     """
     Detects compact broadcast tags for the NFL.com-style ticker (Requirement #2):
-    Returns [TNF], [SNF], [MNF], [SPC], or empty string for standard daytime games.
+    Returns [TNF], [SNF], [MNF], [SPC], or empty string for standard Sunday daytime games.
     """
     weekday = str(row.get("weekday", "")).strip().lower()
     gameday = str(row.get("gameday", "")).strip()
@@ -558,25 +630,45 @@ def classify_primetime_code(row: pd.Series) -> str:
     return ""
 
 
+def render_slot_badge_html(slot_code: str) -> str:
+    """Returns color-coded HTML badge for [TNF], [SNF], [MNF], or [SPC]."""
+    if slot_code == "[TNF]":
+        return '<span class="ticker-slot-tag-tnf">[TNF]</span>'
+    if slot_code == "[SNF]":
+        return '<span class="ticker-slot-tag-snf">[SNF]</span>'
+    if slot_code == "[MNF]":
+        return '<span class="ticker-slot-tag-mnf">[MNF]</span>'
+    if slot_code == "[SPC]":
+        return '<span class="ticker-slot-tag-spc">[SPC]</span>'
+    return '<span class="ticker-score-muted">[SUN]</span>'
+
+
+def select_game_callback(game_id: str, idx: int) -> None:
+    """Updates st.session_state['selected_game'] when a ticker card is clicked."""
+    st.session_state["selected_game"] = game_id
+    st.session_state["selected_game_idx"] = idx
+
+
 def render_nfl_horizontal_ticker(week_games: pd.DataFrame) -> None:
     """
-    Renders a pinned, horizontally scrolling NFL.com-style game strip at the top of the page.
-    Each card displays Away vs Home shorthand, live/final scores, and [TNF]/[SNF]/[MNF]/[SPC] tags.
-    Clicking any card updates st.session_state['selected_game'] and triggers an immediate rerun.
+    Renders the horizontally scrollable NFL.com-style weekly game strip at the top of the page.
+    - Container Layout: Styled with CSS flexbox (`display: flex; overflow-x: auto; white-space: nowrap;`)
+    - Card Content: Away vs. Home shorthand, live/final scores, and [TNF], [SNF], [MNF], or [SPC] tags.
+    - State Interactivity: Clicking any game card updates st.session_state['selected_game'] and triggers st.rerun().
     """
     if week_games.empty:
         st.info("No games match the current filter criteria.")
         return
 
-    cols = st.columns(len(week_games))
     current_selected_id = st.session_state.get("selected_game")
+    cols = st.columns(len(week_games))
 
     for idx, (_, row) in enumerate(week_games.iterrows()):
         game_id = str(row["game_id"])
         is_selected = game_id == current_selected_id
 
-        away_tm = str(row["away_team"])
-        home_tm = str(row["home_team"])
+        away_tm = str(row["away_team"]).strip().upper()
+        home_tm = str(row["home_team"]).strip().upper()
         away_logo = get_team_logo_url(away_tm)
         home_logo = get_team_logo_url(home_tm)
 
@@ -600,15 +692,9 @@ def render_nfl_horizontal_ticker(week_games: pd.DataFrame) -> None:
         else:
             a_score_html = '<span class="ticker-score-muted">--</span>'
             h_score_html = '<span class="ticker-score-muted">--</span>'
-            status_text = f"{gameday_str} {gametime_str}".strip()
+            status_text = f"{gameday_str} {gametime_str}".strip() or "UPCOMING"
 
-        if slot_code == "[SNF]":
-            slot_html = f'<span class="ticker-slot-tag-snf">{slot_code}</span>'
-        elif slot_code:
-            slot_html = f'<span class="ticker-slot-tag">{slot_code}</span>'
-        else:
-            slot_html = ""
-
+        slot_html = render_slot_badge_html(slot_code)
         spread_lbl = f"{home_tm} {spread_v:+.1f}" if pd.notna(spread_v) else "Line TBD"
         ou_lbl = f"O/U {total_v:.1f}" if pd.notna(total_v) else ""
         card_cls = "ticker-card-active" if is_selected else "ticker-card"
@@ -621,16 +707,19 @@ def render_nfl_horizontal_ticker(week_games: pd.DataFrame) -> None:
                         <span>{status_text}</span>
                         {slot_html}
                     </div>
+                    <div class="ticker-matchup-header">
+                        {away_tm} vs. {home_tm}
+                    </div>
                     <div class="ticker-team-row">
                         <span class="ticker-team-left">
-                            <img src="{away_logo}" width="18" height="18" onerror="this.style.display='none'">
+                            <img src="{away_logo}" width="17" height="17" onerror="this.style.display='none'">
                             {away_tm} (A)
                         </span>
                         {a_score_html}
                     </div>
                     <div class="ticker-team-row">
                         <span class="ticker-team-left">
-                            <img src="{home_logo}" width="18" height="18" onerror="this.style.display='none'">
+                            <img src="{home_logo}" width="17" height="17" onerror="this.style.display='none'">
                             {home_tm} (H)
                         </span>
                         {h_score_html}
@@ -643,9 +732,9 @@ def render_nfl_horizontal_ticker(week_games: pd.DataFrame) -> None:
                 """
             )
             btn_label = (
-                f"● [ACTIVE: {away_tm}@{home_tm}]"
+                f"● [ACTIVE: {away_tm} vs {home_tm}]"
                 if is_selected
-                else f"SELECT {away_tm} @ {home_tm}"
+                else f"SELECT {away_tm} vs {home_tm}"
             )
             if st.button(
                 btn_label,
@@ -1965,7 +2054,7 @@ else:
 active_game = week_games.iloc[st.session_state["selected_game_idx"]]
 
 # -----------------------------------------------------------------------------
-# 5. PINNED TOP VIEW: HORIZONTAL SCROLLABLE NFL GAME TICKER (Reqs #1-#4)
+# 5. PINNED TOP VIEW: HORIZONTAL SCROLLABLE NFL GAME TICKER (Reqs #1-#3)
 # -----------------------------------------------------------------------------
 mode_tag = (
     f'<span class="badge-amber">● [BACKTEST MODE: {selected_season}]</span>'
@@ -1984,7 +2073,7 @@ render_html(
 
 ticker_head_col1, ticker_head_col2 = st.columns([1.4, 1])
 with ticker_head_col1:
-    st.subheader(f"{selected_season} Week {selected_week} — Live Matchup Ticker")
+    st.subheader(f"{selected_season} Week {selected_week} — Weekly Game Ticker")
 with ticker_head_col2:
     render_html(
         f'<div style="text-align:right; padding-top:10px;">'
@@ -2506,15 +2595,15 @@ with subtab_players:
 
             cb_col1, cb_col2 = st.columns(2)
 
-            for col_ui, (off_tm, def_tm, role_str, battle_list) in [
+            for col_ui, (off_tm_i, def_tm_i, role_str, battle_list) in [
                 (cb_col1, (away_tm, home_tm, "A", away_cb_wr_battles)),
                 (cb_col2, (home_tm, away_tm, "H", home_cb_wr_battles)),
             ]:
                 with col_ui:
                     render_html(
                         f'<div style="margin-bottom:10px;">'
-                        f'{render_team_pill(off_tm, role_str)} <b>Wideouts vs</b> '
-                        f'{render_team_pill(def_tm)} <b>Cornerbacks</b></div>'
+                        f'{render_team_pill(off_tm_i, role_str)} <b>Wideouts vs</b> '
+                        f'{render_team_pill(def_tm_i)} <b>Cornerbacks</b></div>'
                     )
                     for b in battle_list:
                         render_html(
@@ -2600,19 +2689,19 @@ with subtab_players:
         else:
             p_col1, p_col2 = st.columns(2)
 
-            for col_ui, (off_tm, def_tm, role_str) in [
+            for col_ui, (off_tm_i, def_tm_i, role_str) in [
                 (p_col1, (away_tm, home_tm, "A")),
                 (p_col2, (home_tm, away_tm, "H")),
             ]:
                 with col_ui:
                     render_html(
                         f'<div style="margin-bottom:10px;">'
-                        f'{render_team_pill(off_tm, role_str)} <b>Playmakers vs</b> '
-                        f'{render_team_pill(def_tm)} <b>Defense</b></div>'
+                        f'{render_team_pill(off_tm_i, role_str)} <b>Playmakers vs</b> '
+                        f'{render_team_pill(def_tm_i)} <b>Defense</b></div>'
                     )
-                    tm_weapons = usage_matchup[usage_matchup["team"] == off_tm].copy()
-                    def_pass_rk = int(eff_df.loc[def_tm, "def_pass_epa_rank"])
-                    def_rush_rk = int(eff_df.loc[def_tm, "def_rush_epa_rank"])
+                    tm_weapons = usage_matchup[usage_matchup["team"] == off_tm_i].copy()
+                    def_pass_rk = int(eff_df.loc[def_tm_i, "def_pass_epa_rank"])
+                    def_rush_rk = int(eff_df.loc[def_tm_i, "def_rush_epa_rank"])
 
                     top_receivers = tm_weapons.sort_values(by="calc_target_share", ascending=False).head(3)
                     top_rusher = (
@@ -2625,7 +2714,7 @@ with subtab_players:
                     for _, w_row in featured.iterrows():
                         is_rec = w_row["calc_target_share"] >= w_row["calc_rush_share"]
                         opp_rk = def_pass_rk if is_rec else def_rush_rk
-                        phase_str = f"{def_tm} Pass Def" if is_rec else f"{def_tm} Rush Def"
+                        phase_str = f"{def_tm_i} Pass Def" if is_rec else f"{def_tm_i} Rush Def"
                         share_lbl = (
                             f"Target Share: <b>{w_row['calc_target_share']*100:.1f}%</b> ({int(w_row['targets'])} tgts, {int(w_row['air_yards'])} air yds)"
                             if is_rec
@@ -2646,7 +2735,7 @@ with subtab_players:
                             <div class="{box_cls}">
                                 <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap;">
                                     <div>
-                                        {render_inline_logo(off_tm, 18)}<b>{w_row['player_name']}</b>
+                                        {render_inline_logo(off_tm_i, 18)}<b>{w_row['player_name']}</b>
                                         <span class="badge-sage">[{pos_badge}]</span>
                                     </div>
                                     <div>{opp_unit_badge}</div>
