@@ -44,66 +44,74 @@ st.markdown(
     color: #E2E8F0;
 }
 
-/* NFL.com Style Horizontal Scrollable Game Ticker (Requirement #1) */
-.nfl-ticker-wrapper {
-    display: flex;
-    flex-direction: row;
-    overflow-x: auto;
-    gap: 10px;
-    padding: 8px 4px 14px 4px;
-    margin-bottom: 8px;
+/* ============================================================================
+   NFL.COM STYLE HORIZONTAL SCROLLABLE GAME TICKER (PINNED TOP CONTAINER)
+   Forces Streamlit's column row containing .nfl-ticker-marker into a single
+   non-wrapping horizontal scroll strip with compact 195px game cards.
+   ============================================================================ */
+div[data-testid="stHorizontalBlock"]:has(.nfl-ticker-marker) {
+    display: flex !important;
+    flex-direction: row !important;
+    flex-wrap: nowrap !important;
+    overflow-x: auto !important;
+    overflow-y: hidden !important;
+    gap: 10px !important;
+    padding: 6px 4px 14px 4px !important;
+    margin-bottom: 6px !important;
+    background: #0B0E14;
+    border: 1px solid #1E293B;
+    border-radius: 10px;
     scrollbar-width: thin;
-    scrollbar-color: #334155 #0F141C;
+    scrollbar-color: #334155 #0B0E14;
 }
-.nfl-ticker-wrapper::-webkit-scrollbar {
-    height: 7px;
+div[data-testid="stHorizontalBlock"]:has(.nfl-ticker-marker)::-webkit-scrollbar {
+    height: 8px;
 }
-.nfl-ticker-wrapper::-webkit-scrollbar-track {
-    background: #0F141C;
+div[data-testid="stHorizontalBlock"]:has(.nfl-ticker-marker)::-webkit-scrollbar-track {
+    background: #0B0E14;
     border-radius: 4px;
 }
-.nfl-ticker-wrapper::-webkit-scrollbar-thumb {
+div[data-testid="stHorizontalBlock"]:has(.nfl-ticker-marker)::-webkit-scrollbar-thumb {
     background-color: #334155;
     border-radius: 4px;
 }
-a.ticker-card-link {
-    text-decoration: none !important;
-    color: inherit !important;
-    flex: 0 0 182px;
-    display: block;
+div[data-testid="stHorizontalBlock"]:has(.nfl-ticker-marker) > div[data-testid="stColumn"] {
+    flex: 0 0 192px !important;
+    min-width: 192px !important;
+    max-width: 192px !important;
+    width: 192px !important;
 }
+
+/* Individual Ticker Card Visuals */
 .ticker-card {
     background-color: #131822;
     border: 1px solid #283246;
-    border-top: 3px solid #334155;
-    border-radius: 7px;
-    padding: 9px 11px;
+    border-top: 3px solid #3B475E;
+    border-radius: 7px 7px 0 0;
+    padding: 8px 10px;
+    margin-bottom: -14px;
     transition: all 0.14s ease-in-out;
-    cursor: pointer;
-}
-.ticker-card:hover {
-    background-color: #1A2232;
-    border-color: #64748B;
-    transform: translateY(-2px);
 }
 .ticker-card-active {
-    background: linear-gradient(180deg, #10231E 0%, #121A26 100%);
+    background: linear-gradient(180deg, #0F2920 0%, #121A26 100%);
     border: 1px solid #00FF87;
     border-top: 3px solid #00FF87;
     box-shadow: 0 0 14px rgba(0, 255, 135, 0.22);
-    border-radius: 7px;
-    padding: 9px 11px;
+    border-radius: 7px 7px 0 0;
+    padding: 8px 10px;
+    margin-bottom: -14px;
 }
 .ticker-top-bar {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    font-size: 0.68rem;
+    font-size: 0.67rem;
     font-family: monospace;
     color: #94A3B8;
     margin-bottom: 6px;
     padding-bottom: 4px;
     border-bottom: 1px solid #1E293B;
+    white-space: nowrap;
 }
 .ticker-slot-tag {
     background-color: rgba(255, 176, 32, 0.16);
@@ -111,7 +119,7 @@ a.ticker-card-link {
     border: 1px solid #FFB020;
     padding: 0px 5px;
     border-radius: 3px;
-    font-size: 0.65rem;
+    font-size: 0.64rem;
     font-weight: 800;
     font-family: monospace;
 }
@@ -121,7 +129,7 @@ a.ticker-card-link {
     border: 1px solid #00FF87;
     padding: 0px 5px;
     border-radius: 3px;
-    font-size: 0.65rem;
+    font-size: 0.64rem;
     font-weight: 800;
     font-family: monospace;
 }
@@ -131,7 +139,7 @@ a.ticker-card-link {
     align-items: center;
     margin: 4px 0;
     font-family: monospace;
-    font-size: 0.86rem;
+    font-size: 0.85rem;
     font-weight: 700;
     color: #F8FAFC;
 }
@@ -140,15 +148,21 @@ a.ticker-card-link {
     align-items: center;
     gap: 6px;
 }
-.ticker-score {
+.ticker-score-win {
     font-family: monospace;
     font-size: 0.88rem;
     font-weight: 800;
-    color: #FFFFFF;
+    color: #00FF87;
+}
+.ticker-score {
+    font-family: monospace;
+    font-size: 0.86rem;
+    font-weight: 700;
+    color: #CBD5E1;
 }
 .ticker-score-muted {
     font-family: monospace;
-    font-size: 0.78rem;
+    font-size: 0.76rem;
     color: #64748B;
 }
 .ticker-footer {
@@ -158,9 +172,21 @@ a.ticker-card-link {
     margin-top: 6px;
     padding-top: 4px;
     border-top: 1px dashed #263042;
-    font-size: 0.68rem;
+    font-size: 0.67rem;
     font-family: monospace;
     color: #94A3B8;
+}
+
+/* Style the action button docked seamlessly at the bottom of each ticker card */
+div[data-testid="stHorizontalBlock"]:has(.nfl-ticker-marker) div[data-testid="stButton"] > button {
+    border-radius: 0 0 7px 7px !important;
+    font-family: monospace !important;
+    font-size: 0.72rem !important;
+    font-weight: 700 !important;
+    height: 28px !important;
+    min-height: 28px !important;
+    padding: 0 8px !important;
+    margin-top: 0 !important;
 }
 
 /* High-Visibility Active Game Selection Banner */
@@ -501,7 +527,7 @@ def render_injury_badge(status: str) -> str:
 
 def classify_primetime_code(row: pd.Series) -> str:
     """
-    Detects compact broadcast tags for the NFL.com-style ticker (Requirement #1):
+    Detects compact broadcast tags for the NFL.com-style ticker (Requirement #2):
     Returns [TNF], [SNF], [MNF], [SPC], or empty string for standard daytime games.
     """
     weekday = str(row.get("weekday", "")).strip().lower()
@@ -532,17 +558,23 @@ def classify_primetime_code(row: pd.Series) -> str:
     return ""
 
 
-def render_nfl_game_ticker(week_games: pd.DataFrame, active_idx: int) -> None:
+def render_nfl_horizontal_ticker(week_games: pd.DataFrame) -> None:
     """
-    Renders a horizontal, scrollable NFL.com-style game strip at the top of the page.
-    Clicking any card sets `?game_idx=i` in the URL and immediately selects that game.
+    Renders a pinned, horizontally scrolling NFL.com-style game strip at the top of the page.
+    Each card displays Away vs Home shorthand, live/final scores, and [TNF]/[SNF]/[MNF]/[SPC] tags.
+    Clicking any card updates st.session_state['selected_game'] and triggers an immediate rerun.
     """
     if week_games.empty:
+        st.info("No games match the current filter criteria.")
         return
 
-    cards_html = ['<div class="nfl-ticker-wrapper">']
+    cols = st.columns(len(week_games))
+    current_selected_id = st.session_state.get("selected_game")
 
-    for idx, row in week_games.iterrows():
+    for idx, (_, row) in enumerate(week_games.iterrows()):
+        game_id = str(row["game_id"])
+        is_selected = game_id == current_selected_id
+
         away_tm = str(row["away_team"])
         home_tm = str(row["home_team"])
         away_logo = get_team_logo_url(away_tm)
@@ -559,8 +591,11 @@ def render_nfl_game_ticker(week_games: pd.DataFrame, active_idx: int) -> None:
         gameday_str = str(row.get("gameday", ""))[-5:] if pd.notna(row.get("gameday")) else ""
 
         if has_scores:
-            a_score_html = f'<span class="ticker-score">{int(away_pts)}</span>'
-            h_score_html = f'<span class="ticker-score">{int(home_pts)}</span>'
+            a_int, h_int = int(away_pts), int(home_pts)
+            a_cls = "ticker-score-win" if a_int > h_int else "ticker-score"
+            h_cls = "ticker-score-win" if h_int > a_int else "ticker-score"
+            a_score_html = f'<span class="{a_cls}">{a_int}</span>'
+            h_score_html = f'<span class="{h_cls}">{h_int}</span>'
             status_text = "FINAL"
         else:
             a_score_html = '<span class="ticker-score-muted">--</span>'
@@ -576,40 +611,51 @@ def render_nfl_game_ticker(week_games: pd.DataFrame, active_idx: int) -> None:
 
         spread_lbl = f"{home_tm} {spread_v:+.1f}" if pd.notna(spread_v) else "Line TBD"
         ou_lbl = f"O/U {total_v:.1f}" if pd.notna(total_v) else ""
+        card_cls = "ticker-card-active" if is_selected else "ticker-card"
 
-        card_cls = "ticker-card-active" if idx == active_idx else "ticker-card"
-
-        cards_html.append(
-            f'<a href="?game_idx={idx}" target="_self" class="ticker-card-link">'
-            f'<div class="{card_cls}">'
-            f'<div class="ticker-top-bar">'
-            f'<span>{status_text}</span>'
-            f'{slot_html}'
-            f'</div>'
-            f'<div class="ticker-team-row">'
-            f'<span class="ticker-team-left">'
-            f'<img src="{away_logo}" width="18" height="18" onerror="this.style.display=\'none\'">'
-            f'{away_tm}'
-            f'</span>'
-            f'{a_score_html}'
-            f'</div>'
-            f'<div class="ticker-team-row">'
-            f'<span class="ticker-team-left">'
-            f'<img src="{home_logo}" width="18" height="18" onerror="this.style.display=\'none\'">'
-            f'{home_tm}'
-            f'</span>'
-            f'{h_score_html}'
-            f'</div>'
-            f'<div class="ticker-footer">'
-            f'<span>{spread_lbl}</span>'
-            f'<span>{ou_lbl}</span>'
-            f'</div>'
-            f'</div>'
-            f'</a>'
-        )
-
-    cards_html.append("</div>")
-    render_html("\n".join(cards_html))
+        with cols[idx]:
+            render_html(
+                f"""
+                <div class="nfl-ticker-marker {card_cls}">
+                    <div class="ticker-top-bar">
+                        <span>{status_text}</span>
+                        {slot_html}
+                    </div>
+                    <div class="ticker-team-row">
+                        <span class="ticker-team-left">
+                            <img src="{away_logo}" width="18" height="18" onerror="this.style.display='none'">
+                            {away_tm} (A)
+                        </span>
+                        {a_score_html}
+                    </div>
+                    <div class="ticker-team-row">
+                        <span class="ticker-team-left">
+                            <img src="{home_logo}" width="18" height="18" onerror="this.style.display='none'">
+                            {home_tm} (H)
+                        </span>
+                        {h_score_html}
+                    </div>
+                    <div class="ticker-footer">
+                        <span>{spread_lbl}</span>
+                        <span>{ou_lbl}</span>
+                    </div>
+                </div>
+                """
+            )
+            btn_label = (
+                f"● [ACTIVE: {away_tm}@{home_tm}]"
+                if is_selected
+                else f"SELECT {away_tm} @ {home_tm}"
+            )
+            if st.button(
+                btn_label,
+                key=f"ticker_btn_{game_id}_{idx}",
+                type="primary" if is_selected else "secondary",
+                use_container_width=True,
+            ):
+                st.session_state["selected_game"] = game_id
+                st.session_state["selected_game_idx"] = idx
+                st.rerun()
 
 
 def get_default_nfl_week_index(schedule_df: pd.DataFrame, available_weeks: list[int]) -> int:
@@ -741,6 +787,16 @@ def load_season_schedule(season: int) -> pd.DataFrame:
                 df["home_spread"] = df["spread_line"] * -1
 
     if not df.empty:
+        if "game_id" not in df.columns:
+            df["game_id"] = (
+                df["season"].astype(str)
+                + "_"
+                + df["week"].astype(str)
+                + "_"
+                + df["away_team"].astype(str)
+                + "_"
+                + df["home_team"].astype(str)
+            )
         df["broadcast_slot"] = df.apply(classify_primetime_code, axis=1)
         df["away_logo"] = df["away_team"].apply(get_team_logo_url)
         df["home_logo"] = df["home_team"].apply(get_team_logo_url)
@@ -1104,8 +1160,7 @@ def build_cb_wr_matchup_battles(
     """
     Automatically calculates and surfaces top 1-on-1 Wide Receiver vs. Cornerback
     individual battles for (off_tm WRs vs def_tm CBs).
-    Factors in L4 receiving streaks, defensive pass EPA rank, and CB injuries
-    (surfacing backups forced into starting roles when CB1/CB2 anchors are Out/Doubtful).
+    Factors in L4 receiving streaks, defensive pass EPA rank, and CB injuries.
     """
     if usage_df.empty:
         return []
@@ -1890,26 +1945,27 @@ if only_primetime and "broadcast_slot" in week_games.columns:
 
 week_games = week_games.reset_index(drop=True)
 
-if "selected_game_idx" not in st.session_state:
-    st.session_state.selected_game_idx = 0
+if week_games.empty:
+    st.warning("No games found for the selected filter combination.")
+    st.stop()
 
-# Sync URL query param (?game_idx=X) clicked from the Horizontal Game Ticker
-if "game_idx" in st.query_params:
-    try:
-        qp_idx = int(st.query_params["game_idx"])
-        if 0 <= qp_idx < len(week_games):
-            st.session_state.selected_game_idx = qp_idx
-    except Exception:
-        pass
-    st.query_params.clear()
+# Synchronize st.session_state['selected_game'] (Requirement #3)
+valid_game_ids = week_games["game_id"].astype(str).tolist()
+if (
+    "selected_game" not in st.session_state
+    or st.session_state["selected_game"] not in valid_game_ids
+):
+    st.session_state["selected_game"] = valid_game_ids[0]
+    st.session_state["selected_game_idx"] = 0
+else:
+    st.session_state["selected_game_idx"] = valid_game_ids.index(
+        st.session_state["selected_game"]
+    )
 
-if st.session_state.selected_game_idx >= len(week_games):
-    st.session_state.selected_game_idx = 0
-
-active_game = week_games.iloc[st.session_state.selected_game_idx] if not week_games.empty else None
+active_game = week_games.iloc[st.session_state["selected_game_idx"]]
 
 # -----------------------------------------------------------------------------
-# 5. MASTER VIEW: NFL.COM STYLE HORIZONTAL GAME TICKER (Requirement #1)
+# 5. PINNED TOP VIEW: HORIZONTAL SCROLLABLE NFL GAME TICKER (Reqs #1-#4)
 # -----------------------------------------------------------------------------
 mode_tag = (
     f'<span class="badge-amber">● [BACKTEST MODE: {selected_season}]</span>'
@@ -1923,91 +1979,32 @@ render_html(
     f"{render_rank_badge(1, 'Top-5')} "
     f"{render_rank_badge(12, 'Ranks 6-22')} "
     f"{render_rank_badge(28, 'Bottom-10')} "
-    '<span class="badge-sage">● Click any matchup card in the horizontal ticker below to lock that game</span>'
+    '<span class="badge-sage">● Scroll the horizontal game strip below and click any matchup card to load its analytics</span>'
 )
 
 ticker_head_col1, ticker_head_col2 = st.columns([1.4, 1])
 with ticker_head_col1:
-    st.subheader(f"{selected_season} Week {selected_week} Game Strip")
+    st.subheader(f"{selected_season} Week {selected_week} — Live Matchup Ticker")
 with ticker_head_col2:
-    if active_game is not None:
-        render_html(
-            f'<div style="text-align:right; padding-top:10px;">'
-            f'<span class="active-lock-pill">● ACTIVE DRILL-DOWN</span> '
-            f'{render_team_pill(active_game["away_team"], "A")} '
-            f'<span style="color:#94A3B8; font-weight:700;">@</span> '
-            f'{render_team_pill(active_game["home_team"], "H")}'
-            f"</div>"
-        )
-
-# Render the Horizontal Scrollable NFL.com-Style Ticker
-render_nfl_game_ticker(week_games, st.session_state.selected_game_idx)
-
-# Optional Expandable Full Schedule Table (Augmented with Row Selection)
-with st.expander(f"View Full {selected_season} Week {selected_week} Schedule Grid & Rest Table"):
-    display_cols = [
-        "broadcast_slot",
-        "gameday",
-        "gametime",
-        "away_logo",
-        "away_label",
-        "away_score",
-        "home_logo",
-        "home_label",
-        "home_score",
-        "home_spread",
-        "total_line",
-        "rest_edge_home",
-        "roof",
-        "stadium",
-    ]
-    avail_cols = [c for c in display_cols if c in week_games.columns]
-
-    selection_event = st.dataframe(
-        week_games[avail_cols],
-        width="stretch",
-        hide_index=True,
-        on_select="rerun",
-        selection_mode="single-row",
-        column_config={
-            "broadcast_slot": st.column_config.TextColumn(
-                "Window",
-                help="Special broadcast tags: [TNF], [SNF], [MNF], [SPC].",
-            ),
-            "gameday": "Date",
-            "gametime": "Time (ET)",
-            "away_logo": st.column_config.ImageColumn("", width="small"),
-            "away_label": "Away (A)",
-            "away_score": "Away Pts",
-            "home_logo": st.column_config.ImageColumn("", width="small"),
-            "home_label": "Home (H)",
-            "home_score": "Home Pts",
-            "home_spread": st.column_config.NumberColumn("Home Spread", format="%+.1f"),
-            "total_line": st.column_config.NumberColumn("Over/Under", format="%.1f"),
-            "rest_edge_home": st.column_config.NumberColumn(
-                "Rest Edge",
-                format="%+d days",
-                help="Home rest days minus Away rest days.",
-            ),
-            "roof": "Roof",
-            "stadium": "Stadium",
-        },
+    render_html(
+        f'<div style="text-align:right; padding-top:10px;">'
+        f'<span class="active-lock-pill">● SELECTED GAME: {st.session_state["selected_game"]}</span> '
+        f'{render_team_pill(active_game["away_team"], "A")} '
+        f'<span style="color:#94A3B8; font-weight:700;">@</span> '
+        f'{render_team_pill(active_game["home_team"], "H")}'
+        f"</div>"
     )
 
-    if selection_event.selection.rows:
-        clicked_idx = selection_event.selection.rows[0]
-        if clicked_idx != st.session_state.selected_game_idx:
-            st.session_state.selected_game_idx = clicked_idx
-            st.rerun()
+# Render Pinned Horizontal Scrollable Game Ticker (Replaces Old Schedule Table Entirely)
+render_nfl_horizontal_ticker(week_games)
 
 # -----------------------------------------------------------------------------
 # 6. DETAIL VIEW: HIGH-PROMINENCE SELECTED MATCHUP SPOTLIGHT
 # -----------------------------------------------------------------------------
-if active_game is None or eff_df.empty:
-    st.info("Select a valid matchup above to launch the deep-dive analysis.")
+if eff_df.empty:
+    st.info("Efficiency data unavailable for this season.")
     st.stop()
 
-active_game = week_games.iloc[st.session_state.selected_game_idx]
 away_tm = active_game["away_team"]
 home_tm = active_game["home_team"]
 spread_v = active_game.get("home_spread", np.nan)
@@ -2067,7 +2064,7 @@ render_html(
         <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:14px;">
             <div>
                 <div style="margin-bottom:8px;">
-                    <span class="active-lock-pill">● ACTIVE MATCHUP SELECTED ({st.session_state.selected_game_idx + 1} OF {len(week_games)})</span>
+                    <span class="active-lock-pill">● ACTIVE MATCHUP SELECTED ({st.session_state["selected_game_idx"] + 1} OF {len(week_games)})</span>
                     <span class="metric-subtext" style="margin-left:8px;">{selected_season} WEEK {selected_week} • {stadium_str} ({roof_str})</span>
                 </div>
                 <div style="display:flex; align-items:center; flex-wrap:wrap; gap:10px; margin:8px 0;">
@@ -2446,7 +2443,6 @@ with subtab_brief:
 # SUB-TAB 2: PLAYER MISMATCHES & INJURIES (WITH DEDICATED CB vs WR SUB-TAB)
 # =============================================================================
 with subtab_players:
-    # Requirement #2: Dedicated Sub-Tab Navigation inside Player Mismatches
     pm_subtab_cbwr, pm_subtab_volume, pm_subtab_injuries = st.tabs(
         [
             "1-on-1 CB vs. WR Mismatches",
@@ -2455,9 +2451,6 @@ with subtab_players:
         ]
     )
 
-    # -------------------------------------------------------------------------
-    # NESTED SUB-TAB 2A: DEDICATED 1-ON-1 CB vs. WR MISMATCHES (Requirement #2)
-    # -------------------------------------------------------------------------
     with pm_subtab_cbwr:
         render_html(
             f"<h4 style='margin:0 0 4px 0;'>"
@@ -2480,9 +2473,12 @@ with subtab_players:
         if not all_battles:
             st.info("Insufficient wide receiver or cornerback snap data to project 1-on-1 battles.")
         else:
-            # Top KPI Callout Strip for CB vs WR Battles
             elite_battles = [b for b in all_battles if b["mismatch_score"] >= 74.0]
-            backup_triggers = [b for b in all_battles if "BACKUP" in b["cb_status_badge"] or "ROTATIONAL" in b["cb_status_badge"]]
+            backup_triggers = [
+                b
+                for b in all_battles
+                if "BACKUP" in b["cb_status_badge"] or "ROTATIONAL" in b["cb_status_badge"]
+            ]
             hot_wrs = [b for b in all_battles if "WR HOT" in b["wr_streak_badge"]]
             top_battle = sorted(all_battles, key=lambda x: x["mismatch_score"], reverse=True)[0]
 
@@ -2556,7 +2552,6 @@ with subtab_players:
                             """
                         )
 
-            # Summary Comparison Table of All 1-on-1 Battles
             battle_table_df = pd.DataFrame(
                 [
                     {
@@ -2590,9 +2585,6 @@ with subtab_players:
                 },
             )
 
-    # -------------------------------------------------------------------------
-    # NESTED SUB-TAB 2B: OVERALL SKILL-PLAYER VOLUME MISMATCHES
-    # -------------------------------------------------------------------------
     with pm_subtab_volume:
         render_html(
             f"<h4 style='margin:0 0 4px 0;'>"
@@ -2667,9 +2659,6 @@ with subtab_players:
                             """
                         )
 
-    # -------------------------------------------------------------------------
-    # NESTED SUB-TAB 2C: OFFICIAL WEEKLY INJURIES & MISSING STARTER EPA DRAG
-    # -------------------------------------------------------------------------
     with pm_subtab_injuries:
         render_html(
             f"<h4 style='margin:0 0 8px 0;'>"
