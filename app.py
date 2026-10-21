@@ -46,7 +46,7 @@ st.markdown(
     color: #E2E8F0;
 }
 
-/* High-Visibility Active Game Selection Banner (Requirement #4) */
+/* High-Visibility Active Game Selection Banner */
 .active-game-spotlight {
     background: linear-gradient(135deg, #0D1B2A 0%, #112233 55%, #0F1E19 100%);
     border: 2px solid #00FF87;
@@ -70,18 +70,18 @@ st.markdown(
     text-transform: uppercase;
 }
 
-/* Clean Dot-Indicator Unit Ranking & Status Badges (Requirement #2) */
+/* Clean Dot-Indicator Unit Ranking & Status Badges */
 .badge-elite {
     background-color: rgba(0, 255, 135, 0.14);
     color: #00FF87;
     border: 1px solid #00FF87;
     padding: 2px 8px;
     border-radius: 4px;
-    font-size: 0.76rem;
+    font-size: 0.75rem;
     font-weight: 700;
     font-family: monospace;
     display: inline-block;
-    margin: 2px 3px;
+    margin: 2px 2px;
 }
 .badge-mid {
     background-color: rgba(148, 163, 184, 0.12);
@@ -89,11 +89,11 @@ st.markdown(
     border: 1px solid #475569;
     padding: 2px 8px;
     border-radius: 4px;
-    font-size: 0.76rem;
+    font-size: 0.75rem;
     font-weight: 600;
     font-family: monospace;
     display: inline-block;
-    margin: 2px 3px;
+    margin: 2px 2px;
 }
 .badge-bad {
     background-color: rgba(220, 20, 60, 0.18);
@@ -101,11 +101,11 @@ st.markdown(
     border: 1px solid #DC143C;
     padding: 2px 8px;
     border-radius: 4px;
-    font-size: 0.76rem;
+    font-size: 0.75rem;
     font-weight: 700;
     font-family: monospace;
     display: inline-block;
-    margin: 2px 3px;
+    margin: 2px 2px;
 }
 .badge-amber {
     background-color: rgba(255, 176, 32, 0.15);
@@ -113,11 +113,11 @@ st.markdown(
     border: 1px solid #FFB020;
     padding: 2px 8px;
     border-radius: 4px;
-    font-size: 0.76rem;
+    font-size: 0.75rem;
     font-weight: 700;
     font-family: monospace;
     display: inline-block;
-    margin: 2px 3px;
+    margin: 2px 2px;
 }
 .badge-sage {
     background-color: rgba(110, 168, 150, 0.15);
@@ -125,11 +125,11 @@ st.markdown(
     border: 1px solid #7FD1B9;
     padding: 2px 8px;
     border-radius: 4px;
-    font-size: 0.76rem;
+    font-size: 0.75rem;
     font-weight: 600;
     font-family: monospace;
     display: inline-block;
-    margin: 2px 3px;
+    margin: 2px 2px;
 }
 .badge-hot {
     background-color: rgba(255, 107, 53, 0.18);
@@ -188,18 +188,111 @@ st.markdown(
     color: #94A3B8;
     font-family: monospace;
 }
-.brief-bullet {
-    font-size: 0.95rem;
-    line-height: 1.65;
+
+/* Redesigned Comparative Brief Pillars & Tactical Timeline (Requirements #1 & #2) */
+.brief-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    margin-bottom: 12px;
+}
+.unit-pillar {
+    background-color: #151B26;
+    border: 1px solid #263042;
+    border-radius: 8px;
+    padding: 12px 14px;
+}
+.unit-pillar-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid #263042;
+    padding-bottom: 8px;
     margin-bottom: 10px;
+    font-weight: 700;
+    font-size: 0.92rem;
+    color: #F8FAFC;
+}
+.unit-tier-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 5px 0;
+    font-size: 0.84rem;
+    border-bottom: 1px dashed rgba(71, 85, 105, 0.35);
+}
+.unit-tier-label {
+    color: #94A3B8;
+    font-family: monospace;
+    font-weight: 600;
+    min-width: 58px;
+}
+.unit-lever-footer {
+    margin-top: 9px;
+    padding-top: 6px;
+    font-size: 0.82rem;
+    color: #E2E8F0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+.brief-context-strip {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    background-color: #141A24;
+    border: 1px solid #262D3D;
+    border-radius: 8px;
+    padding: 10px 14px;
+}
+.context-cell-title {
+    font-size: 0.72rem;
+    font-family: monospace;
+    color: #94A3B8;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin-bottom: 4px;
+}
+.tactical-step {
+    background-color: #151B26;
+    border: 1px solid #263042;
+    border-left: 3px solid #7FD1B9;
+    border-radius: 6px;
+    padding: 10px 14px;
+    margin-bottom: 10px;
+}
+.tactical-step-last {
+    background-color: #151B26;
+    border: 1px solid #263042;
+    border-left: 3px solid #FFB020;
+    border-radius: 6px;
+    padding: 10px 14px;
+    margin-bottom: 0;
+}
+.tactical-phase-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 5px;
+}
+.tactical-phase-tag {
+    font-size: 0.73rem;
+    font-family: monospace;
+    font-weight: 800;
+    color: #7FD1B9;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+}
+.tactical-body {
+    font-size: 0.88rem;
     color: #F1F5F9;
+    line-height: 1.45;
 }
 </style>
 """,
     unsafe_allow_html=True,
 )
 
-# Standard Positional Groupings for One-Click Roster Filtering (Requirement #3)
 OFFENSE_POSITIONS = {"QB", "RB", "FB", "WR", "TE", "OL", "T", "OT", "LT", "RT", "G", "OG", "LG", "RG", "C"}
 DEFENSE_POSITIONS = {"DL", "DE", "DT", "NT", "EDGE", "LB", "ILB", "OLB", "MLB", "DB", "CB", "S", "FS", "SS"}
 SPECIAL_TEAMS_POSITIONS = {"K", "P", "LS"}
@@ -234,7 +327,7 @@ def render_inline_logo(team_abbr: str, size: int = 20) -> str:
 
 
 def render_team_pill(team_abbr: str, role_tag: str = "", large: bool = False) -> str:
-    """Renders an inline HTML team pill with embedded logo and optional clean H/A tag (no emojis)."""
+    """Renders an inline HTML team pill with embedded logo and optional clean H/A tag."""
     logo = get_team_logo_url(team_abbr)
     cls = "team-pill-lg" if large else "team-pill"
     img_sz = 34 if large else 18
@@ -252,7 +345,7 @@ def render_team_pill(team_abbr: str, role_tag: str = "", large: bool = False) ->
 
 def render_rank_badge(rank: int, prefix: str = "") -> str:
     """
-    Renders standardized unit ranking tags using clean colored dot indicators (Requirement #2):
+    Renders standardized unit ranking tags using clean colored dot indicators:
     - Top 5 (1-5): ● ELITE [#X]
     - Bottom 10 (23-32): ● BAD [#X]
     - Middle Tier (6-22): ● MID [#X]
@@ -280,7 +373,7 @@ def render_injury_badge(status: str) -> str:
 def classify_primetime_slot(row: pd.Series) -> str:
     """
     Detects Primetime (TNF, SNF, MNF) or Special broadcast windows from schedule metadata.
-    Returns an empty string for regular daytime games so only primetime matchups stand out (Requirement #2).
+    Returns an empty string for regular daytime games so only primetime matchups stand out.
     """
     weekday = str(row.get("weekday", "")).strip().lower()
     gameday = str(row.get("gameday", "")).strip()
@@ -313,7 +406,7 @@ def classify_primetime_slot(row: pd.Series) -> str:
 def get_default_nfl_week_index(schedule_df: pd.DataFrame, available_weeks: list[int]) -> int:
     """
     Calculates the current active NFL week dynamically based on today's date
-    or the first week with unplayed games so the app opens on the active slate (Requirement #1).
+    or the first week with unplayed games so the app opens on the active slate.
     """
     if schedule_df.empty or not available_weeks:
         return 0
@@ -326,19 +419,16 @@ def get_default_nfl_week_index(schedule_df: pd.DataFrame, available_weeks: list[
         valid_dates = temp.dropna(subset=["parsed_date", "week"])
 
         if not valid_dates.empty:
-            # Find games occurring within the upcoming/current 6-day window
             upcoming = valid_dates[valid_dates["parsed_date"] >= (today - pd.Timedelta(days=1))]
             if not upcoming.empty:
                 target_wk = int(upcoming.sort_values("parsed_date").iloc[0]["week"])
                 if target_wk in available_weeks:
                     return available_weeks.index(target_wk)
 
-            # If today is after the last scheduled date, return the final week
             max_date = valid_dates["parsed_date"].max()
             if today > max_date:
                 return len(available_weeks) - 1
 
-    # Fallback: First week with unplayed games (missing home_score)
     if "home_score" in schedule_df.columns:
         unplayed = schedule_df[schedule_df["home_score"].isna()]
         if not unplayed.empty:
@@ -442,7 +532,6 @@ def load_season_schedule(season: int) -> pd.DataFrame:
                 df["home_spread"] = df["spread_line"] * -1
 
     if not df.empty:
-        # Requirement #2: Non-primetime games have blank slot; Away/Home labels have NO icons next to H/A
         df["broadcast_slot"] = df.apply(classify_primetime_slot, axis=1)
         df["away_logo"] = df["away_team"].apply(get_team_logo_url)
         df["home_logo"] = df["home_team"].apply(get_team_logo_url)
@@ -1256,7 +1345,7 @@ def run_season_backtest(
 
 
 # -----------------------------------------------------------------------------
-# 4. SIDEBAR CONTROLS & DYNAMIC CURRENT WEEK DEFAULT (Requirement #1)
+# 4. SIDEBAR CONTROLS & DYNAMIC CURRENT WEEK DEFAULT
 # -----------------------------------------------------------------------------
 st.sidebar.markdown("## Controls")
 
@@ -1284,8 +1373,6 @@ if schedule_df.empty:
     st.stop()
 
 available_weeks = sorted(schedule_df["week"].dropna().astype(int).unique())
-
-# Requirement #1: Dynamically calculate and default to the current active NFL week
 default_week_idx = get_default_nfl_week_index(schedule_df, available_weeks)
 selected_week = st.sidebar.selectbox(
     "Select NFL Week (Auto-Synced to Active Week)",
@@ -1335,11 +1422,10 @@ if "trigger_scroll" not in st.session_state:
 if st.session_state.selected_game_idx >= len(week_games):
     st.session_state.selected_game_idx = 0
 
-# Pre-compute currently active game for top-level status indicator
 active_game = week_games.iloc[st.session_state.selected_game_idx] if not week_games.empty else None
 
 # -----------------------------------------------------------------------------
-# 5. MASTER VIEW: STREAMLINED HEADER & CLEAN SCHEDULE TABLE (Requirement #2)
+# 5. MASTER VIEW: STREAMLINED HEADER & CLEAN SCHEDULE TABLE
 # -----------------------------------------------------------------------------
 mode_tag = (
     f'<span class="badge-amber">● BACKTEST MODE ({selected_season})</span>'
@@ -1356,7 +1442,6 @@ render_html(
     '<span class="badge-sage">● Click any schedule row below to lock that matchup into the analyzer</span>'
 )
 
-# Schedule Header & Active Selection Indicator Bar
 sched_head_col1, sched_head_col2 = st.columns([1.4, 1])
 with sched_head_col1:
     st.subheader(f"{selected_season} Week {selected_week}")
@@ -1371,7 +1456,6 @@ with sched_head_col2:
             f"</div>"
         )
 
-# Primetime Callout Bar (Only renders actual primetime games; non-primetime has no badges)
 if "broadcast_slot" in week_games.columns:
     pt_games = week_games[week_games["broadcast_slot"] != ""]
     if not pt_games.empty:
@@ -1444,7 +1528,7 @@ if selection_event.selection.rows:
         st.rerun()
 
 # -----------------------------------------------------------------------------
-# 6. DETAIL VIEW: HIGH-PROMINENCE SELECTED MATCHUP SPOTLIGHT (Requirement #4)
+# 6. DETAIL VIEW: HIGH-PROMINENCE SELECTED MATCHUP SPOTLIGHT
 # -----------------------------------------------------------------------------
 st.divider()
 render_html('<div id="matchup-detail-anchor"></div>')
@@ -1467,7 +1551,6 @@ if active_game is None or eff_df.empty:
     st.info("Select a valid matchup above to launch the deep-dive analysis.")
     st.stop()
 
-# Quick Matchup Switcher Bar synced with Table Selection
 matchup_labels = [
     f"Game {i + 1}: {r['away_team']} (A) @ {r['home_team']} (H) — {r.get('gameday', '')}"
     for i, r in week_games.iterrows()
@@ -1517,7 +1600,6 @@ elif pd.notna(rest_v) and rest_v < 0:
 else:
     rest_badge = '<span class="badge-mid">● EVEN REST [0d]</span>'
 
-# Pre-compute shared matchup datasets
 a_eff = eff_df.loc[away_tm] if away_tm in eff_df.index else None
 h_eff = eff_df.loc[home_tm] if home_tm in eff_df.index else None
 usage_matchup = aggregate_team_skill_usage(player_df, [away_tm, home_tm])
@@ -1544,7 +1626,6 @@ a_def_badge = render_rank_badge(int(a_eff["def_epa_rank"]), f"{away_tm} Def") if
 h_ovr_badge = render_rank_badge(int(h_eff["off_epa_rank"]), f"{home_tm} Off") if h_eff is not None else ""
 h_def_badge = render_rank_badge(int(h_eff["def_epa_rank"]), f"{home_tm} Def") if h_eff is not None else ""
 
-# Requirement #4: High-Prominence Active Selected Matchup Spotlight with Large Team Logos
 render_html(
     f"""
     <div class="active-game-spotlight">
@@ -1591,7 +1672,7 @@ subtab_brief, subtab_players, subtab_trench, subtab_props, subtab_roster, subtab
 )
 
 # =============================================================================
-# SUB-TAB 1: BRIEF SUMMARY & 5-YEAR MATCHUP HISTORY
+# SUB-TAB 1: REDESIGNED BRIEF SUMMARY & TACTICAL GAME SCRIPT (Reqs #1 & #2)
 # =============================================================================
 with subtab_brief:
     if a_eff is None or h_eff is None:
@@ -1658,8 +1739,11 @@ with subtab_brief:
                     delta_color="off",
                 )
 
-        col_brief_left, col_brief_right = st.columns([1.15, 1])
+        col_brief_left, col_brief_right = st.columns([1.2, 1])
 
+        # ---------------------------------------------------------------------
+        # REQUIREMENT #1: REDESIGNED COMPARATIVE BRIEF SUMMARY
+        # ---------------------------------------------------------------------
         with col_brief_left:
             a_pass_rk, a_rush_rk = int(a_eff["off_pass_epa_rank"]), int(a_eff["off_rush_epa_rank"])
             h_pdef_rk, h_rdef_rk = int(h_eff["def_pass_epa_rank"]), int(h_eff["def_rush_epa_rank"])
@@ -1667,116 +1751,204 @@ with subtab_brief:
             h_pass_rk, h_rush_rk = int(h_eff["off_pass_epa_rank"]), int(h_eff["off_rush_epa_rank"])
             a_pdef_rk, a_rdef_rk = int(a_eff["def_pass_epa_rank"]), int(a_eff["def_rush_epa_rank"])
 
-            if (h_pdef_rk - a_pass_rk) >= (h_rdef_rk - a_rush_rk):
-                away_plan_html = (
-                    f"{render_inline_logo(away_tm, 18)}<b>{away_tm} Air Funnel:</b> <b>{away_tm}</b> Pass Offense "
-                    f"{render_rank_badge(a_pass_rk)} (<b>{a_eff['off_pass_epa']:+.3f} EPA</b>) attacks "
-                    f"<b>{home_tm}</b> Pass Defense {render_rank_badge(h_pdef_rk)} — expect early dropbacks "
-                    f"and high-volume intermediate targeting."
+            # Away Primary Lever Tag
+            away_air_gap = h_pdef_rk - a_pass_rk
+            away_grd_gap = h_rdef_rk - a_rush_rk
+            if away_air_gap >= away_grd_gap:
+                away_lever_tag = (
+                    f'<span class="badge-elite">● AIR EDGE ({away_air_gap:+d} Rank Gap)</span>'
+                    if away_air_gap >= 6
+                    else f'<span class="badge-sage">● LEAN PASS ({a_eff["off_pass_epa"]:+.2f} EPA)</span>'
                 )
             else:
-                away_plan_html = (
-                    f"{render_inline_logo(away_tm, 18)}<b>{away_tm} Ground Control:</b> <b>{away_tm}</b> Rush Offense "
-                    f"{render_rank_badge(a_rush_rk)} (<b>{a_eff['off_rush_epa']:+.3f} EPA</b>) presses "
-                    f"<b>{home_tm}</b> Run Front {render_rank_badge(h_rdef_rk)} — sets up early-down "
-                    f"efficiency and play-action."
+                away_lever_tag = (
+                    f'<span class="badge-elite">● GROUND EDGE ({away_grd_gap:+d} Rank Gap)</span>'
+                    if away_grd_gap >= 6
+                    else f'<span class="badge-sage">● LEAN RUSH ({a_eff["off_rush_epa"]:+.2f} EPA)</span>'
                 )
 
-            if (a_pdef_rk - h_pass_rk) >= (a_rdef_rk - h_rush_rk):
-                home_plan_html = (
-                    f"{render_inline_logo(home_tm, 18)}<b>{home_tm} Passing Ceiling:</b> <b>{home_tm}</b> Pass Offense "
-                    f"{render_rank_badge(h_pass_rk)} (<b>{h_eff['off_pass_epa']:+.3f} EPA</b>) squares off with "
-                    f"<b>{away_tm}</b> Coverage {render_rank_badge(a_pdef_rk)} — elevated explosive-play "
-                    f"probability through the air."
+            # Home Primary Lever Tag
+            home_air_gap = a_pdef_rk - h_pass_rk
+            home_grd_gap = a_rdef_rk - h_rush_rk
+            if home_air_gap >= home_grd_gap:
+                home_lever_tag = (
+                    f'<span class="badge-elite">● AIR EDGE ({home_air_gap:+d} Rank Gap)</span>'
+                    if home_air_gap >= 6
+                    else f'<span class="badge-sage">● LEAN PASS ({h_eff["off_pass_epa"]:+.2f} EPA)</span>'
                 )
             else:
-                home_plan_html = (
-                    f"{render_inline_logo(home_tm, 18)}<b>{home_tm} Trench Dominance:</b> <b>{home_tm}</b> Rush Offense "
-                    f"{render_rank_badge(h_rush_rk)} (<b>{h_eff['off_rush_epa']:+.3f} EPA</b>) leans on "
-                    f"<b>{away_tm}</b> Rush Defense {render_rank_badge(a_rdef_rk)} to control clock and "
-                    f"stay ahead of the chains."
+                home_lever_tag = (
+                    f'<span class="badge-elite">● GROUND EDGE ({home_grd_gap:+d} Rank Gap)</span>'
+                    if home_grd_gap >= 6
+                    else f'<span class="badge-sage">● LEAN RUSH ({h_eff["off_rush_epa"]:+.2f} EPA)</span>'
                 )
 
-            if pd.notna(rest_v) and abs(rest_v) >= 2:
+            # Rest / Venue Compact Cell
+            if pd.notna(rest_v) and abs(rest_v) >= 1:
                 adv_rest_tm = home_tm if rest_v > 0 else away_tm
-                sit_bullet_html = (
-                    f"{render_inline_logo(adv_rest_tm, 18)}<b>Rest Advantage:</b> <b>{adv_rest_tm}</b> enters with a "
-                    f'<span class="badge-elite">● +{int(abs(rest_v))} DAY REST EDGE</span>, '
-                    f"boosting 4th-quarter pass-rush stamina."
+                rest_cell_html = (
+                    f'{render_inline_logo(adv_rest_tm, 16)}<b>+{int(abs(rest_v))}d Rest Advantage</b> '
+                    f'<span class="metric-subtext">• {roof_str}</span>'
                 )
             else:
-                sit_bullet_html = (
-                    f"<b>● Situational Parity:</b> Both teams enter on even rest inside "
-                    f"<b>{stadium_str}</b> ({roof_str})."
+                rest_cell_html = (
+                    f'<span class="badge-mid">● EVEN REST (0d)</span> '
+                    f'<span class="metric-subtext">{stadium_str} ({roof_str})</span>'
                 )
 
+            # Key Absence Compact Cell
             if not inj_matchup.empty and int(inj_matchup["is_anchor"].sum()) > 0:
                 top_inj = inj_matchup[inj_matchup["is_anchor"]].iloc[0]
-                inj_bullet_html = (
-                    f"{render_inline_logo(top_inj['team'], 18)}<b>Cluster Absence:</b> <b>{top_inj['team']}</b> starter "
-                    f"<b>{top_inj['player_display']}</b> ({top_inj.get('position', 'POS')}) is listed "
-                    f"{render_injury_badge(top_inj['report_status'])}, shaving "
-                    f"<b>-{top_inj['est_epa_penalty']:.3f} EPA/play</b> off their {top_inj['unit_side'].lower()} unit."
+                inj_cell_html = (
+                    f'{render_inline_logo(top_inj["team"], 16)}<b>{top_inj["player_display"]}</b> '
+                    f'({top_inj.get("position", "POS")}) {render_injury_badge(top_inj["report_status"])} '
+                    f'<span style="color:#FF4D6D; font-family:monospace; font-weight:700;">-{top_inj["est_epa_penalty"]:.3f} EPA</span>'
                 )
             else:
-                inj_bullet_html = (
-                    '<b>● Clean Starters:</b> <span class="badge-elite">● FULL STRENGTH</span> '
-                    "No flagged anchor starter absences on the active weekly report."
-                )
+                inj_cell_html = '<span class="badge-elite">● FULL STRENGTH</span> <span class="metric-subtext">0 Anchor Absences</span>'
 
             render_html(
                 f"""
                 <div class="terminal-card-elite">
-                    <h4 style="margin:0 0 12px 0; color:#00FF87;">
-                        {render_inline_logo(away_tm, 22)}{render_inline_logo(home_tm, 22)}Brief Summary
-                    </h4>
-                    <div class="brief-bullet">{away_plan_html}</div>
-                    <div class="brief-bullet">{home_plan_html}</div>
-                    <div class="brief-bullet">{sit_bullet_html}</div>
-                    <div class="brief-bullet">{inj_bullet_html}</div>
+                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
+                        <h4 style="margin:0; color:#00FF87;">Brief Summary — Unit Tier Matrix</h4>
+                        <span class="metric-subtext">Offense Tier [EPA] vs Opposing Defense Tier</span>
+                    </div>
+                    <div class="brief-grid">
+                        <div class="unit-pillar">
+                            <div class="unit-pillar-header">
+                                <span>{render_inline_logo(away_tm, 20)}{away_tm} Possession (A)</span>
+                                <span class="metric-subtext">vs {home_tm} Def</span>
+                            </div>
+                            <div class="unit-tier-row">
+                                <span class="unit-tier-label">AIR</span>
+                                <span>{render_rank_badge(a_pass_rk, "Off")} <span class="metric-subtext">({a_eff["off_pass_epa"]:+.2f})</span></span>
+                                <span class="metric-subtext">vs</span>
+                                <span>{render_rank_badge(h_pdef_rk, "Def")}</span>
+                            </div>
+                            <div class="unit-tier-row">
+                                <span class="unit-tier-label">GROUND</span>
+                                <span>{render_rank_badge(a_rush_rk, "Off")} <span class="metric-subtext">({a_eff["off_rush_epa"]:+.2f})</span></span>
+                                <span class="metric-subtext">vs</span>
+                                <span>{render_rank_badge(h_rdef_rk, "Def")}</span>
+                            </div>
+                            <div class="unit-lever-footer">
+                                <span class="metric-subtext">Primary Lever</span>
+                                {away_lever_tag}
+                            </div>
+                        </div>
+                        <div class="unit-pillar">
+                            <div class="unit-pillar-header">
+                                <span>{render_inline_logo(home_tm, 20)}{home_tm} Possession (H)</span>
+                                <span class="metric-subtext">vs {away_tm} Def</span>
+                            </div>
+                            <div class="unit-tier-row">
+                                <span class="unit-tier-label">AIR</span>
+                                <span>{render_rank_badge(h_pass_rk, "Off")} <span class="metric-subtext">({h_eff["off_pass_epa"]:+.2f})</span></span>
+                                <span class="metric-subtext">vs</span>
+                                <span>{render_rank_badge(a_pdef_rk, "Def")}</span>
+                            </div>
+                            <div class="unit-tier-row">
+                                <span class="unit-tier-label">GROUND</span>
+                                <span>{render_rank_badge(h_rush_rk, "Off")} <span class="metric-subtext">({h_eff["off_rush_epa"]:+.2f})</span></span>
+                                <span class="metric-subtext">vs</span>
+                                <span>{render_rank_badge(a_rdef_rk, "Def")}</span>
+                            </div>
+                            <div class="unit-lever-footer">
+                                <span class="metric-subtext">Primary Lever</span>
+                                {home_lever_tag}
+                            </div>
+                        </div>
+                    </div>
+                    <div class="brief-context-strip">
+                        <div>
+                            <div class="context-cell-title">Rest & Environment</div>
+                            <div>{rest_cell_html}</div>
+                        </div>
+                        <div>
+                            <div class="context-cell-title">Top Lineup Absence</div>
+                            <div>{inj_cell_html}</div>
+                        </div>
+                    </div>
                 </div>
                 """
             )
 
+        # ---------------------------------------------------------------------
+        # REQUIREMENT #2: REDESIGNED 3-PHASE TACTICAL GAME SCRIPT TIMELINE
+        # ---------------------------------------------------------------------
         with col_brief_right:
             fav_team = home_tm if (pd.notna(spread_v) and spread_v <= 0) else away_tm
             dog_team = away_tm if fav_team == home_tm else home_tm
+            fav_sr = (
+                h_eff["off_sr"] * 100.0 if fav_team == home_tm else a_eff["off_sr"] * 100.0
+            )
+            dog_p_rk = (
+                int(a_eff["off_pass_epa_rank"]) if dog_team == away_tm else int(h_eff["off_pass_epa_rank"])
+            )
+            fav_pdef_rk = (
+                int(h_eff["def_pass_epa_rank"]) if fav_team == home_tm else int(a_eff["def_pass_epa_rank"])
+            )
 
-            weapon_callout_html = "Balanced skill distribution expected across primary receivers and backs."
+            # Phase 2 Focal Target Data
             if not usage_matchup.empty:
                 top_w = usage_matchup.sort_values(by="calc_target_share", ascending=False).iloc[0]
                 w_tm = top_w["team"]
                 opp_tm = home_tm if w_tm == away_tm else away_tm
                 opp_p_rk = int(eff_df.loc[opp_tm, "def_pass_epa_rank"])
-                weapon_callout_html = (
-                    f"{render_inline_logo(w_tm, 18)}<b>{top_w['player_name']}</b> ({w_tm} {top_w['position']}) commands a "
-                    f"<b>{top_w['calc_target_share']*100:.1f}% target share</b> against "
-                    f"<b>{opp_tm}</b> Pass Defense {render_rank_badge(opp_p_rk)}."
+                phase2_badge = f'<span class="badge-amber">● {top_w["calc_target_share"]*100:.1f}% TARGET SHARE</span>'
+                phase2_body = (
+                    f"{render_inline_logo(w_tm, 16)}<b>{top_w['player_name']}</b> ({top_w['position']}) "
+                    f"featured vs {render_inline_logo(opp_tm, 16)}{render_rank_badge(opp_p_rk, 'Cov')} "
+                    f"<span class='metric-subtext'>({int(top_w['targets'])} tgts, {int(top_w['air_yards'])} air yds)</span>"
                 )
+            else:
+                phase2_badge = '<span class="badge-mid">● BALANCED TARGETS</span>'
+                phase2_body = "Distributed progression reads across primary WRs and TEs."
 
             render_html(
                 f"""
                 <div class="terminal-card">
-                    <h4 style="margin:0 0 12px 0; color:#7FD1B9;">
-                        {render_inline_logo(model_lean_team, 22)}Game Script Flow
-                    </h4>
-                    <div class="brief-bullet">
-                        <b>1. Opening Script:</b> {render_inline_logo(model_lean_team, 16)}<b>{model_lean_team}</b> holds a
-                        <span class="badge-elite">● +{model_edge_mag:.3f} NET EPA/PLAY</span> schematic cushion.
-                        Expect <b>{fav_team}</b> to attack the weakest opposing defensive tier on early downs.
+                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
+                        <h4 style="margin:0; color:#7FD1B9;">Game Script Flow — Tactical Timeline</h4>
+                        <span class="metric-subtext">3-Phase Projection</span>
                     </div>
-                    <div class="brief-bullet">
-                        <b>2. Focal Matchup:</b> {weapon_callout_html}
+                    <div class="tactical-step">
+                        <div class="tactical-phase-header">
+                            <span class="tactical-phase-tag">PHASE 1 • OPENING SCRIPT & EARLY DOWNS TEMPO</span>
+                            <span class="badge-elite">● {model_lean_team} +{model_edge_mag:.3f} EPA</span>
+                        </div>
+                        <div class="tactical-body">
+                            {render_inline_logo(fav_team, 16)}<b>{fav_team}</b> dictates early tempo
+                            (<b>{fav_sr:.1f}%</b> Success Rate) • Primary script lever: <b>{best_phase_val[0]}</b>
+                            (<b>{best_phase_val[1]:+.3f}</b> net delta).
+                        </div>
                     </div>
-                    <div class="brief-bullet">
-                        <b>3. 2nd-Half Pivot:</b> If <b>{fav_team}</b> builds a single-score lead,
-                        <b>{dog_team}</b> is forced into predictable dropback mode against opposing pass rushers.
+                    <div class="tactical-step">
+                        <div class="tactical-phase-header">
+                            <span class="tactical-phase-tag">PHASE 2 • FOCAL MISMATCH & TARGET SHARE FOCUS</span>
+                            {phase2_badge}
+                        </div>
+                        <div class="tactical-body">
+                            {phase2_body}
+                        </div>
+                    </div>
+                    <div class="tactical-step-last">
+                        <div class="tactical-phase-header">
+                            <span class="tactical-phase-tag" style="color:#FFB020;">PHASE 3 • SECOND-HALF PIVOT & SCRIPT CONDITION</span>
+                            <span class="badge-sage">● IF {fav_team} LEADS +7</span>
+                        </div>
+                        <div class="tactical-body">
+                            {render_inline_logo(dog_team, 16)}<b>{dog_team}</b> forced into high-volume dropback script:
+                            {render_rank_badge(dog_p_rk, "Pass Off")} vs
+                            {render_inline_logo(fav_team, 16)}{render_rank_badge(fav_pdef_rk, "Pass Def")}.
+                        </div>
                     </div>
                 </div>
                 """
             )
 
-        # 5-Year Matchup History Panel with Team Logos
+        # 5-Year Matchup History Panel
         render_html(
             f"<h4 style='margin:14px 0 8px 0;'>"
             f"{render_inline_logo(away_tm, 24)}{away_tm} vs {render_inline_logo(home_tm, 24)}{home_tm} — "
@@ -1851,7 +2023,6 @@ with subtab_brief:
 # SUB-TAB 2: PLAYER MISMATCHES (TOP) & INJURIES (DIRECTLY BENEATH)
 # =============================================================================
 with subtab_players:
-    # 1. TOP SECTION: PLAYER MISMATCHES
     render_html(
         f"<h4 style='margin:0 0 4px 0;'>"
         f"{render_inline_logo(away_tm, 24)}Player Mismatches — {away_tm} (A) at {render_inline_logo(home_tm, 24)}{home_tm} (H)</h4>"
@@ -1927,7 +2098,6 @@ with subtab_players:
 
     st.divider()
 
-    # 2. SECOND SECTION DIRECTLY BENEATH: INJURIES
     render_html(
         f"<h4 style='margin:0 0 8px 0;'>"
         f"{render_inline_logo(away_tm, 22)}{render_inline_logo(home_tm, 22)}"
@@ -2471,7 +2641,7 @@ with subtab_props:
             )
 
 # =============================================================================
-# SUB-TAB 5: TEAM ROSTER & USAGE EXPLORER (Requirement #3: All Offense / Defense)
+# SUB-TAB 5: TEAM ROSTER & USAGE EXPLORER
 # =============================================================================
 with subtab_roster:
     render_html(
@@ -2497,7 +2667,6 @@ with subtab_roster:
                 horizontal=True,
             )
         with r_col2:
-            # Requirement #3: Select All Offense or All Defense at once
             unit_group_filter = st.radio(
                 "2. Unit Group (One-Click Filter)",
                 options=["All Roster", "All Offense", "All Defense", "Special Teams"],
