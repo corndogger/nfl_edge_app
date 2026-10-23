@@ -1838,16 +1838,24 @@ def build_cb_wr_matchup_battles(
     def_tm: str,
 ) -> list[dict]:
     """
-    Automatically calculates and surfaces top 1-on-1 Wide Receiver vs. Cornerback
-    individual battles for (off_tm WRs vs def_tm CBs).
-    Strict Injury Mismatch Gate:
-      - An injury or backup-elevation penalty ONLY triggers if a player's official
-        report_status is strictly active/unresolved ('OUT', 'DOUBTFUL', 'IR', 'PUP',
-        'SUSPENDED', or active gameday 'QUESTIONABLE').
-      - If a player is cleared, marked active, or removed from the weekly injury designation,
-        zero backup/injury penalties are applied and the matchup is graded strictly on
-        baseline talent, target volume, L4 form, and defensive pass efficiency.
-      - Excludes offensive WRs who are ruled OUT/DOUBTFUL/IR from active 1-on-1 projections.
+    Calibrated 1-on-1 Wide Receiver vs. Cornerback Mismatch Engine (0-100 scale):
+      1. Continuous Volume & Production Composite (Target Share + YPG + Air Yards Share):
+         Eliminates artificial cliffs (e.g., 23.9% vs 24.0% target share) and prevents
+         low-yardage receivers from being over-indexed purely on target share.
+      2. Magnitude-Weighted L4 Form Adjustment:
+         Requires both meaningful yardage delta (>= +12.0 YPG or >= +20% with >= +10.0 YPG
+         and L4 >= 65.0 YPG) for a full Hot Streak, preventing a modest +9.8 YPG bump on a
+         53.0 YPG baseline from receiving the same +10 boost as an 85+ YPG alpha surge.
+      3. Continuous Opposing Pass Defense Efficiency + Primary CB1 Anchor Resistance:
+         Scales smoothly across NFL ranks #1-#32 and applies a realistic coverage resistance
+         factor (-3.5 to -1.5 pts) when a receiver faces a healthy, every-down perimeter CB1
+         (>=85% defensive snaps).
+      4. Strict Injury Mismatch Gate & Elite Mismatch Guardrail:
+         - Backup/Injury bonuses ONLY trigger when a defensive starter is strictly in
+           UNAVAILABLE_DESIGNATIONS or assigned cover man is QUESTIONABLE.
+         - [ELITE MISMATCH] (>= 75.0) is reserved for true smash spots: requires score >= 75.0
+           AND at least one elite catalyst (Bottom-8 Pass Defense #25-#32, active secondary
+           injury/backup trigger, or elite WR output >= 75.0 YPG / >= 80.0 L4 YPG).
     """
     if usage_df.empty:
         return []
@@ -1882,7 +1890,8 @@ def build_cb_wr_matchup_battles(
     if top_wrs.empty:
         return []
 
-    wr_streaks = {}
+    # Compute L4 vs Season receiving form with yardage-magnitude awareness
+    wr_streaks: dict[str, tuple[str, float, float, float, float]] = {}
     if not player_df.empty and "team" in player_df.columns:
         p_sub = player_df[player_df["team"] == off_tm].copy()
         name_col = "player_display_name" if "player_display_name" in p_sub.columns else "player_name"
@@ -1895,12 +1904,20 @@ def build_cb_wr_matchup_battles(
                 l4_avg = float(grp_sorted.tail(4)["receiving_yards"].mean())
                 diff_yds = l4_avg - s_avg
                 rel_pct = (diff_yds / s_avg * 100.0) if s_avg > 10.0 else 0.0
-                if rel_pct >= 18.0 or diff_yds >= 15.0:
-                    wr_streaks[str(p_name).strip().lower()] = ("HOT", l4_avg, s_avg, rel_pct)
-                elif rel_pct <= -18.0 or diff_yds <= -15.0:
-                    wr_streaks[str(p_name).strip().lower()] = ("COLD", l4_avg, s_avg, rel_pct)
+
+                # Calibrated streak classification:
+                # - HOT: >= +14.0 YPG surge OR (>= +20% surge AND >= +11.0 YPG AND L4 >= 65.0 YPG)
+                # - WARM: >= +7.5 YPG surge OR (>= +14% surge AND >= +7.0 YPG)
+                # - COLD: <= -12.0 YPG drop OR (<= -18% drop AND <= -8.0 YPG)
+                if diff_yds >= 14.0 or (rel_pct >= 20.0 and diff_yds >= 11.0 and l4_avg >= 65.0):
+                    s_type = "HOT"
+                elif diff_yds >= 7.5 or (rel_pct >= 14.0 and diff_yds >= 7.0):
+                    s_type = "WARM"
+                elif diff_yds <= -12.0 or (rel_pct <= -18.0 and diff_yds <= -8.0):
+                    s_type = "COLD"
                 else:
-                    wr_streaks[str(p_name).strip().lower()] = ("STEADY", l4_avg, s_avg, rel_pct)
+                    s_type = "STEADY"
+                wr_streaks[str(p_name).strip().lower()] = (s_type, l4_avg, s_avg, rel_pct, diff_yds)
 
     cb_roster = pd.DataFrame()
     if not snaps_df.empty and {"player", "team", "position", "defense_pct"}.issubset(snaps_df.columns):
@@ -1950,7 +1967,6 @@ def build_cb_wr_matchup_battles(
                     }
                 )
             elif not is_unavailable_injury(raw_inj_status):
-                # Player is available to play (either ACTIVE, ACTIVE / CLEARED, or gameday QUESTIONABLE)
                 resolved_status = (
                     "QUESTIONABLE"
                     if raw_inj_status == "QUESTIONABLE"
@@ -1994,42 +2010,74 @@ def build_cb_wr_matchup_battles(
         wr_games = max(1, int(wr_row["games"]))
         wr_ypg = float(wr_row["rec_yards"]) / wr_games
 
-        streak_type, l4_val, s_val, rel_pct = wr_streaks.get(
-            wr_clean, ("STEADY", wr_ypg, wr_ypg, 0.0)
+        streak_type, l4_val, s_val, rel_pct, diff_yds = wr_streaks.get(
+            wr_clean, ("STEADY", wr_ypg, wr_ypg, 0.0, 0.0)
         )
 
-        # Baseline talent, volume, L4 form, and unit efficiency score
+        # ---------------------------------------------------------------------
+        # CALIBRATED MISMATCH SCORING ENGINE (Base = 50.0)
+        # ---------------------------------------------------------------------
         score = 50.0
-        if wr_tgt_sh >= 24.0:
-            score += 14.0
-        elif wr_tgt_sh >= 18.0:
-            score += 8.0
 
-        if def_pass_rk >= 25:
-            score += 18.0
-        elif def_pass_rk >= 20:
-            score += 10.0
-        elif def_pass_rk <= 5:
-            score -= 16.0
-        elif def_pass_rk <= 10:
-            score -= 8.0
+        # 1. Continuous WR Opportunity & Production Composite (-6.0 to +16.0 pts)
+        #    - Target Share component: centered at 18% (-4.0 to +8.5 pts)
+        #    - Season YPG component: centered at 55 YPG (-4.0 to +6.5 pts)
+        #    - Air Yards Share bonus: rewards deep/alpha usage >= 28% (0.0 to +2.5 pts)
+        tgt_pts = float(np.clip((wr_tgt_sh - 18.0) * 0.65, -4.0, 8.5))
+        ypg_pts = float(np.clip((wr_ypg - 55.0) * 0.18, -4.0, 6.5))
+        air_pts = float(np.clip((wr_air_sh - 26.0) * 0.15, 0.0, 2.5))
+        wr_talent_pts = float(np.clip(tgt_pts + ypg_pts + air_pts, -6.0, 16.0))
+        score += wr_talent_pts
 
+        # 2. Continuous Opposing Pass Defense Rank & EPA Component (-16.0 to +14.0 pts)
+        #    - Rank #16 is neutral (0.0 pts)
+        #    - Rank #23 adds +5.6 pts (instead of a flat +10 cliff)
+        #    - Rank #32 adds +14.0 pts; Rank #1 subtracts -16.0 pts
+        if def_pass_rk >= 16:
+            def_unit_pts = ((def_pass_rk - 16) / 16.0) * 12.5
+            if def_pass_rk >= 28:
+                def_unit_pts += 1.5
+        else:
+            def_unit_pts = -((16 - def_pass_rk) / 15.0) * 14.5
+            if def_pass_rk <= 4:
+                def_unit_pts -= 1.5
+        score += float(np.clip(def_unit_pts, -16.0, 14.0))
+
+        # 3. Healthy Every-Down Cornerback Resistance (-3.5 to +2.0 pts)
+        #    When no starter is missing and the assigned CB is healthy/cleared:
+        #    facing an entrenched 85%+ snap CB1 provides real coverage resistance.
+        cb_snap_pct = float(cb_assigned["snap_pct"])
+        cb_resistance_pts = 0.0
+        if not missing_starting_cbs and cb_assigned["status"] != "QUESTIONABLE":
+            if cb_snap_pct >= 85.0:
+                cb_resistance_pts = -3.0 if def_pass_rk <= 18 else -1.5
+            elif cb_snap_pct <= 55.0:
+                cb_resistance_pts = 2.0
+        score += cb_resistance_pts
+
+        # 4. Magnitude-Scaled L4 Form Adjustment (-6.5 to +7.5 pts)
+        #    Scales by actual yardage delta (`diff_yds`) so a +9.8 YPG uptick on a
+        #    53 YPG baseline adds +3.0 pts (`WARM`) instead of an inflated +10.0 pts.
         if streak_type == "HOT":
-            score += 10.0
+            form_pts = float(np.clip(4.0 + (diff_yds - 12.0) * 0.25, 4.5, 7.5))
+        elif streak_type == "WARM":
+            form_pts = float(np.clip(diff_yds * 0.30, 1.5, 3.8))
         elif streak_type == "COLD":
-            score -= 8.0
+            form_pts = float(np.clip(diff_yds * 0.35, -6.5, -2.5))
+        else:
+            form_pts = float(np.clip(diff_yds * 0.15, -1.5, 1.5))
+        score += form_pts
 
-        # Strict Injury & Backup Penalty Gate:
-        # 1. Starter Absence / Backup Elevation ONLY triggers if `missing_starting_cbs` is non-empty
-        #    (meaning a primary starter >=50% snaps is strictly OUT, DOUBTFUL, IR, PUP, or SUSPENDED).
-        # 2. Assigned CB injury penalty ONLY triggers if `cb_assigned["status"] == "QUESTIONABLE"`.
-        # 3. Healthy/cleared CBs never trigger injury or backup penalties and never produce contradictory rationale text.
+        # 5. Strict Injury & Backup Penalty Gate:
+        #    - Starter Absence / Backup Elevation ONLY triggers if `missing_starting_cbs` is non-empty
+        #      (a primary starter >=50% snaps is strictly OUT, DOUBTFUL, IR, PUP, or SUSPENDED).
+        #    - Assigned CB injury penalty ONLY triggers if `cb_assigned["status"] == "QUESTIONABLE"`.
         rationale_clauses = []
         has_injury_or_backup_trigger = False
 
         if missing_starting_cbs and idx < len(missing_starting_cbs):
             out_cb = missing_starting_cbs[idx]
-            score += 18.0
+            score += 14.0
             has_injury_or_backup_trigger = True
             rationale_clauses.append(
                 f"Primary {def_tm} starter {out_cb['name']} ({out_cb['snap_pct']:.0f}% snaps) is [{out_cb['status']}]; "
@@ -2037,7 +2085,7 @@ def build_cb_wr_matchup_battles(
             )
         elif missing_starting_cbs:
             out_cb = missing_starting_cbs[0]
-            score += 10.0
+            score += 8.0
             has_injury_or_backup_trigger = True
             rationale_clauses.append(
                 f"Secondary rotation shifted with {out_cb['name']} [{out_cb['status']}]; "
@@ -2045,23 +2093,37 @@ def build_cb_wr_matchup_battles(
             )
 
         if cb_assigned["status"] == "QUESTIONABLE":
-            score += 9.0
+            score += 7.5
             has_injury_or_backup_trigger = True
             inj_detail = f" ({cb_assigned['injury']})" if cb_assigned.get("injury") else ""
             rationale_clauses.append(
                 f"Assigned cover man {cb_assigned['name']} carries an active [QUESTIONABLE]{inj_detail} designation."
             )
 
+        score = float(np.clip(round(score, 1), 15.0, 96.0))
+
+        # Elite Mismatch Guardrail:
+        # Reserve [ELITE MISMATCH] for spots with score >= 75.0 AND a genuine elite catalyst:
+        # (Bottom-8 pass defense #25-#32, active secondary injury trigger, or elite WR yardage >= 75 YPG / >= 80 L4 YPG).
+        has_elite_catalyst = (
+            (def_pass_rk >= 25)
+            or has_injury_or_backup_trigger
+            or (wr_ypg >= 75.0)
+            or (l4_val >= 80.0)
+        )
+        if score >= 75.0 and not has_elite_catalyst:
+            score = 72.5
+
         # Determine Callout Tier Badge
-        if score >= 74.0:
+        if score >= 75.0:
             tier_badge = '<span class="badge-elite">● [ELITE MISMATCH]</span>'
             tier_plain = "[ELITE MISMATCH]"
             card_style = "terminal-card-elite"
-        elif score >= 61.0:
+        elif score >= 60.0:
             tier_badge = '<span class="badge-sage">● [ADVANTAGE WR]</span>'
             tier_plain = "[ADVANTAGE WR]"
             card_style = "terminal-card"
-        elif score <= 38.0:
+        elif score <= 40.0:
             tier_badge = '<span class="badge-bad">● [CB LOCKDOWN SPOT]</span>'
             tier_plain = "[CB LOCKDOWN SPOT]"
             card_style = "terminal-card-vuln"
@@ -2071,9 +2133,11 @@ def build_cb_wr_matchup_battles(
             card_style = "terminal-card"
 
         if streak_type == "HOT":
-            wr_streak_badge = f'<span class="badge-hot">● [WR HOT L4: {l4_val:.1f} YPG ({rel_pct:+.0f}%)]</span>'
+            wr_streak_badge = f'<span class="badge-hot">● [WR HOT L4: {l4_val:.1f} YPG ({diff_yds:+.1f} vs Avg)]</span>'
+        elif streak_type == "WARM":
+            wr_streak_badge = f'<span class="badge-amber">● [WR L4 UPTICK: {l4_val:.1f} YPG ({diff_yds:+.1f} vs Avg)]</span>'
         elif streak_type == "COLD":
-            wr_streak_badge = f'<span class="badge-cold">● [WR COLD L4: {l4_val:.1f} YPG ({rel_pct:+.0f}%)]</span>'
+            wr_streak_badge = f'<span class="badge-cold">● [WR COLD L4: {l4_val:.1f} YPG ({diff_yds:+.1f} vs Avg)]</span>'
         else:
             wr_streak_badge = f'<span class="badge-mid">● [WR L4: {l4_val:.1f} YPG]</span>'
 
@@ -2096,19 +2160,24 @@ def build_cb_wr_matchup_battles(
                 if cb_assigned["status"] == "ACTIVE / CLEARED"
                 else ""
             )
-            if score >= 70.0:
+            if score >= 75.0:
                 rationale_clauses.append(
-                    f"{clearance_prefix}Baseline volume & efficiency edge: {wr_name} ({wr_tgt_sh:.1f}% target share, {wr_ypg:.1f} YPG) "
-                    f"attacks #{def_pass_rk} {def_tm} pass defense ({def_pass_epa:+.3f} EPA/play)."
+                    f"{clearance_prefix}High-conviction alpha mismatch: {wr_name} ({wr_tgt_sh:.1f}% target share, {wr_ypg:.1f} YPG, {l4_val:.1f} L4 YPG) "
+                    f"attacks vulnerable #{def_pass_rk} {def_tm} pass defense ({def_pass_epa:+.3f} EPA/play)."
                 )
-            elif score <= 38.0:
+            elif score >= 60.0:
                 rationale_clauses.append(
-                    f"{clearance_prefix}Baseline coverage edge: {cb_assigned['name']} and #{def_pass_rk} {def_tm} pass defense "
-                    f"({def_pass_epa:+.3f} EPA/play allowed) project to contain {wr_name}."
+                    f"{clearance_prefix}Favorable WR volume & efficiency lean: {wr_name} ({wr_tgt_sh:.1f}% target share, {wr_ypg:.1f} YPG, {l4_val:.1f} L4 YPG) "
+                    f"vs {cb_assigned['name']} ({cb_assigned['snap_pct']:.0f}% snaps) and #{def_pass_rk} {def_tm} pass defense ({def_pass_epa:+.3f} EPA/play)."
+                )
+            elif score <= 40.0:
+                rationale_clauses.append(
+                    f"{clearance_prefix}Coverage lockdown lean: {cb_assigned['name']} ({cb_assigned['snap_pct']:.0f}% snaps) and #{def_pass_rk} {def_tm} pass defense "
+                    f"({def_pass_epa:+.3f} EPA/play allowed) project to cap {wr_name} ({wr_ypg:.1f} YPG)."
                 )
             else:
                 rationale_clauses.append(
-                    f"{clearance_prefix}Baseline talent matchup: {wr_name} ({wr_tgt_sh:.1f}% target share, {wr_ypg:.1f} YPG) "
+                    f"{clearance_prefix}Balanced head-to-head matchup: {wr_name} ({wr_tgt_sh:.1f}% target share, {wr_ypg:.1f} YPG) "
                     f"vs {cb_assigned['name']} ({cb_assigned['snap_pct']:.0f}% snaps, #{def_pass_rk} {def_tm} pass defense)."
                 )
 
@@ -2133,7 +2202,7 @@ def build_cb_wr_matchup_battles(
                 "tier_badge": tier_badge,
                 "tier_plain": tier_plain,
                 "card_style": card_style,
-                "mismatch_score": round(score, 1),
+                "mismatch_score": score,
                 "trigger_note": " ".join(rationale_clauses),
             }
         )
@@ -4228,21 +4297,25 @@ with subtab_players:
         if not all_battles:
             st.info("Insufficient wide receiver or cornerback snap data to project 1-on-1 battles.")
         else:
-            elite_battles = [b for b in all_battles if b["mismatch_score"] >= 74.0]
+            elite_battles = [b for b in all_battles if b["mismatch_score"] >= 75.0]
             backup_triggers = [b for b in all_battles if b.get("has_injury_trigger", False)]
-            hot_wrs = [b for b in all_battles if "WR HOT" in b["wr_streak_badge"]]
+            hot_wrs = [
+                b
+                for b in all_battles
+                if "WR HOT" in b["wr_streak_badge"] or "WR L4 UPTICK" in b["wr_streak_badge"]
+            ]
             top_battle = sorted(all_battles, key=lambda x: x["mismatch_score"], reverse=True)[0]
 
             c_k1, c_k2, c_k3, c_k4 = st.columns(4)
             c_k1.metric(
                 "Top 1-on-1 Target Edge",
                 f"{top_battle['wr_name']} ({top_battle['off_tm']})",
-                delta=f"Index {top_battle['mismatch_score']:.0f}/100 vs {top_battle['cb_name']}",
+                delta=f"Index {top_battle['mismatch_score']:.1f}/100 vs {top_battle['cb_name']}",
             )
             c_k2.metric(
                 "Flagged [ELITE MISMATCH] Spots",
                 f"{len(elite_battles)} Battles",
-                delta="Score >= 74/100 Threshold",
+                delta="Score >= 75/100 + Elite Catalyst",
             )
             c_k3.metric(
                 "Active Secondary Injury / Backup Triggers",
@@ -4250,9 +4323,9 @@ with subtab_players:
                 delta="Out / Doubtful / Questionable CBs Only",
             )
             c_k4.metric(
-                "Wideouts on L4 Hot Streak",
+                "Wideouts on Positive L4 Surge",
                 f"{len(hot_wrs)} Receivers",
-                delta=">= +18% L4 YPG vs Season",
+                delta="Hot / Uptick L4 YPG vs Season",
             )
 
             cb_col1, cb_col2 = st.columns(2)
@@ -4272,7 +4345,7 @@ with subtab_players:
                             render_html(
                                 f"""
                                 <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:6px; margin-bottom:4px;">
-                                    <span class="metric-subtext">{b['alignment']} • Mismatch Index: <b>{b['mismatch_score']:.0f}/100</b></span>
+                                    <span class="metric-subtext">{b['alignment']} • Mismatch Index: <b>{b['mismatch_score']:.1f}/100</b></span>
                                     {b['tier_badge']}
                                 </div>
                                 """
@@ -4348,7 +4421,7 @@ with subtab_players:
                     "L4 YPG": st.column_config.NumberColumn("L4 YPG", format="%.1f"),
                     "CB Snap %": st.column_config.NumberColumn("CB Def Snaps", format="%.0f%%"),
                     "Mismatch Index": st.column_config.ProgressColumn(
-                        "Mismatch Score", format="%.0f / 100", min_value=0, max_value=100
+                        "Mismatch Score", format="%.1f / 100", min_value=0, max_value=100
                     ),
                 },
             )
