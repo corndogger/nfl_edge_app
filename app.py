@@ -340,11 +340,11 @@ div[data-testid="stHorizontalBlock"]:has(.nfl-ticker-marker) div[data-testid="st
 
 /* ============================================================================
    COMPACT PLAYER HEADSHOT AVATARS FOR MISMATCH CARDS
-   Clean 52x52 cutout frame with tight horizontal column spacing.
+   Clean 48x48 cutout frame that never overrides parent Streamlit column widths.
    ============================================================================ */
 .mismatch-headshot-wrap {
-    width: 52px;
-    height: 52px;
+    width: 48px;
+    height: 48px;
     border-radius: 8px;
     background: linear-gradient(180deg, #161F2E 0%, #0D121B 100%);
     border: 1px solid #283246;
@@ -353,12 +353,12 @@ div[data-testid="stHorizontalBlock"]:has(.nfl-ticker-marker) div[data-testid="st
     justify-content: center;
     overflow: hidden;
     flex-shrink: 0;
-    margin: 0;
+    margin: 2px 0 0 0;
     padding: 0;
 }
 .mismatch-headshot-img {
-    width: 52px;
-    height: 52px;
+    width: 48px;
+    height: 48px;
     object-fit: cover;
     object-position: top center;
     display: block;
@@ -366,34 +366,16 @@ div[data-testid="stHorizontalBlock"]:has(.nfl-ticker-marker) div[data-testid="st
     padding: 0;
 }
 .mismatch-headshot-fallback {
-    width: 52px;
-    height: 52px;
+    width: 48px;
+    height: 48px;
     display: flex;
     align-items: center;
     justify-content: center;
     font-family: monospace;
-    font-size: 0.88rem;
+    font-size: 0.85rem;
     font-weight: 800;
     color: #94A3B8;
     background: #141B26;
-}
-div[data-testid="stHorizontalBlock"]:has(.mismatch-headshot-wrap) {
-    gap: 8px !important;
-    align-items: center !important;
-}
-div[data-testid="stHorizontalBlock"]:has(.mismatch-headshot-wrap) > div[data-testid="stColumn"]:has(.mismatch-headshot-wrap),
-div[data-testid="stHorizontalBlock"]:has(.mismatch-headshot-wrap) > div[data-testid="column"]:has(.mismatch-headshot-wrap) {
-    flex: 0 0 54px !important;
-    min-width: 54px !important;
-    max-width: 54px !important;
-    width: 54px !important;
-}
-div[data-testid="stHorizontalBlock"]:has(.mismatch-vs-divider) > div[data-testid="stColumn"]:has(.mismatch-vs-divider),
-div[data-testid="stHorizontalBlock"]:has(.mismatch-vs-divider) > div[data-testid="column"]:has(.mismatch-vs-divider) {
-    flex: 0 0 26px !important;
-    min-width: 26px !important;
-    max-width: 26px !important;
-    width: 26px !important;
 }
 
 /* ============================================================================
@@ -1670,7 +1652,7 @@ def render_mismatch_headshot_html(
     player_name: str, team_abbr: str, headshot_lookup: dict[str, dict]
 ) -> str:
     """
-    Renders a clean 52x52px player headshot box for the mismatch area cards,
+    Renders a clean 48x48px player headshot box for the mismatch area cards,
     with graceful fallback to monogram initials if a photo is unavailable.
     """
     clean_p = str(player_name).strip()
@@ -4318,6 +4300,12 @@ with subtab_players:
                         f'{render_team_pill(def_tm_i)} <b>Cornerbacks</b></div>'
                     )
                     for b_idx, b in enumerate(battle_list):
+                        wr_pic_html = render_mismatch_headshot_html(
+                            b["wr_name"], b["off_tm"], headshot_lookup
+                        )
+                        cb_pic_html = render_mismatch_headshot_html(
+                            b["cb_name"], b["def_tm"], headshot_lookup
+                        )
                         with st.container(border=True):
                             render_html(
                                 f"""
@@ -4327,16 +4315,8 @@ with subtab_players:
                                 </div>
                                 """
                             )
-                            wr_img_c, wr_txt_c, vs_mid, cb_img_c, cb_txt_c = st.columns(
-                                [0.36, 1.35, 0.20, 0.36, 1.35]
-                            )
-                            with wr_img_c:
-                                render_html(
-                                    render_mismatch_headshot_html(
-                                        b["wr_name"], b["off_tm"], headshot_lookup
-                                    )
-                                )
-                            with wr_txt_c:
+                            vs_c1, vs_mid, vs_c2 = st.columns([1.45, 0.25, 1.45])
+                            with vs_c1:
                                 render_inline_player_trigger(
                                     b["wr_name"],
                                     b["off_tm"],
@@ -4345,19 +4325,21 @@ with subtab_players:
                                     f"[{b['off_tm']} WR]",
                                 )
                                 render_html(
-                                    f'<span class="metric-subtext">Tgt: <b>{b["wr_tgt_sh"]:.1f}%</b> | Air: <b>{b["wr_air_sh"]:.1f}%</b> | <b>{b["wr_ypg"]:.1f} YPG</b></span>'
+                                    f"""
+                                    <div style="display:flex; align-items:center; gap:10px; margin-top:4px;">
+                                        {wr_pic_html}
+                                        <div class="metric-subtext" style="line-height:1.4;">
+                                            Tgt: <b>{b["wr_tgt_sh"]:.1f}%</b> | Air: <b>{b["wr_air_sh"]:.1f}%</b><br>
+                                            Season: <b>{b["wr_ypg"]:.1f} YPG</b>
+                                        </div>
+                                    </div>
+                                    """
                                 )
                             with vs_mid:
                                 render_html(
-                                    '<div class="mismatch-vs-divider" style="text-align:center; font-family:monospace; font-weight:800; color:#64748B; font-size:0.80rem;">VS</div>'
+                                    '<div style="text-align:center; padding-top:24px; font-family:monospace; font-weight:800; color:#64748B;">VS</div>'
                                 )
-                            with cb_img_c:
-                                render_html(
-                                    render_mismatch_headshot_html(
-                                        b["cb_name"], b["def_tm"], headshot_lookup
-                                    )
-                                )
-                            with cb_txt_c:
+                            with vs_c2:
                                 render_inline_player_trigger(
                                     b["cb_name"],
                                     b["def_tm"],
@@ -4366,7 +4348,15 @@ with subtab_players:
                                     f"[{b['def_tm']} {b['cb_pos']}]",
                                 )
                                 render_html(
-                                    f'<span class="metric-subtext">Snaps: <b>{b["cb_snap_pct"]:.0f}%</b> | Pass Def: <b>#{b["def_pass_rk"]} NFL</b></span>'
+                                    f"""
+                                    <div style="display:flex; align-items:center; gap:10px; margin-top:4px;">
+                                        {cb_pic_html}
+                                        <div class="metric-subtext" style="line-height:1.4;">
+                                            Def Snaps: <b>{b["cb_snap_pct"]:.0f}%</b><br>
+                                            Pass Def: <b>#{b["def_pass_rk"]} NFL</b>
+                                        </div>
+                                    </div>
+                                    """
                                 )
                             render_html(
                                 f"""
@@ -4374,7 +4364,7 @@ with subtab_players:
                                     {b['wr_streak_badge']}
                                     {b['cb_status_badge']}
                                 </div>
-                                <div class="metric-subtext" style="color:#CBD5E1; white-space:normal; line-height:1.35;">
+                                <div class="metric-subtext" style="color:#CBD5E1;">
                                     <b>Rationale:</b> {b['trigger_note']}
                                 </div>
                                 """
@@ -4468,7 +4458,7 @@ with subtab_players:
                         opp_rk = def_pass_rk if is_rec else def_rush_rk
                         phase_str = f"{def_tm_i} Pass Def" if is_rec else f"{def_tm_i} Rush Def"
                         share_lbl = (
-                            f"Tgt Share: <b>{w_row['calc_target_share']*100:.1f}%</b> ({int(w_row['targets'])} tgts, {int(w_row['air_yards'])} air yds)"
+                            f"Target Share: <b>{w_row['calc_target_share']*100:.1f}%</b> ({int(w_row['targets'])} tgts, {int(w_row['air_yards'])} air yds)"
                             if is_rec
                             else f"Rush Share: <b>{w_row['calc_rush_share']*100:.1f}%</b> ({int(w_row['carries'])} att, {int(w_row['touches'])} touches)"
                         )
@@ -4476,16 +4466,13 @@ with subtab_players:
                         opp_unit_badge = render_rank_badge(opp_rk, f"vs {phase_str}")
                         pos_badge = str(w_row.get("position", "POS"))
                         scrim_yds = int(w_row["scrimmage_yards"])
+                        w_pic_html = render_mismatch_headshot_html(
+                            w_row["player_name"], off_tm_i, headshot_lookup
+                        )
 
                         with st.container(border=True):
-                            v_img_c, v_txt_c, v_badge_c = st.columns([0.36, 1.55, 1.0])
-                            with v_img_c:
-                                render_html(
-                                    render_mismatch_headshot_html(
-                                        w_row["player_name"], off_tm_i, headshot_lookup
-                                    )
-                                )
-                            with v_txt_c:
+                            top_c1, top_c2 = st.columns([1.4, 1])
+                            with top_c1:
                                 render_inline_player_trigger(
                                     w_row["player_name"],
                                     off_tm_i,
@@ -4493,11 +4480,19 @@ with subtab_players:
                                     f"vol_{off_tm_i}_{w_idx}",
                                     f"[{off_tm_i} {pos_badge}]",
                                 )
-                                render_html(
-                                    f'<span class="metric-subtext">{share_lbl} | EPA: <b>{w_row["total_epa"]:+.1f}</b> | <b>{scrim_yds} yds ({int(w_row["total_tds"])} TD)</b></span>'
-                                )
-                            with v_badge_c:
+                            with top_c2:
                                 render_html(f'<div style="text-align:right;">{opp_unit_badge}</div>')
+                            render_html(
+                                f"""
+                                <div style="display:flex; align-items:center; gap:10px; margin-top:4px;">
+                                    {w_pic_html}
+                                    <div class="metric-subtext">
+                                        {share_lbl} | Total EPA: <b>{w_row['total_epa']:+.1f}</b> |
+                                        Scrimmage: <b>{scrim_yds} yds ({int(w_row['total_tds'])} TD)</b>
+                                    </div>
+                                </div>
+                                """
+                            )
 
     with pm_subtab_injuries:
         render_html(
@@ -4644,17 +4639,11 @@ with subtab_players:
                             pos_str = str(r_inj.get("position", "POS"))
                             is_clr = bool(r_inj.get("is_cleared", False))
                             epa_color = "#00FF87" if is_clr else "#FF4D6D"
-                            epa_str = "0.000/play (Cleared)" if is_clr else f"-{r_inj['est_epa_penalty']:.3f}/play"
+                            epa_str = "0.000/play (Cleared — Baseline Talent Only)" if is_clr else f"-{r_inj['est_epa_penalty']:.3f}/play"
 
                             with st.container(border=True):
-                                i_img_c, i_txt_c, i_b_c = st.columns([0.36, 1.45, 1.15])
-                                with i_img_c:
-                                    render_html(
-                                        render_mismatch_headshot_html(
-                                            r_inj["player_display"], tm, headshot_lookup
-                                        )
-                                    )
-                                with i_txt_c:
+                                ic1, ic2 = st.columns([1.4, 1.2])
+                                with ic1:
                                     render_inline_player_trigger(
                                         r_inj["player_display"],
                                         tm,
@@ -4662,17 +4651,17 @@ with subtab_players:
                                         f"inj_{tm}_{i_idx}",
                                         f"[{tm} {pos_str}]",
                                     )
-                                    render_html(
-                                        f"""
-                                        <span class="metric-subtext">
-                                            {r_inj['role_tier']} • <b>{r_inj['primary_injury']}</b> •
-                                            Snaps: <b>{snap_pct:.0f}%</b> | Tgt: <b>{tgt_pct:.1f}%</b> |
-                                            EPA: <span style="color:{epa_color}; font-weight:700;">{epa_str}</span>
-                                        </span>
-                                        """
-                                    )
-                                with i_b_c:
+                                with ic2:
                                     render_html(f'<div style="text-align:right;">{badge_html} {prac_html}</div>')
+                                render_html(
+                                    f"""
+                                    <div class="metric-subtext" style="margin-top:4px;">
+                                        {r_inj['role_tier']} | Ailment: <b>{r_inj['primary_injury']}</b> |
+                                        Snaps: <b>{snap_pct:.0f}%</b> | Tgt Share: <b>{tgt_pct:.1f}%</b> |
+                                        EPA Impact: <span style="color:{epa_color}; font-weight:700;">{epa_str}</span>
+                                    </div>
+                                    """
+                                )
 
 # =============================================================================
 # SUB-TAB 3: TRENCH & AIR EFFICIENCY
