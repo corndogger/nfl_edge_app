@@ -339,6 +339,64 @@ div[data-testid="stHorizontalBlock"]:has(.nfl-ticker-marker) div[data-testid="st
 }
 
 /* ============================================================================
+   COMPACT PLAYER HEADSHOT AVATARS FOR MISMATCH CARDS
+   Clean 52x52 cutout frame with tight horizontal column spacing.
+   ============================================================================ */
+.mismatch-headshot-wrap {
+    width: 52px;
+    height: 52px;
+    border-radius: 8px;
+    background: linear-gradient(180deg, #161F2E 0%, #0D121B 100%);
+    border: 1px solid #283246;
+    display: flex;
+    align-items: flex-end;
+    justify-content: center;
+    overflow: hidden;
+    flex-shrink: 0;
+    margin: 0;
+    padding: 0;
+}
+.mismatch-headshot-img {
+    width: 52px;
+    height: 52px;
+    object-fit: cover;
+    object-position: top center;
+    display: block;
+    margin: 0;
+    padding: 0;
+}
+.mismatch-headshot-fallback {
+    width: 52px;
+    height: 52px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: monospace;
+    font-size: 0.88rem;
+    font-weight: 800;
+    color: #94A3B8;
+    background: #141B26;
+}
+div[data-testid="stHorizontalBlock"]:has(.mismatch-headshot-wrap) {
+    gap: 8px !important;
+    align-items: center !important;
+}
+div[data-testid="stHorizontalBlock"]:has(.mismatch-headshot-wrap) > div[data-testid="stColumn"]:has(.mismatch-headshot-wrap),
+div[data-testid="stHorizontalBlock"]:has(.mismatch-headshot-wrap) > div[data-testid="column"]:has(.mismatch-headshot-wrap) {
+    flex: 0 0 54px !important;
+    min-width: 54px !important;
+    max-width: 54px !important;
+    width: 54px !important;
+}
+div[data-testid="stHorizontalBlock"]:has(.mismatch-vs-divider) > div[data-testid="stColumn"]:has(.mismatch-vs-divider),
+div[data-testid="stHorizontalBlock"]:has(.mismatch-vs-divider) > div[data-testid="column"]:has(.mismatch-vs-divider) {
+    flex: 0 0 26px !important;
+    min-width: 26px !important;
+    max-width: 26px !important;
+    width: 26px !important;
+}
+
+/* ============================================================================
    PLAYER POP-OUT DOSSIER HEADER & BORDERLESS FLUSH HEADSHOT
    No circular ring; larger proportioned cutout flush against the bottom edge.
    ============================================================================ */
@@ -404,14 +462,14 @@ div[data-testid="stHorizontalBlock"]:has(.nfl-ticker-marker) div[data-testid="st
     padding-bottom: 16px;
 }
 
-/* Clean Dot-Indicator Unit Ranking & Status Badges */
+/* Unit Ranking & Status Badges (Clean Tag Format — No Leading Dot) */
 .badge-elite {
     background-color: rgba(0, 255, 135, 0.14);
     color: #00FF87;
     border: 1px solid #00FF87;
     padding: 2px 8px;
     border-radius: 4px;
-    font-size: 0.75rem;
+    font-size: 0.74rem;
     font-weight: 700;
     font-family: monospace;
     display: inline-block;
@@ -423,7 +481,7 @@ div[data-testid="stHorizontalBlock"]:has(.nfl-ticker-marker) div[data-testid="st
     border: 1px solid #00FF87;
     padding: 2px 8px;
     border-radius: 4px;
-    font-size: 0.75rem;
+    font-size: 0.74rem;
     font-weight: 800;
     font-family: monospace;
     display: inline-block;
@@ -435,7 +493,7 @@ div[data-testid="stHorizontalBlock"]:has(.nfl-ticker-marker) div[data-testid="st
     border: 1px solid #475569;
     padding: 2px 8px;
     border-radius: 4px;
-    font-size: 0.75rem;
+    font-size: 0.74rem;
     font-weight: 600;
     font-family: monospace;
     display: inline-block;
@@ -447,7 +505,7 @@ div[data-testid="stHorizontalBlock"]:has(.nfl-ticker-marker) div[data-testid="st
     border: 1px solid #DC143C;
     padding: 2px 8px;
     border-radius: 4px;
-    font-size: 0.75rem;
+    font-size: 0.74rem;
     font-weight: 700;
     font-family: monospace;
     display: inline-block;
@@ -459,7 +517,7 @@ div[data-testid="stHorizontalBlock"]:has(.nfl-ticker-marker) div[data-testid="st
     border: 1px solid #FFB020;
     padding: 2px 8px;
     border-radius: 4px;
-    font-size: 0.75rem;
+    font-size: 0.74rem;
     font-weight: 700;
     font-family: monospace;
     display: inline-block;
@@ -471,7 +529,7 @@ div[data-testid="stHorizontalBlock"]:has(.nfl-ticker-marker) div[data-testid="st
     border: 1px solid #7FD1B9;
     padding: 2px 8px;
     border-radius: 4px;
-    font-size: 0.75rem;
+    font-size: 0.74rem;
     font-weight: 600;
     font-family: monospace;
     display: inline-block;
@@ -481,25 +539,25 @@ div[data-testid="stHorizontalBlock"]:has(.nfl-ticker-marker) div[data-testid="st
     background-color: rgba(255, 107, 53, 0.18);
     color: #FF8C42;
     border: 1px solid #FF6B35;
-    padding: 3px 9px;
+    padding: 2px 8px;
     border-radius: 4px;
-    font-size: 0.76rem;
+    font-size: 0.74rem;
     font-weight: 700;
     font-family: monospace;
     display: inline-block;
-    margin: 2px 3px;
+    margin: 2px 2px;
 }
 .badge-cold {
     background-color: rgba(56, 189, 248, 0.16);
     color: #38BDF8;
     border: 1px solid #0284C7;
-    padding: 3px 9px;
+    padding: 2px 8px;
     border-radius: 4px;
-    font-size: 0.76rem;
+    font-size: 0.74rem;
     font-weight: 700;
     font-family: monospace;
     display: inline-block;
-    margin: 2px 3px;
+    margin: 2px 2px;
 }
 .team-pill {
     background-color: #1E293B;
@@ -530,7 +588,7 @@ div[data-testid="stHorizontalBlock"]:has(.nfl-ticker-marker) div[data-testid="st
     margin: 0 6px;
 }
 .metric-subtext {
-    font-size: 0.82rem;
+    font-size: 0.80rem;
     color: #94A3B8;
     font-family: monospace;
 }
@@ -667,8 +725,6 @@ div[data-testid="stHorizontalBlock"]:has(.nfl-ticker-marker) div[data-testid="st
 )
 
 # Zero-reload JavaScript interceptor for any inline <a class="player-name-link"> tags
-# Uses history.pushState + PopStateEvent on window.parent so Streamlit's SPA router
-# picks up the query params in-place without reloading the browser tab.
 components.html(
     """
     <script>
@@ -699,10 +755,6 @@ OFFENSE_POSITIONS = {"QB", "RB", "FB", "WR", "TE", "OL", "T", "OT", "LT", "RT", 
 DEFENSE_POSITIONS = {"DL", "DE", "DT", "NT", "EDGE", "LB", "ILB", "OLB", "MLB", "DB", "CB", "S", "FS", "SS"}
 SPECIAL_TEAMS_POSITIONS = {"K", "P", "LS"}
 
-# Strict Injury Mismatch Logic Gate sets:
-# - Unavailables force starter-absence / backup-elevation penalties.
-# - Active gameday questionable statuses apply a minor gameday limitation factor.
-# - Cleared / Active statuses trigger ZERO injury or backup penalties.
 UNAVAILABLE_DESIGNATIONS = {"OUT", "DOUBTFUL", "IR", "PUP", "SUSPENDED", "NFI"}
 ACTIVE_INJURY_DESIGNATIONS = {"OUT", "DOUBTFUL", "QUESTIONABLE", "IR", "PUP", "SUSPENDED", "NFI"}
 CLEARED_DESIGNATIONS = {
@@ -716,7 +768,6 @@ CLEARED_DESIGNATIONS = {
     "AVAILABLE",
 }
 
-# Ensure session state stores real-time injury overrides and cache-busting token
 if "injury_status_overrides" not in st.session_state:
     st.session_state["injury_status_overrides"] = {}
 if "injury_refresh_token" not in st.session_state:
@@ -801,7 +852,7 @@ def render_inline_player_trigger(
     disp_text = f"{clean_p} {extra_label}".strip()
     if st.button(
         disp_text,
-        key=f" inline_plr_{key_suffix}_{clean_p}_{team_abbr}",
+        key=f"inline_plr_{key_suffix}_{clean_p}_{team_abbr}",
         type="tertiary",
     ):
         trigger_player_popup(clean_p, team_abbr, pos)
@@ -846,17 +897,17 @@ def render_team_pill(team_abbr: str, role_tag: str = "", large: bool = False) ->
 
 def render_rank_badge(rank: int, prefix: str = "") -> str:
     """
-    Renders standardized unit ranking tags using clean colored dot indicators:
-    - Top 5 (1-5): ● ELITE [#X]
-    - Bottom 10 (23-32): ● BAD [#X]
-    - Middle Tier (6-22): ● MID [#X]
+    Renders standardized unit ranking tags without leading dots:
+    - Top 5 (1-5): ELITE [#X]
+    - Bottom 10 (23-32): BAD [#X]
+    - Middle Tier (6-22): MID [#X]
     """
     lbl = f"{prefix} " if prefix else ""
     if rank <= 5:
-        return f'<span class="badge-elite">● {lbl}ELITE [#{rank}]</span>'
+        return f'<span class="badge-elite">{lbl}ELITE [#{rank}]</span>'
     if rank >= 23:
-        return f'<span class="badge-bad">● {lbl}BAD [#{rank}]</span>'
-    return f'<span class="badge-mid">● {lbl}MID [#{rank}]</span>'
+        return f'<span class="badge-bad">{lbl}BAD [#{rank}]</span>'
+    return f'<span class="badge-mid">{lbl}MID [#{rank}]</span>'
 
 
 def is_active_unresolved_injury(status_str: str) -> bool:
@@ -912,9 +963,6 @@ def normalize_injury_designation(
     if "QUEST" in s_clean:
         return "QUESTIONABLE"
 
-    # When official game_status / report_status is blank:
-    # Under NFL reporting rules, a player with no game-status designation on the final report
-    # (even if they had mid-week practice management/limitations) is officially cleared to play.
     if not s_clean:
         return "ACTIVE / CLEARED"
 
@@ -923,35 +971,35 @@ def normalize_injury_designation(
 
 def render_injury_badge(status: str) -> str:
     """
-    Renders an HTML badge for official NFL injury report designations using clean dot indicators.
+    Renders an HTML badge for official NFL injury report designations without leading dots.
     Clearly distinguishes ACTIVE / CLEARED players from lingering designations.
     """
     status_clean = str(status).strip().upper()
     if status_clean in CLEARED_DESIGNATIONS or "CLEARED" in status_clean or "PLAYED" in status_clean:
-        return '<span class="badge-elite">● [ACTIVE / CLEARED]</span>'
+        return '<span class="badge-elite">[ACTIVE / CLEARED]</span>'
     if status_clean in ["OUT", "IR", "PUP", "SUSPENDED", "NFI"]:
-        return f'<span class="badge-bad">● [{status_clean}]</span>'
+        return f'<span class="badge-bad">[{status_clean}]</span>'
     if status_clean == "DOUBTFUL":
-        return f'<span class="badge-bad">● [{status_clean}]</span>'
+        return f'<span class="badge-bad">[{status_clean}]</span>'
     if status_clean == "QUESTIONABLE":
-        return f'<span class="badge-amber">● [{status_clean}]</span>'
-    return f'<span class="badge-mid">● [{status_clean}]</span>'
+        return f'<span class="badge-amber">[{status_clean}]</span>'
+    return f'<span class="badge-mid">[{status_clean}]</span>'
 
 
 def render_practice_badge(practice_status: str) -> str:
-    """Renders a clean dot-indicator badge for weekly practice participation (FP, LP, DNP)."""
+    """Renders a clean tag badge for weekly practice participation (FP, LP, DNP) without leading dots."""
     if pd.isna(practice_status) or not str(practice_status).strip():
-        return '<span class="badge-mid">● [PRACTICE: N/A]</span>'
+        return '<span class="badge-mid">[PRACTICE: N/A]</span>'
     p_clean = str(practice_status).strip().upper()
     if p_clean in ["NAN", "NONE", "NULL"]:
-        return '<span class="badge-mid">● [PRACTICE: N/A]</span>'
+        return '<span class="badge-mid">[PRACTICE: N/A]</span>'
     if "FULL" in p_clean or p_clean == "FP":
-        return '<span class="badge-elite">● [FULL PRACTICE (FP)]</span>'
+        return '<span class="badge-elite">[FULL PRACTICE (FP)]</span>'
     if "LIMITED" in p_clean or p_clean == "LP":
-        return '<span class="badge-amber">● [LIMITED PRACTICE (LP)]</span>'
+        return '<span class="badge-amber">[LIMITED PRACTICE (LP)]</span>'
     if "DID NOT" in p_clean or "DNP" in p_clean or "NONE" in p_clean:
-        return '<span class="badge-bad">● [DID NOT PARTICIPATE (DNP)]</span>'
-    return f'<span class="badge-mid">● [{p_clean}]</span>'
+        return '<span class="badge-bad">[DID NOT PARTICIPATE (DNP)]</span>'
+    return f'<span class="badge-mid">[{p_clean}]</span>'
 
 
 def classify_primetime_code(row: pd.Series) -> str:
@@ -1057,10 +1105,6 @@ def render_nfl_horizontal_ticker(
 ) -> None:
     """
     Renders the horizontally scrollable NFL.com-style weekly game strip at the top of the page.
-    - Container Layout: Styled with CSS flexbox (`display: flex; overflow-x: auto; white-space: nowrap;`)
-    - Card Content: Team logos, team shorthand + dynamic season record (e.g., 4-1) with NO Home/Away labels,
-      live/final scores, and [TNF], [SNF], [MNF], or [SPC] tags.
-    - State Interactivity: Clicking any game card updates st.session_state['selected_game'] and triggers st.rerun().
     """
     if week_games.empty:
         st.info("No games match the current filter criteria.")
@@ -1140,7 +1184,7 @@ def render_nfl_horizontal_ticker(
                 """
             )
             btn_label = (
-                f"● [ACTIVE: {away_tm} vs {home_tm}]"
+                f"[ACTIVE: {away_tm} vs {home_tm}]"
                 if is_selected
                 else f"SELECT {away_tm} vs {home_tm}"
             )
@@ -1196,7 +1240,7 @@ def evaluate_player_streak_badge(
 ) -> tuple[str, str]:
     """
     Evaluates a player's Last 3 Games (L3) output against their season baseline
-    using clean colored dot indicators.
+    using clean tag badges without leading dots.
     """
     diff = l3_avg - season_avg
     rel_pct = (diff / season_avg * 100.0) if season_avg > 0.25 else (diff * 100.0)
@@ -1204,31 +1248,31 @@ def evaluate_player_streak_badge(
     if is_negative_stat:
         if diff >= 0.35:
             return (
-                f'<span class="badge-bad">● [TURNOVER SPIKE: L3 {l3_avg:.2f}/g vs {season_avg:.2f} Avg]</span>',
+                f'<span class="badge-bad">[TURNOVER SPIKE: L3 {l3_avg:.2f}/g vs {season_avg:.2f} Avg]</span>',
                 f"{diff:+.2f} vs Season Avg",
             )
         if diff <= -0.25:
             return (
-                f'<span class="badge-elite">● [CLEAN POCKET: L3 {l3_avg:.2f}/g vs {season_avg:.2f} Avg]</span>',
+                f'<span class="badge-elite">[CLEAN POCKET: L3 {l3_avg:.2f}/g vs {season_avg:.2f} Avg]</span>',
                 f"{diff:+.2f} vs Season Avg",
             )
         return (
-            f'<span class="badge-mid">● [STEADY RATE: L3 {l3_avg:.2f}/g]</span>',
+            f'<span class="badge-mid">[STEADY RATE: L3 {l3_avg:.2f}/g]</span>',
             f"{diff:+.2f} vs Season Avg",
         )
 
     if rel_pct >= 15.0 or (season_avg < 1.5 and diff >= 0.35):
         return (
-            f'<span class="badge-hot">● [HOT STREAK: L3 Avg {l3_avg:.1f} vs {season_avg:.1f} Season]</span>',
+            f'<span class="badge-hot">[HOT STREAK: L3 Avg {l3_avg:.1f} vs {season_avg:.1f} Season]</span>',
             f"{diff:+.1f} L3 Surge ({rel_pct:+.0f}%)",
         )
     if rel_pct <= -15.0 or (season_avg < 1.5 and diff <= -0.35):
         return (
-            f'<span class="badge-cold">● [COLD STREAK: L3 Avg {l3_avg:.1f} vs {season_avg:.1f} Season]</span>',
+            f'<span class="badge-cold">[COLD STREAK: L3 Avg {l3_avg:.1f} vs {season_avg:.1f} Season]</span>',
             f"{diff:+.1f} L3 Dip ({rel_pct:+.0f}%)",
         )
     return (
-        f'<span class="badge-sage">● [STEADY FORM: L3 Avg {l3_avg:.1f} vs {season_avg:.1f} Season]</span>',
+        f'<span class="badge-sage">[STEADY FORM: L3 Avg {l3_avg:.1f} vs {season_avg:.1f} Season]</span>',
         f"{diff:+.1f} vs Season Avg",
     )
 
@@ -1432,7 +1476,6 @@ def load_injuries_csv(season: int, refresh_token: int = 0) -> tuple[pd.DataFrame
     Fetches official weekly NFL injury reports AND weekly roster status feeds via pd.read_csv.
     Uses a short 300s TTL plus an explicit `refresh_token` cache-buster so real-time
     mid-week and game-day injury clearances update immediately without stale cache lag.
-    Also cross-references `weekly_rosters` (`ACT`, `RES`, `INA`, `OUT`) to catch late clearances.
     """
     inj_df = pd.DataFrame()
     loaded_yr = season
@@ -1455,7 +1498,6 @@ def load_injuries_csv(season: int, refresh_token: int = 0) -> tuple[pd.DataFrame
         if not inj_df.empty:
             break
 
-    # Cross-check with weekly_rosters for the same season to capture real-time Active (ACT) vs Inactive/IR updates
     weekly_roster_url = (
         f"https://github.com/nflverse/nflverse-data/releases/download/weekly_rosters/"
         f"roster_weekly_{loaded_yr}.csv.gz{cache_bust_qs}"
@@ -1500,8 +1542,6 @@ def load_injuries_csv(season: int, refresh_token: int = 0) -> tuple[pd.DataFrame
             for r_st, p_st in zip(raw_statuses, prac_statuses)
         ]
 
-        # If weekly_rosters shows player is officially ACT (Active) for that week while report_status was blank/Questionable,
-        # record the roster confirmation so cleared players are immediately recognized.
         if not wr_df.empty and "week" in wr_df.columns and "status" in wr_df.columns:
             wr_name_col = "full_name" if "full_name" in wr_df.columns else "player_name"
             if wr_name_col in wr_df.columns:
@@ -1624,6 +1664,30 @@ def get_player_headshot_and_meta(
     meta = headshot_lookup.get(f"{clean_nm}|{clean_tm}") or headshot_lookup.get(clean_nm) or {}
     url = meta.get("headshot_url", "")
     return url, meta
+
+
+def render_mismatch_headshot_html(
+    player_name: str, team_abbr: str, headshot_lookup: dict[str, dict]
+) -> str:
+    """
+    Renders a clean 52x52px player headshot box for the mismatch area cards,
+    with graceful fallback to monogram initials if a photo is unavailable.
+    """
+    clean_p = str(player_name).strip()
+    initials = "".join([part[0].upper() for part in clean_p.split()[:2] if part]) or "NFL"
+    h_url, _ = get_player_headshot_and_meta(clean_p, team_abbr, headshot_lookup)
+    if h_url and "Rotation" not in clean_p:
+        return (
+            f'<div class="mismatch-headshot-wrap">'
+            f'<img src="{h_url}" class="mismatch-headshot-img" alt="{clean_p}" '
+            f'onerror="this.style.display=\'none\'; this.parentElement.innerHTML=\'<div class=mismatch-headshot-fallback>{initials}</div>\';">'
+            f"</div>"
+        )
+    return (
+        f'<div class="mismatch-headshot-wrap">'
+        f'<div class="mismatch-headshot-fallback">{initials}</div>'
+        f"</div>"
+    )
 
 
 # -----------------------------------------------------------------------------
@@ -1839,28 +1903,15 @@ def build_cb_wr_matchup_battles(
 ) -> list[dict]:
     """
     Calibrated 1-on-1 Wide Receiver vs. Cornerback Mismatch Engine (0-100 scale):
-      1. Continuous Volume & Production Composite (Target Share + YPG + Air Yards Share):
-         Eliminates artificial cliffs (e.g., 23.9% vs 24.0% target share) and prevents
-         low-yardage receivers from being over-indexed purely on target share.
-      2. Magnitude-Weighted L4 Form Adjustment:
-         Requires both meaningful yardage delta (>= +12.0 YPG or >= +20% with >= +10.0 YPG
-         and L4 >= 65.0 YPG) for a full Hot Streak, preventing a modest +9.8 YPG bump on a
-         53.0 YPG baseline from receiving the same +10 boost as an 85+ YPG alpha surge.
-      3. Continuous Opposing Pass Defense Efficiency + Primary CB1 Anchor Resistance:
-         Scales smoothly across NFL ranks #1-#32 and applies a realistic coverage resistance
-         factor (-3.5 to -1.5 pts) when a receiver faces a healthy, every-down perimeter CB1
-         (>=85% defensive snaps).
-      4. Strict Injury Mismatch Gate & Elite Mismatch Guardrail:
-         - Backup/Injury bonuses ONLY trigger when a defensive starter is strictly in
-           UNAVAILABLE_DESIGNATIONS or assigned cover man is QUESTIONABLE.
-         - [ELITE MISMATCH] (>= 75.0) is reserved for true smash spots: requires score >= 75.0
-           AND at least one elite catalyst (Bottom-8 Pass Defense #25-#32, active secondary
-           injury/backup trigger, or elite WR output >= 75.0 YPG / >= 80.0 L4 YPG).
+      1. Continuous Volume & Production Composite (Target Share + YPG + Air Yards Share).
+      2. Magnitude-Weighted L4 Form Adjustment.
+      3. Continuous Opposing Pass Defense Efficiency + Primary CB1 Anchor Resistance.
+      4. Strict Injury Mismatch Gate & Elite Mismatch Guardrail.
+      5. Shortened, concise single-line rationale strings so cards cleanly fit player headshots.
     """
     if usage_df.empty:
         return []
 
-    # Build lookup of offensive skill players who are unavailable (OUT / DOUBTFUL / IR / PUP)
     unavailable_off_players: set[str] = set()
     if not inj_df.empty and "team" in inj_df.columns:
         o_inj = inj_df[inj_df["team"] == off_tm]
@@ -1890,7 +1941,6 @@ def build_cb_wr_matchup_battles(
     if top_wrs.empty:
         return []
 
-    # Compute L4 vs Season receiving form with yardage-magnitude awareness
     wr_streaks: dict[str, tuple[str, float, float, float, float]] = {}
     if not player_df.empty and "team" in player_df.columns:
         p_sub = player_df[player_df["team"] == off_tm].copy()
@@ -1905,15 +1955,11 @@ def build_cb_wr_matchup_battles(
                 diff_yds = l4_avg - s_avg
                 rel_pct = (diff_yds / s_avg * 100.0) if s_avg > 10.0 else 0.0
 
-                # Calibrated streak classification:
-                # - HOT: >= +14.0 YPG surge OR (>= +20% surge AND >= +11.0 YPG AND L4 >= 65.0 YPG)
-                # - WARM: >= +7.5 YPG surge OR (>= +14% surge AND >= +7.0 YPG)
-                # - COLD: <= -12.0 YPG drop OR (<= -18% drop AND <= -8.0 YPG)
-                if diff_yds >= 14.0 or (rel_pct >= 20.0 and diff_yds >= 11.0 and l4_avg >= 65.0):
+                if diff_yds >= 14.0 and l4_avg >= 68.0:
                     s_type = "HOT"
-                elif diff_yds >= 7.5 or (rel_pct >= 14.0 and diff_yds >= 7.0):
+                elif diff_yds >= 7.0:
                     s_type = "WARM"
-                elif diff_yds <= -12.0 or (rel_pct <= -18.0 and diff_yds <= -8.0):
+                elif diff_yds <= -10.0:
                     s_type = "COLD"
                 else:
                     s_type = "STEADY"
@@ -1935,7 +1981,6 @@ def build_cb_wr_matchup_battles(
         )
         cb_roster["clean_name"] = cb_roster["player"].astype(str).str.strip().str.lower()
 
-    # Map defensive secondary injury statuses strictly for players on the report
     sec_inj_map: dict[str, tuple[str, str]] = {}
     if not inj_df.empty and "team" in inj_df.columns:
         d_inj = inj_df[inj_df["team"] == def_tm].copy()
@@ -1956,7 +2001,6 @@ def build_cb_wr_matchup_battles(
             pos_u = cb_row["pos_upper"]
             raw_inj_status, inj_desc = sec_inj_map.get(c_nm, ("ACTIVE", ""))
 
-            # Strict gate: Only classify as a missing starter if status is strictly in UNAVAILABLE_DESIGNATIONS
             if is_unavailable_injury(raw_inj_status) and snap_sh >= 0.50:
                 missing_starting_cbs.append(
                     {
@@ -2004,8 +2048,10 @@ def build_cb_wr_matchup_battles(
         cb_assigned = active_cbs[min(idx, len(active_cbs) - 1)]
         wr_name = wr_row["player_name"]
         wr_clean = str(wr_name).strip().lower()
-        wr_tgt_sh = float(wr_row["calc_target_share"]) * 100.0
-        wr_air_sh = float(wr_row["calc_air_share"]) * 100.0
+        wr_tgt_sh_frac = float(wr_row["calc_target_share"])
+        wr_air_sh_frac = float(wr_row["calc_air_share"])
+        wr_tgt_sh = wr_tgt_sh_frac * 100.0
+        wr_air_sh = wr_air_sh_frac * 100.0
         wr_epa = float(wr_row["rec_epa"])
         wr_games = max(1, int(wr_row["games"]))
         wr_ypg = float(wr_row["rec_yards"]) / wr_games
@@ -2019,92 +2065,63 @@ def build_cb_wr_matchup_battles(
         # ---------------------------------------------------------------------
         score = 50.0
 
-        # 1. Continuous WR Opportunity & Production Composite (-6.0 to +16.0 pts)
-        #    - Target Share component: centered at 18% (-4.0 to +8.5 pts)
-        #    - Season YPG component: centered at 55 YPG (-4.0 to +6.5 pts)
-        #    - Air Yards Share bonus: rewards deep/alpha usage >= 28% (0.0 to +2.5 pts)
-        tgt_pts = float(np.clip((wr_tgt_sh - 18.0) * 0.65, -4.0, 8.5))
-        ypg_pts = float(np.clip((wr_ypg - 55.0) * 0.18, -4.0, 6.5))
-        air_pts = float(np.clip((wr_air_sh - 26.0) * 0.15, 0.0, 2.5))
-        wr_talent_pts = float(np.clip(tgt_pts + ypg_pts + air_pts, -6.0, 16.0))
+        # 1. Continuous WR Volume & Production Composite (-12.0 to +18.0 pts)
+        tgt_pts = float(np.clip((wr_tgt_sh_frac - 0.16) * 48.0, -6.0, 10.0))
+        ypg_pts = float(np.clip((wr_ypg - 55.0) * 0.18, -7.0, 9.0))
+        air_pts = float(np.clip((wr_air_sh_frac - 0.26) * 15.0, -2.5, 3.5))
+        wr_talent_pts = float(np.clip(tgt_pts + ypg_pts + air_pts, -12.0, 18.0))
         score += wr_talent_pts
 
-        # 2. Continuous Opposing Pass Defense Rank & EPA Component (-16.0 to +14.0 pts)
-        #    - Rank #16 is neutral (0.0 pts)
-        #    - Rank #23 adds +5.6 pts (instead of a flat +10 cliff)
-        #    - Rank #32 adds +14.0 pts; Rank #1 subtracts -16.0 pts
-        if def_pass_rk >= 16:
-            def_unit_pts = ((def_pass_rk - 16) / 16.0) * 12.5
-            if def_pass_rk >= 28:
-                def_unit_pts += 1.5
-        else:
-            def_unit_pts = -((16 - def_pass_rk) / 15.0) * 14.5
-            if def_pass_rk <= 4:
-                def_unit_pts -= 1.5
-        score += float(np.clip(def_unit_pts, -16.0, 14.0))
+        # 2. Continuous Opposing Pass Defense Rank Curve (-13.0 to +13.0 pts)
+        def_unit_pts = float(np.clip(((def_pass_rk - 16.5) / 15.5) * 13.0, -13.0, 13.0))
+        score += def_unit_pts
 
-        # 3. Healthy Every-Down Cornerback Resistance (-3.5 to +2.0 pts)
-        #    When no starter is missing and the assigned CB is healthy/cleared:
-        #    facing an entrenched 85%+ snap CB1 provides real coverage resistance.
+        # 3. Healthy Every-Down Cornerback Resistance (-1.5 pts)
         cb_snap_pct = float(cb_assigned["snap_pct"])
-        cb_resistance_pts = 0.0
-        if not missing_starting_cbs and cb_assigned["status"] != "QUESTIONABLE":
-            if cb_snap_pct >= 85.0:
-                cb_resistance_pts = -3.0 if def_pass_rk <= 18 else -1.5
-            elif cb_snap_pct <= 55.0:
-                cb_resistance_pts = 2.0
-        score += cb_resistance_pts
+        if not missing_starting_cbs and cb_assigned["status"] != "QUESTIONABLE" and cb_snap_pct >= 85.0:
+            score -= 1.5
 
-        # 4. Magnitude-Scaled L4 Form Adjustment (-6.5 to +7.5 pts)
-        #    Scales by actual yardage delta (`diff_yds`) so a +9.8 YPG uptick on a
-        #    53 YPG baseline adds +3.0 pts (`WARM`) instead of an inflated +10.0 pts.
-        if streak_type == "HOT":
-            form_pts = float(np.clip(4.0 + (diff_yds - 12.0) * 0.25, 4.5, 7.5))
-        elif streak_type == "WARM":
-            form_pts = float(np.clip(diff_yds * 0.30, 1.5, 3.8))
-        elif streak_type == "COLD":
-            form_pts = float(np.clip(diff_yds * 0.35, -6.5, -2.5))
-        else:
-            form_pts = float(np.clip(diff_yds * 0.15, -1.5, 1.5))
+        # 4. Magnitude-Scaled L4 Form Adjustment (-8.0 to +8.0 pts)
+        form_pts = float(np.clip(diff_yds * 0.30, -8.0, 8.0))
         score += form_pts
 
-        # 5. Strict Injury & Backup Penalty Gate:
-        #    - Starter Absence / Backup Elevation ONLY triggers if `missing_starting_cbs` is non-empty
-        #      (a primary starter >=50% snaps is strictly OUT, DOUBTFUL, IR, PUP, or SUSPENDED).
-        #    - Assigned CB injury penalty ONLY triggers if `cb_assigned["status"] == "QUESTIONABLE"`.
+        # 5. Strict Injury & Backup Penalty Gate + Shortened Single-Line Rationale
         rationale_clauses = []
         has_injury_or_backup_trigger = False
 
         if missing_starting_cbs and idx < len(missing_starting_cbs):
             out_cb = missing_starting_cbs[idx]
-            score += 14.0
+            score += 12.0
             has_injury_or_backup_trigger = True
             rationale_clauses.append(
-                f"Primary {def_tm} starter {out_cb['name']} ({out_cb['snap_pct']:.0f}% snaps) is [{out_cb['status']}]; "
-                f"{cb_assigned['name']} ({cb_assigned['snap_pct']:.0f}% snaps) elevated into primary coverage."
+                f"Starter {out_cb['name']} [{out_cb['status']}] • {cb_assigned['name']} ({cb_assigned['snap_pct']:.0f}% snaps) elevated."
             )
         elif missing_starting_cbs:
             out_cb = missing_starting_cbs[0]
-            score += 8.0
+            score += 7.0
             has_injury_or_backup_trigger = True
             rationale_clauses.append(
-                f"Secondary rotation shifted with {out_cb['name']} [{out_cb['status']}]; "
-                f"{cb_assigned['name']} ({cb_assigned['snap_pct']:.0f}% snaps) draws coverage."
+                f"Rotation shift ({out_cb['name']} [{out_cb['status']}]) • {cb_assigned['name']} draws coverage."
             )
 
         if cb_assigned["status"] == "QUESTIONABLE":
-            score += 7.5
+            score += 6.5
             has_injury_or_backup_trigger = True
             inj_detail = f" ({cb_assigned['injury']})" if cb_assigned.get("injury") else ""
             rationale_clauses.append(
-                f"Assigned cover man {cb_assigned['name']} carries an active [QUESTIONABLE]{inj_detail} designation."
+                f"{cb_assigned['name']} [QUESTIONABLE]{inj_detail} • Gameday limitation risk."
+            )
+
+        if not missing_starting_cbs and cb_assigned["status"] != "QUESTIONABLE" and cb_snap_pct < 68.0:
+            score += 4.5
+            has_injury_or_backup_trigger = True
+            rationale_clauses.append(
+                f"Rotational CB ({cb_snap_pct:.0f}% snaps) • Exploitable perimeter cushion."
             )
 
         score = float(np.clip(round(score, 1), 15.0, 96.0))
 
-        # Elite Mismatch Guardrail:
-        # Reserve [ELITE MISMATCH] for spots with score >= 75.0 AND a genuine elite catalyst:
-        # (Bottom-8 pass defense #25-#32, active secondary injury trigger, or elite WR yardage >= 75 YPG / >= 80 L4 YPG).
+        # Elite Mismatch Guardrail
         has_elite_catalyst = (
             (def_pass_rk >= 25)
             or has_injury_or_backup_trigger
@@ -2114,71 +2131,61 @@ def build_cb_wr_matchup_battles(
         if score >= 75.0 and not has_elite_catalyst:
             score = 72.5
 
-        # Determine Callout Tier Badge
         if score >= 75.0:
-            tier_badge = '<span class="badge-elite">● [ELITE MISMATCH]</span>'
+            tier_badge = '<span class="badge-elite">[ELITE MISMATCH]</span>'
             tier_plain = "[ELITE MISMATCH]"
             card_style = "terminal-card-elite"
         elif score >= 60.0:
-            tier_badge = '<span class="badge-sage">● [ADVANTAGE WR]</span>'
+            tier_badge = '<span class="badge-sage">[ADVANTAGE WR]</span>'
             tier_plain = "[ADVANTAGE WR]"
             card_style = "terminal-card"
         elif score <= 40.0:
-            tier_badge = '<span class="badge-bad">● [CB LOCKDOWN SPOT]</span>'
+            tier_badge = '<span class="badge-bad">[CB LOCKDOWN SPOT]</span>'
             tier_plain = "[CB LOCKDOWN SPOT]"
             card_style = "terminal-card-vuln"
         else:
-            tier_badge = '<span class="badge-mid">● [NEUTRAL BATTLE]</span>'
+            tier_badge = '<span class="badge-mid">[NEUTRAL BATTLE]</span>'
             tier_plain = "[NEUTRAL BATTLE]"
             card_style = "terminal-card"
 
         if streak_type == "HOT":
-            wr_streak_badge = f'<span class="badge-hot">● [WR HOT L4: {l4_val:.1f} YPG ({diff_yds:+.1f} vs Avg)]</span>'
+            wr_streak_badge = f'<span class="badge-hot">[WR HOT L4: {l4_val:.1f} YPG ({diff_yds:+.1f})]</span>'
         elif streak_type == "WARM":
-            wr_streak_badge = f'<span class="badge-amber">● [WR L4 UPTICK: {l4_val:.1f} YPG ({diff_yds:+.1f} vs Avg)]</span>'
+            wr_streak_badge = f'<span class="badge-amber">[WR L4 UPTICK: {l4_val:.1f} YPG ({diff_yds:+.1f})]</span>'
         elif streak_type == "COLD":
-            wr_streak_badge = f'<span class="badge-cold">● [WR COLD L4: {l4_val:.1f} YPG ({diff_yds:+.1f} vs Avg)]</span>'
+            wr_streak_badge = f'<span class="badge-cold">[WR COLD L4: {l4_val:.1f} YPG ({diff_yds:+.1f})]</span>'
         else:
-            wr_streak_badge = f'<span class="badge-mid">● [WR L4: {l4_val:.1f} YPG]</span>'
+            wr_streak_badge = f'<span class="badge-mid">[WR L4: {l4_val:.1f} YPG]</span>'
 
-        # Clean, non-contradictory CB status badge
         if missing_starting_cbs and idx < len(missing_starting_cbs):
-            cb_status_badge = '<span class="badge-bad">● [BACKUP CB ELEVATED]</span>'
+            cb_status_badge = '<span class="badge-bad">[BACKUP CB ELEVATED]</span>'
         elif cb_assigned["status"] == "QUESTIONABLE":
-            cb_status_badge = '<span class="badge-amber">● [CB QUESTIONABLE]</span>'
+            cb_status_badge = '<span class="badge-amber">[CB QUESTIONABLE]</span>'
         elif def_pass_rk <= 5:
-            cb_status_badge = f'<span class="badge-bad">● [SHUTDOWN COVERAGE • {cb_assigned["snap_pct"]:.0f}% SNAPS]</span>'
+            cb_status_badge = f'<span class="badge-bad">[SHUTDOWN CB • {cb_assigned["snap_pct"]:.0f}% SNAPS]</span>'
         elif cb_assigned["status"] == "ACTIVE / CLEARED":
-            cb_status_badge = f'<span class="badge-elite">● [CB CLEARED / ACTIVE • {cb_assigned["snap_pct"]:.0f}% SNAPS]</span>'
+            cb_status_badge = f'<span class="badge-elite">[CB CLEARED / ACTIVE • {cb_assigned["snap_pct"]:.0f}% SNAPS]</span>'
         else:
-            cb_status_badge = f'<span class="badge-mid">● [ACTIVE • {cb_assigned["snap_pct"]:.0f}% DEF SNAPS]</span>'
+            cb_status_badge = f'<span class="badge-mid">[ACTIVE • {cb_assigned["snap_pct"]:.0f}% DEF SNAPS]</span>'
 
-        # Clean baseline rationale when no unresolved injury or backup penalty is active
+        # Concise, single-line baseline rationale when no unresolved injury penalty is active
         if not rationale_clauses:
-            clearance_prefix = (
-                f"{cb_assigned['name']} is officially cleared/active ({cb_assigned['snap_pct']:.0f}% snaps, no injury penalty). "
-                if cb_assigned["status"] == "ACTIVE / CLEARED"
-                else ""
-            )
+            clr_prefix = "CB cleared (0 inj drag) • " if cb_assigned["status"] == "ACTIVE / CLEARED" else ""
             if score >= 75.0:
                 rationale_clauses.append(
-                    f"{clearance_prefix}High-conviction alpha mismatch: {wr_name} ({wr_tgt_sh:.1f}% target share, {wr_ypg:.1f} YPG, {l4_val:.1f} L4 YPG) "
-                    f"attacks vulnerable #{def_pass_rk} {def_tm} pass defense ({def_pass_epa:+.3f} EPA/play)."
+                    f"{clr_prefix}Alpha volume ({wr_tgt_sh:.1f}% tgt, {wr_ypg:.1f} YPG) vs #{def_pass_rk} {def_tm} pass def ({def_pass_epa:+.3f} EPA)."
                 )
             elif score >= 60.0:
                 rationale_clauses.append(
-                    f"{clearance_prefix}Favorable WR volume & efficiency lean: {wr_name} ({wr_tgt_sh:.1f}% target share, {wr_ypg:.1f} YPG, {l4_val:.1f} L4 YPG) "
-                    f"vs {cb_assigned['name']} ({cb_assigned['snap_pct']:.0f}% snaps) and #{def_pass_rk} {def_tm} pass defense ({def_pass_epa:+.3f} EPA/play)."
+                    f"{clr_prefix}Volume edge ({wr_tgt_sh:.1f}% tgt, {l4_val:.1f} L4 YPG) vs #{def_pass_rk} {def_tm} pass def ({def_pass_epa:+.3f} EPA)."
                 )
             elif score <= 40.0:
                 rationale_clauses.append(
-                    f"{clearance_prefix}Coverage lockdown lean: {cb_assigned['name']} ({cb_assigned['snap_pct']:.0f}% snaps) and #{def_pass_rk} {def_tm} pass defense "
-                    f"({def_pass_epa:+.3f} EPA/play allowed) project to cap {wr_name} ({wr_ypg:.1f} YPG)."
+                    f"{clr_prefix}#{def_pass_rk} {def_tm} pass def ({def_pass_epa:+.3f} EPA) & {cb_assigned['name']} project to cap {wr_name}."
                 )
             else:
                 rationale_clauses.append(
-                    f"{clearance_prefix}Balanced head-to-head matchup: {wr_name} ({wr_tgt_sh:.1f}% target share, {wr_ypg:.1f} YPG) "
-                    f"vs {cb_assigned['name']} ({cb_assigned['snap_pct']:.0f}% snaps, #{def_pass_rk} {def_tm} pass defense)."
+                    f"{clr_prefix}Balanced battle ({wr_tgt_sh:.1f}% tgt) vs #{def_pass_rk} {def_tm} pass def ({def_pass_epa:+.3f} EPA)."
                 )
 
         battles.append(
@@ -2349,7 +2356,6 @@ def build_roster_usage_table(
     merged["primary_snap_pct"] = merged["primary_snap_pct"].round(1)
     merged["total_epa"] = merged["total_epa"].round(2)
 
-    # Attach clean Injury / Active status indicator column
     status_map: dict[tuple[str, str], str] = {}
     if inj_matchup is not None and not inj_matchup.empty and "clean_name" in inj_matchup.columns:
         for _, r_inj in inj_matchup.iterrows():
@@ -2358,13 +2364,13 @@ def build_roster_usage_table(
             st_v = str(r_inj.get("report_status", "ACTIVE / CLEARED")).strip().upper()
             inj_v = str(r_inj.get("primary_injury", "")).strip()
             if not is_active_unresolved_injury(st_v):
-                status_map[(tm_k, nm_k)] = "● ACTIVE [CLEARED]"
+                status_map[(tm_k, nm_k)] = "[ACTIVE / CLEARED]"
             else:
                 suffix = f" ({inj_v})" if inj_v and inj_v not in ["Undisclosed", "None / Cleared"] else ""
-                status_map[(tm_k, nm_k)] = f"● {st_v}{suffix}"
+                status_map[(tm_k, nm_k)] = f"[{st_v}]{suffix}"
 
     merged["health_status"] = [
-        status_map.get((str(r["team"]).strip().upper(), str(r["clean_name"]).strip().lower()), "● ACTIVE")
+        status_map.get((str(r["team"]).strip().upper(), str(r["clean_name"]).strip().lower()), "[ACTIVE]")
         for _, r in merged.iterrows()
     ]
 
@@ -2382,12 +2388,6 @@ def build_injury_impact_report(
     """
     Cross-references official weekly injury designations with snap counts, recent game
     participation, and manual real-time overrides.
-    Strict Injury Mismatch Gate:
-    - An EPA penalty is ONLY applied if `is_active_unresolved_injury(report_status)` is True
-      (i.e. status is strictly in ['OUT', 'DOUBTFUL', 'QUESTIONABLE', 'IR', 'PUP', 'SUSPENDED', 'NFI']).
-    - If a player is cleared, marked active, or removed from the weekly injury report
-      (e.g., when a prior week's report is used as a fallback and the player is not on a long-term
-      reserve list like IR/PUP), they are marked 'ACTIVE / CLEARED' with 0.000 EPA penalty.
     """
     status_overrides = status_overrides or {}
 
@@ -2411,7 +2411,6 @@ def build_injury_impact_report(
                 team_inj = team_inj[team_inj["week"] == latest_wk].copy()
             used_fallback_week = True
 
-    # Identify players confirmed to have played in `selected_week` via snap_counts
     played_in_selected_week: set[tuple[str, str]] = set()
     if not snaps_df.empty and {"player", "team", "week"}.issubset(snaps_df.columns):
         s_wk = snaps_df[
@@ -2454,8 +2453,6 @@ def build_injury_impact_report(
             else "N/A"
         )
 
-        # Resolve current week statuses so cleared players or players who suited up in selected_week
-        # never carry stale injury penalties
         updated_statuses = []
         status_notes = []
         for _, r_inj in team_inj.iterrows():
@@ -2472,7 +2469,6 @@ def build_injury_impact_report(
                 updated_statuses.append("ACTIVE / CLEARED")
                 status_notes.append(f"Confirmed Active on Field (Wk {selected_week} Snaps Logged)")
             elif used_fallback_week and cur_st in ["QUESTIONABLE", "DOUBTFUL"]:
-                # Do not carry stale single-week Questionable/Doubtful tags into a new week
                 updated_statuses.append("ACTIVE / CLEARED")
                 status_notes.append("Cleared from Prior Week Report")
             else:
@@ -2499,7 +2495,6 @@ def build_injury_impact_report(
             ]
         )
 
-    # Inject any manual overrides for players on `teams` not already in `team_inj`
     for ov_key, ov_status in status_overrides.items():
         if "|" not in ov_key:
             continue
@@ -2606,9 +2601,6 @@ def build_injury_impact_report(
         tgt = float(row["calc_target_share"])
         status_str = str(row["report_status"]).upper().strip()
 
-        # Strict Injury Mismatch Gate:
-        # Only unresolved injury designations ('OUT', 'DOUBTFUL', 'QUESTIONABLE', 'IR', 'PUP', 'SUSPENDED', 'NFI')
-        # can receive an EPA penalty or be flagged as an injured anchor.
         has_active_injury = is_active_unresolved_injury(status_str)
         is_cleared = not has_active_injury
         is_cleared_flags.append(is_cleared)
@@ -2618,24 +2610,24 @@ def build_injury_impact_report(
         is_anchor_flags.append(is_anchor)
 
         if is_cleared:
-            roles.append("● [CLEARED TO PLAY / NO EPA DRAG]")
+            roles.append("[CLEARED TO PLAY / NO EPA DRAG]")
             penalty = 0.0
         else:
             if is_key_player:
                 if pos in ["T", "LT", "RT", "G", "C"]:
-                    roles.append("● [STARTING OL ANCHOR]")
+                    roles.append("[STARTING OL ANCHOR]")
                 elif pos == "WR" or tgt >= 0.18:
-                    roles.append("● [PRIMARY TARGET / WR1]")
+                    roles.append("[PRIMARY TARGET / WR1]")
                 elif pos in ["DE", "EDGE", "DT"]:
-                    roles.append("● [PRIMARY PASS RUSHER]")
+                    roles.append("[PRIMARY PASS RUSHER]")
                 elif pos in ["CB", "S"]:
-                    roles.append("● [STARTING COVERAGE ANCHOR]")
+                    roles.append("[STARTING COVERAGE ANCHOR]")
                 elif pos == "QB":
-                    roles.append("● [STARTING QUARTERBACK]")
+                    roles.append("[STARTING QUARTERBACK]")
                 else:
-                    roles.append("● [KEY STARTING ANCHOR]")
+                    roles.append("[KEY STARTING ANCHOR]")
             elif snap >= 0.35 or tgt >= 0.10:
-                roles.append("● [ROTATIONAL CONTRIBUTOR]")
+                roles.append("[ROTATIONAL CONTRIBUTOR]")
             else:
                 roles.append("[DEPTH / SPECIAL TEAMS]")
 
@@ -2680,10 +2672,7 @@ def get_player_season_injury_history(
     selected_week: int | None = None,
 ) -> pd.DataFrame:
     """
-    Extracts a player's week-by-week historical injury log across the entire season,
-    including official game designations (Questionable, Doubtful, Out, IR, Active/Cleared),
-    primary/secondary injury descriptions, practice participation levels (FP, LP, DNP),
-    and actual game snap participation for each week.
+    Extracts a player's week-by-week historical injury log across the entire season.
     """
     status_overrides = status_overrides or {}
     clean_nm = str(player_name).strip().lower()
@@ -2702,7 +2691,6 @@ def get_player_season_injury_history(
             if (p_inj["team"].astype(str).str.upper() == clean_tm).any():
                 p_inj = p_inj[p_inj["team"].astype(str).str.upper() == clean_tm].copy()
 
-    # Map weekly snaps for this player to show whether they suited up and played that week
     snap_by_week: dict[int, tuple[int, float]] = {}
     if not snaps_df.empty and "player" in snaps_df.columns and "week" in snaps_df.columns:
         p_sn = snaps_df[snaps_df["player"].astype(str).str.strip().str.lower() == clean_nm].copy()
@@ -2801,7 +2789,7 @@ def run_season_backtest(
 ) -> tuple[pd.DataFrame, pd.DataFrame]:
     """
     Grades all completed games in the selected season where extreme unit mismatches
-    (● ELITE vs ● BAD) or rest edges occurred.
+    (ELITE vs BAD) or rest edges occurred.
     """
     if schedule_df.empty or eff_df.empty:
         return pd.DataFrame(), pd.DataFrame()
@@ -2836,7 +2824,7 @@ def run_season_backtest(
             ats_win = (home_margin > sp) if is_home else (home_margin < sp)
             return su_win, ats_win, is_push
 
-        # 1. ● ELITE (<=5) vs ● BAD (>=23) Pass Mismatch
+        # 1. ELITE (<=5) vs BAD (>=23) Pass Mismatch
         h_pass_elite_mm = (h_eff["off_pass_epa_rank"] <= 5) and (a_eff["def_pass_epa_rank"] >= 23)
         a_pass_elite_mm = (a_eff["off_pass_epa_rank"] <= 5) and (h_eff["def_pass_epa_rank"] >= 23)
         if h_pass_elite_mm != a_pass_elite_mm:
@@ -2846,7 +2834,7 @@ def run_season_backtest(
                 {
                     "Week": int(row["week"]),
                     "Matchup": f"{at} @ {ht}",
-                    "Category": "● ELITE vs ● BAD Pass Unit",
+                    "Category": "ELITE vs BAD Pass Unit",
                     "Backed Team": backed,
                     "Final Score": f"{at} {int(as_)} - {ht} {int(hs)}",
                     "Closing Spread": f"{ht} {-sp:+.1f}",
@@ -2856,7 +2844,7 @@ def run_season_backtest(
                 }
             )
 
-        # 2. ● ELITE (<=5) vs ● BAD (>=23) Rush Mismatch
+        # 2. ELITE (<=5) vs BAD (>=23) Rush Mismatch
         h_rush_elite_mm = (h_eff["off_rush_epa_rank"] <= 5) and (a_eff["def_rush_epa_rank"] >= 23)
         a_rush_elite_mm = (a_eff["off_rush_epa_rank"] <= 5) and (h_eff["def_rush_epa_rank"] >= 23)
         if h_rush_elite_mm != a_rush_elite_mm:
@@ -2866,7 +2854,7 @@ def run_season_backtest(
                 {
                     "Week": int(row["week"]),
                     "Matchup": f"{at} @ {ht}",
-                    "Category": "● ELITE vs ● BAD Rush Unit",
+                    "Category": "ELITE vs BAD Rush Unit",
                     "Backed Team": backed,
                     "Final Score": f"{at} {int(as_)} - {ht} {int(hs)}",
                     "Closing Spread": f"{ht} {-sp:+.1f}",
@@ -2890,7 +2878,7 @@ def run_season_backtest(
                 {
                     "Week": int(row["week"]),
                     "Matchup": f"{at} @ {ht}",
-                    "Category": "● Top-10 Off vs ● Bottom-10 Def",
+                    "Category": "Top-10 Off vs Bottom-10 Def",
                     "Backed Team": backed,
                     "Final Score": f"{at} {int(as_)} - {ht} {int(hs)}",
                     "Closing Spread": f"{ht} {-sp:+.1f}",
@@ -2909,7 +2897,7 @@ def run_season_backtest(
                 {
                     "Week": int(row["week"]),
                     "Matchup": f"{at} @ {ht}",
-                    "Category": "● Situational Rest Edge (3+ Days)",
+                    "Category": "Situational Rest Edge (3+ Days)",
                     "Backed Team": backed,
                     "Final Score": f"{at} {int(as_)} - {ht} {int(hs)}",
                     "Closing Spread": f"{ht} {-sp:+.1f}",
@@ -2928,7 +2916,7 @@ def run_season_backtest(
                 {
                     "Week": int(row["week"]),
                     "Matchup": f"{at} @ {ht}",
-                    "Category": "● Net EPA Model Edge (>=0.08/play)",
+                    "Category": "Net EPA Model Edge (>=0.08/play)",
                     "Backed Team": backed,
                     "Final Score": f"{at} {int(as_)} - {ht} {int(hs)}",
                     "Closing Spread": f"{ht} {-sp:+.1f}",
@@ -2973,7 +2961,6 @@ def run_season_backtest(
 # -----------------------------------------------------------------------------
 # 4. INTERACTIVE PLAYER POP-OUT MODAL (FLUSH HEADSHOT + 3 TABS INCL. INJURY LOG)
 # -----------------------------------------------------------------------------
-# Intercept clicked inline player name links (?inspect_player=...)
 if "inspect_player" in st.query_params:
     qp_name = st.query_params.get("inspect_player", "")
     qp_team = st.query_params.get("inspect_team", "")
@@ -3003,10 +2990,7 @@ def render_player_popup_contents(
 ) -> None:
     """
     Renders the header (with borderless flush cutout headshot, real-time active/injury status badge)
-    and 3 tabs inside the player pop-out dossier:
-      - Tab 1: Season & Game Stats
-      - Tab 2: Player Props
-      - Tab 3: Injury History & Status Log (with real-time status override control)
+    and 3 tabs inside the player pop-out dossier.
     """
     p_name = str(active_info.get("name", "")).strip()
     p_team = str(active_info.get("team", "")).strip().upper()
@@ -3059,7 +3043,6 @@ def render_player_popup_contents(
             f"</div>"
         )
 
-    # Build player's full-season historical injury log
     player_inj_history = get_player_season_injury_history(
         injuries_full_df,
         snaps_df,
@@ -3069,7 +3052,6 @@ def render_player_popup_contents(
         selected_week=selected_week,
     )
 
-    # Determine current week status badge (clearly distinguishing Active/Cleared vs Lingering Designation)
     current_status_str = "ACTIVE / CLEAN REPORT"
     current_prac_badge = ""
     if not inj_matchup.empty and "player_display" in inj_matchup.columns:
@@ -3085,7 +3067,7 @@ def render_player_popup_contents(
             if not is_active_unresolved_injury(current_status_str):
                 inj_badge_html = (
                     f'{render_injury_badge("ACTIVE / CLEARED")} '
-                    f'<span class="badge-sage">● [CLEARED FROM {prim_inj_val.upper() if prim_inj_val else "REPORT"} — 0.000 EPA DRAG]</span> '
+                    f'<span class="badge-sage">[CLEARED FROM {prim_inj_val.upper() if prim_inj_val else "REPORT"} — 0.000 EPA DRAG]</span> '
                     f'{current_prac_badge}'
                 )
             else:
@@ -3099,19 +3081,19 @@ def render_player_popup_contents(
                 last_hist = player_inj_history.iloc[0]
                 inj_badge_html = (
                     f'{render_injury_badge("ACTIVE / CLEARED")} '
-                    f'<span class="badge-sage">● [OFF WK {selected_week} REPORT — LAST LISTED WK {int(last_hist["Week"])} ({last_hist["Injury / Ailment"]})]</span>'
+                    f'<span class="badge-sage">[OFF WK {selected_week} REPORT — LAST LISTED WK {int(last_hist["Week"])} ({last_hist["Injury / Ailment"]})]</span>'
                 )
             else:
-                inj_badge_html = '<span class="badge-elite">● [ACTIVE / CLEAN SEASON REPORT]</span>'
+                inj_badge_html = '<span class="badge-elite">[ACTIVE / CLEAN SEASON REPORT]</span>'
     else:
         if not player_inj_history.empty:
             last_hist = player_inj_history.iloc[0]
             inj_badge_html = (
                 f'{render_injury_badge("ACTIVE / CLEARED")} '
-                f'<span class="badge-sage">● [OFF WK {selected_week} REPORT — LAST LISTED WK {int(last_hist["Week"])} ({last_hist["Injury / Ailment"]})]</span>'
+                f'<span class="badge-sage">[OFF WK {selected_week} REPORT — LAST LISTED WK {int(last_hist["Week"])} ({last_hist["Injury / Ailment"]})]</span>'
             )
         else:
-            inj_badge_html = '<span class="badge-elite">● [ACTIVE / CLEAN SEASON REPORT]</span>'
+            inj_badge_html = '<span class="badge-elite">[ACTIVE / CLEAN SEASON REPORT]</span>'
 
     opp_tm = home_tm if p_team == away_tm else away_tm
     render_html(
@@ -3468,7 +3450,6 @@ def render_player_popup_contents(
             "practice participation levels (FP, LP, DNP), and real-time gameday clearance overrides."
         )
 
-        # Real-time Status Override control inside the Player Dossier
         ov_key = f"{clean_nm}|{p_team}"
         current_ov = st.session_state["injury_status_overrides"].get(ov_key, "Auto (Official Feed)")
         ov_options = [
@@ -3509,7 +3490,7 @@ def render_player_popup_contents(
             render_html(
                 f"""
                 <div class="terminal-card-elite" style="margin-top:8px;">
-                    <span class="badge-elite">● [CLEAN {inj_season} INJURY LOG — 0 WEEKS LISTED]</span>
+                    <span class="badge-elite">[CLEAN {inj_season} INJURY LOG — 0 WEEKS LISTED]</span>
                     <p class="metric-subtext" style="margin:6px 0 0 0;">
                         {p_name} ({p_team} {p_pos}) has not appeared on any weekly NFL injury or practice restriction report during the {inj_season} season.
                     </p>
@@ -3590,7 +3571,7 @@ def render_player_popup_contents(
                         <div style="display:flex; align-items:center; flex-wrap:wrap; gap:6px;">
                             {prac_badge}
                             {desig_badge}
-                            <span class="{outcome_cls}">● [{outcome_str}]</span>
+                            <span class="{outcome_cls}">[{outcome_str}]</span>
                         </div>
                     </div>
                     """
@@ -3672,7 +3653,7 @@ if st.sidebar.button(
 
 active_ov_count = len(st.session_state.get("injury_status_overrides", {}))
 if active_ov_count > 0:
-    st.sidebar.caption(f"● `{active_ov_count}` manual status override(s) active.")
+    st.sidebar.caption(f"`{active_ov_count}` manual status override(s) active.")
     if st.sidebar.button("Reset All Status Overrides", use_container_width=True):
         st.session_state["injury_status_overrides"] = {}
         st.rerun()
@@ -3712,7 +3693,6 @@ if week_games.empty:
     st.warning("No games found for the selected filter combination.")
     st.stop()
 
-# Synchronize st.session_state['selected_game']
 valid_game_ids = week_games["game_id"].astype(str).tolist()
 if (
     "selected_game" not in st.session_state
@@ -3732,9 +3712,9 @@ team_records_map = compute_team_records(schedule_df, through_week=selected_week)
 # 6. PINNED TOP VIEW: HORIZONTAL SCROLLABLE NFL GAME TICKER
 # -----------------------------------------------------------------------------
 mode_tag = (
-    f'<span class="badge-amber">● [BACKTEST MODE: {selected_season}]</span>'
+    f'<span class="badge-amber">[BACKTEST MODE: {selected_season}]</span>'
     if backtest_mode or selected_season < 2026
-    else '<span class="badge-elite">● [LIVE 2026 SEASON]</span>'
+    else '<span class="badge-elite">[LIVE 2026 SEASON]</span>'
 )
 
 st.title("Football Edger")
@@ -3743,7 +3723,7 @@ render_html(
     f"{render_rank_badge(1, 'Top-5')} "
     f"{render_rank_badge(12, 'Ranks 6-22')} "
     f"{render_rank_badge(28, 'Bottom-10')} "
-    '<span class="badge-sage">● Click any underlined player name or table row to open their Player Pop-Out Dossier & Injury History</span>'
+    '<span class="badge-sage">[Click any underlined player name or table row to open their Player Pop-Out Dossier & Injury History]</span>'
 )
 
 ticker_head_col1, ticker_head_col2 = st.columns([1.4, 1])
@@ -3752,14 +3732,13 @@ with ticker_head_col1:
 with ticker_head_col2:
     render_html(
         f'<div style="text-align:right; padding-top:10px;">'
-        f'<span class="active-lock-pill">● SELECTED GAME: {st.session_state["selected_game"]}</span> '
+        f'<span class="active-lock-pill">SELECTED GAME: {st.session_state["selected_game"]}</span> '
         f'{render_team_pill(active_game["away_team"])} '
         f'<span style="color:#94A3B8; font-weight:700;">@</span> '
         f'{render_team_pill(active_game["home_team"])}'
         f"</div>"
     )
 
-# Render Pinned Horizontal Scrollable Game Ticker (With Season Records & No H/A Labels)
 render_nfl_horizontal_ticker(week_games, team_records_map)
 
 # -----------------------------------------------------------------------------
@@ -3783,18 +3762,18 @@ home_pts = active_game.get("home_score", np.nan)
 spread_str = f"{home_tm} {spread_v:+.1f}" if pd.notna(spread_v) else "Spread TBD"
 total_str = f"O/U {total_v:.1f}" if pd.notna(total_v) else "Total TBD"
 final_score_badge = (
-    f'<span class="badge-amber">● [FINAL: {away_tm} {int(away_pts)} - {home_tm} {int(home_pts)}]</span>'
+    f'<span class="badge-amber">[FINAL: {away_tm} {int(away_pts)} - {home_tm} {int(home_pts)}]</span>'
     if pd.notna(away_pts) and pd.notna(home_pts)
     else ""
 )
-slot_badge = f'<span class="badge-amber">● {slot_str}</span>' if slot_str else ""
+slot_badge = f'<span class="badge-amber">{slot_str}</span>' if slot_str else ""
 
 if pd.notna(rest_v) and rest_v > 0:
-    rest_badge = f'<span class="badge-elite">● [REST EDGE: {home_tm} +{int(rest_v)}d]</span>'
+    rest_badge = f'<span class="badge-elite">[REST EDGE: {home_tm} +{int(rest_v)}d]</span>'
 elif pd.notna(rest_v) and rest_v < 0:
-    rest_badge = f'<span class="badge-elite">● [REST EDGE: {away_tm} +{int(abs(rest_v))}d]</span>'
+    rest_badge = f'<span class="badge-elite">[REST EDGE: {away_tm} +{int(abs(rest_v))}d]</span>'
 else:
-    rest_badge = '<span class="badge-mid">● [EVEN REST: 0d]</span>'
+    rest_badge = '<span class="badge-mid">[EVEN REST: 0d]</span>'
 
 a_eff = eff_df.loc[away_tm] if away_tm in eff_df.index else None
 h_eff = eff_df.loc[home_tm] if home_tm in eff_df.index else None
@@ -3817,8 +3796,7 @@ prop_logs_matchup = prepare_matchup_player_prop_logs(player_df, [away_tm, home_t
 def get_unit_penalty(tm: str, side: str) -> float:
     """
     Strictly sums unit EPA penalties ONLY for rows that are NOT cleared
-    and carry an active unresolved injury designation ('OUT', 'DOUBTFUL',
-    'QUESTIONABLE', 'IR', 'PUP', 'SUSPENDED', 'NFI').
+    and carry an active unresolved injury designation.
     """
     if inj_matchup.empty:
         return 0.0
@@ -3852,7 +3830,7 @@ render_html(
         <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:14px;">
             <div>
                 <div style="margin-bottom:8px;">
-                    <span class="active-lock-pill">● ACTIVE MATCHUP SELECTED ({st.session_state["selected_game_idx"] + 1} OF {len(week_games)})</span>
+                    <span class="active-lock-pill">ACTIVE MATCHUP SELECTED ({st.session_state["selected_game_idx"] + 1} OF {len(week_games)})</span>
                     <span class="metric-subtext" style="margin-left:8px;">{selected_season} WEEK {selected_week} • {stadium_str} ({roof_str})</span>
                 </div>
                 <div style="display:flex; align-items:center; flex-wrap:wrap; gap:10px; margin:8px 0;">
@@ -3970,7 +3948,6 @@ with subtab_brief:
             if not active_anchor_rows.empty:
                 top_inj_row = active_anchor_rows.iloc[0]
 
-        # Exclude unavailable offensive players from focal weapon projection
         unavailable_off_set: set[tuple[str, str]] = set()
         if not inj_matchup.empty:
             for _, r_u in inj_matchup.iterrows():
@@ -4001,30 +3978,30 @@ with subtab_brief:
             away_grd_gap = h_rdef_rk - a_rush_rk
             if away_air_gap >= away_grd_gap:
                 away_lever_tag = (
-                    f'<span class="badge-elite">● [AIR EDGE: {away_air_gap:+d} RANK GAP]</span>'
+                    f'<span class="badge-elite">[AIR EDGE: {away_air_gap:+d} RANK GAP]</span>'
                     if away_air_gap >= 6
-                    else f'<span class="badge-sage">● [LEAN PASS: {a_eff["off_pass_epa"]:+.2f} EPA]</span>'
+                    else f'<span class="badge-sage">[LEAN PASS: {a_eff["off_pass_epa"]:+.2f} EPA]</span>'
                 )
             else:
                 away_lever_tag = (
-                    f'<span class="badge-elite">● [GROUND EDGE: {away_grd_gap:+d} RANK GAP]</span>'
+                    f'<span class="badge-elite">[GROUND EDGE: {away_grd_gap:+d} RANK GAP]</span>'
                     if away_grd_gap >= 6
-                    else f'<span class="badge-sage">● [LEAN RUSH: {a_eff["off_rush_epa"]:+.2f} EPA]</span>'
+                    else f'<span class="badge-sage">[LEAN RUSH: {a_eff["off_rush_epa"]:+.2f} EPA]</span>'
                 )
 
             home_air_gap = a_pdef_rk - h_pass_rk
             home_grd_gap = a_rdef_rk - h_rush_rk
             if home_air_gap >= home_grd_gap:
                 home_lever_tag = (
-                    f'<span class="badge-elite">● [AIR EDGE: {home_air_gap:+d} RANK GAP]</span>'
+                    f'<span class="badge-elite">[AIR EDGE: {home_air_gap:+d} RANK GAP]</span>'
                     if home_air_gap >= 6
-                    else f'<span class="badge-sage">● [LEAN PASS: {h_eff["off_pass_epa"]:+.2f} EPA]</span>'
+                    else f'<span class="badge-sage">[LEAN PASS: {h_eff["off_pass_epa"]:+.2f} EPA]</span>'
                 )
             else:
                 home_lever_tag = (
-                    f'<span class="badge-elite">● [GROUND EDGE: {home_grd_gap:+d} RANK GAP]</span>'
+                    f'<span class="badge-elite">[GROUND EDGE: {home_grd_gap:+d} RANK GAP]</span>'
                     if home_grd_gap >= 6
-                    else f'<span class="badge-sage">● [LEAN RUSH: {h_eff["off_rush_epa"]:+.2f} EPA]</span>'
+                    else f'<span class="badge-sage">[LEAN RUSH: {h_eff["off_rush_epa"]:+.2f} EPA]</span>'
                 )
 
             if pd.notna(rest_v) and abs(rest_v) >= 1:
@@ -4035,7 +4012,7 @@ with subtab_brief:
                 )
             else:
                 rest_cell_html = (
-                    f'<span class="badge-mid">● [EVEN REST: 0d]</span> '
+                    f'<span class="badge-mid">[EVEN REST: 0d]</span> '
                     f'<span class="metric-subtext">{stadium_str} ({roof_str})</span>'
                 )
 
@@ -4051,7 +4028,7 @@ with subtab_brief:
                     f'<span style="color:#FF4D6D; font-family:monospace; font-weight:700;">-{top_inj_row["est_epa_penalty"]:.3f} EPA</span>'
                 )
             else:
-                inj_cell_html = '<span class="badge-elite">● [FULL STRENGTH / ALL ANCHORS CLEARED]</span>'
+                inj_cell_html = '<span class="badge-elite">[FULL STRENGTH / ALL ANCHORS CLEARED]</span>'
 
             render_html(
                 f"""
@@ -4137,7 +4114,7 @@ with subtab_brief:
                 w_tm = top_weapon_row["team"]
                 opp_tm = home_tm if w_tm == away_tm else away_tm
                 opp_p_rk = int(eff_df.loc[opp_tm, "def_pass_epa_rank"])
-                phase2_badge = f'<span class="badge-amber">● [{top_weapon_row["calc_target_share"]*100:.1f}% TARGET SHARE]</span>'
+                phase2_badge = f'<span class="badge-amber">[{top_weapon_row["calc_target_share"]*100:.1f}% TARGET SHARE]</span>'
                 w_link_html = render_player_link(
                     top_weapon_row["player_name"],
                     w_tm,
@@ -4149,7 +4126,7 @@ with subtab_brief:
                     f"<span class='metric-subtext'>({int(top_weapon_row['targets'])} tgts, {int(top_weapon_row['air_yards'])} air yds)</span>"
                 )
             else:
-                phase2_badge = '<span class="badge-mid">● [BALANCED TARGETS]</span>'
+                phase2_badge = '<span class="badge-mid">[BALANCED TARGETS]</span>'
                 phase2_body = "Distributed progression reads across primary WRs and TEs."
 
             render_html(
@@ -4162,7 +4139,7 @@ with subtab_brief:
                     <div class="tactical-step">
                         <div class="tactical-phase-header">
                             <span class="tactical-phase-tag">PHASE 1 • OPENING SCRIPT & EARLY DOWNS TEMPO</span>
-                            <span class="badge-elite">● [{model_lean_team} +{model_edge_mag:.3f} EPA]</span>
+                            <span class="badge-elite">[{model_lean_team} +{model_edge_mag:.3f} EPA]</span>
                         </div>
                         <div class="tactical-body">
                             {render_inline_logo(fav_team, 16)}<b>{fav_team}</b> dictates early tempo
@@ -4182,7 +4159,7 @@ with subtab_brief:
                     <div class="tactical-step-last">
                         <div class="tactical-phase-header">
                             <span class="tactical-phase-tag" style="color:#FFB020;">PHASE 3 • SECOND-HALF PIVOT & SCRIPT CONDITION</span>
-                            <span class="badge-sage">● [IF {fav_team} LEADS +7]</span>
+                            <span class="badge-sage">[IF {fav_team} LEADS +7]</span>
                         </div>
                         <div class="tactical-body">
                             {render_inline_logo(dog_team, 16)}<b>{dog_team}</b> forced into high-volume dropback script:
@@ -4211,10 +4188,10 @@ with subtab_brief:
             render_html(
                 f"""
                 <div class="terminal-card" style="padding:12px; margin-bottom:12px;">
-                    <span class="badge-sage">● [5-YR MEETINGS: {len(h2h_5yr)}]</span>
-                    <span class="badge-elite">● [{home_tm} SU WINS: {h_su}]</span>
-                    <span class="badge-elite">● [{away_tm} SU WINS: {a_su}]</span>
-                    <span class="badge-amber">● [AVG COMBINED PTS: {avg_tot:.1f}]</span>
+                    <span class="badge-sage">[5-YR MEETINGS: {len(h2h_5yr)}]</span>
+                    <span class="badge-elite">[{home_tm} SU WINS: {h_su}]</span>
+                    <span class="badge-elite">[{away_tm} SU WINS: {a_su}]</span>
+                    <span class="badge-amber">[AVG COMBINED PTS: {avg_tot:.1f}]</span>
                 </div>
                 """
             )
@@ -4224,9 +4201,9 @@ with subtab_brief:
                 for _, h_row in h2h_5yr.head(3).iterrows():
                     win_tm = h_row["SU Winner"]
                     badge_w = (
-                        f'<span class="badge-elite">{render_inline_logo(win_tm, 14)}● [{win_tm} WON]</span>'
+                        f'<span class="badge-elite">{render_inline_logo(win_tm, 14)}[{win_tm} WON]</span>'
                         if win_tm != "TIE"
-                        else '<span class="badge-mid">● [TIE]</span>'
+                        else '<span class="badge-mid">[TIE]</span>'
                     )
                     render_html(
                         f"""
@@ -4265,7 +4242,7 @@ with subtab_brief:
                 )
 
 # =============================================================================
-# SUB-TAB 2: PLAYER MISMATCHES & INJURIES (DIRECT HYPERLINKED PLAYER NAMES)
+# SUB-TAB 2: PLAYER MISMATCHES & INJURIES (WITH PLAYER HEADSHOTS & CONCISE RATIONALE)
 # =============================================================================
 with subtab_players:
     pm_subtab_cbwr, pm_subtab_volume, pm_subtab_injuries = st.tabs(
@@ -4344,14 +4321,22 @@ with subtab_players:
                         with st.container(border=True):
                             render_html(
                                 f"""
-                                <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:6px; margin-bottom:4px;">
-                                    <span class="metric-subtext">{b['alignment']} • Mismatch Index: <b>{b['mismatch_score']:.1f}/100</b></span>
+                                <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:6px; margin-bottom:6px;">
+                                    <span class="metric-subtext">{b['alignment']} • Mismatch Index: <b>{b['mismatch_score']:.0f}/100</b></span>
                                     {b['tier_badge']}
                                 </div>
                                 """
                             )
-                            vs_c1, vs_mid, vs_c2 = st.columns([1.45, 0.25, 1.45])
-                            with vs_c1:
+                            wr_img_c, wr_txt_c, vs_mid, cb_img_c, cb_txt_c = st.columns(
+                                [0.36, 1.35, 0.20, 0.36, 1.35]
+                            )
+                            with wr_img_c:
+                                render_html(
+                                    render_mismatch_headshot_html(
+                                        b["wr_name"], b["off_tm"], headshot_lookup
+                                    )
+                                )
+                            with wr_txt_c:
                                 render_inline_player_trigger(
                                     b["wr_name"],
                                     b["off_tm"],
@@ -4364,9 +4349,15 @@ with subtab_players:
                                 )
                             with vs_mid:
                                 render_html(
-                                    '<div style="text-align:center; padding-top:10px; font-family:monospace; font-weight:800; color:#64748B;">VS</div>'
+                                    '<div class="mismatch-vs-divider" style="text-align:center; font-family:monospace; font-weight:800; color:#64748B; font-size:0.80rem;">VS</div>'
                                 )
-                            with vs_c2:
+                            with cb_img_c:
+                                render_html(
+                                    render_mismatch_headshot_html(
+                                        b["cb_name"], b["def_tm"], headshot_lookup
+                                    )
+                                )
+                            with cb_txt_c:
                                 render_inline_player_trigger(
                                     b["cb_name"],
                                     b["def_tm"],
@@ -4375,7 +4366,7 @@ with subtab_players:
                                     f"[{b['def_tm']} {b['cb_pos']}]",
                                 )
                                 render_html(
-                                    f'<span class="metric-subtext">Def Snaps: <b>{b["cb_snap_pct"]:.0f}%</b> | Pass Def: <b>#{b["def_pass_rk"]} NFL</b></span>'
+                                    f'<span class="metric-subtext">Snaps: <b>{b["cb_snap_pct"]:.0f}%</b> | Pass Def: <b>#{b["def_pass_rk"]} NFL</b></span>'
                                 )
                             render_html(
                                 f"""
@@ -4383,7 +4374,7 @@ with subtab_players:
                                     {b['wr_streak_badge']}
                                     {b['cb_status_badge']}
                                 </div>
-                                <div class="metric-subtext" style="color:#CBD5E1;">
+                                <div class="metric-subtext" style="color:#CBD5E1; white-space:normal; line-height:1.35;">
                                     <b>Rationale:</b> {b['trigger_note']}
                                 </div>
                                 """
@@ -4477,7 +4468,7 @@ with subtab_players:
                         opp_rk = def_pass_rk if is_rec else def_rush_rk
                         phase_str = f"{def_tm_i} Pass Def" if is_rec else f"{def_tm_i} Rush Def"
                         share_lbl = (
-                            f"Target Share: <b>{w_row['calc_target_share']*100:.1f}%</b> ({int(w_row['targets'])} tgts, {int(w_row['air_yards'])} air yds)"
+                            f"Tgt Share: <b>{w_row['calc_target_share']*100:.1f}%</b> ({int(w_row['targets'])} tgts, {int(w_row['air_yards'])} air yds)"
                             if is_rec
                             else f"Rush Share: <b>{w_row['calc_rush_share']*100:.1f}%</b> ({int(w_row['carries'])} att, {int(w_row['touches'])} touches)"
                         )
@@ -4487,8 +4478,14 @@ with subtab_players:
                         scrim_yds = int(w_row["scrimmage_yards"])
 
                         with st.container(border=True):
-                            top_c1, top_c2 = st.columns([1.4, 1])
-                            with top_c1:
+                            v_img_c, v_txt_c, v_badge_c = st.columns([0.36, 1.55, 1.0])
+                            with v_img_c:
+                                render_html(
+                                    render_mismatch_headshot_html(
+                                        w_row["player_name"], off_tm_i, headshot_lookup
+                                    )
+                                )
+                            with v_txt_c:
                                 render_inline_player_trigger(
                                     w_row["player_name"],
                                     off_tm_i,
@@ -4496,16 +4493,11 @@ with subtab_players:
                                     f"vol_{off_tm_i}_{w_idx}",
                                     f"[{off_tm_i} {pos_badge}]",
                                 )
-                            with top_c2:
+                                render_html(
+                                    f'<span class="metric-subtext">{share_lbl} | EPA: <b>{w_row["total_epa"]:+.1f}</b> | <b>{scrim_yds} yds ({int(w_row["total_tds"])} TD)</b></span>'
+                                )
+                            with v_badge_c:
                                 render_html(f'<div style="text-align:right;">{opp_unit_badge}</div>')
-                            render_html(
-                                f"""
-                                <div class="metric-subtext" style="margin-top:4px;">
-                                    {share_lbl} | Total EPA: <b>{w_row['total_epa']:+.1f}</b> |
-                                    Scrimmage: <b>{scrim_yds} yds ({int(w_row['total_tds'])} TD)</b>
-                                </div>
-                                """
-                            )
 
     with pm_subtab_injuries:
         render_html(
@@ -4514,11 +4506,10 @@ with subtab_players:
             f"Weekly Injuries, Real-Time Clearances & Missing Starter EPA Drag ({away_tm} @ {home_tm})</h4>"
         )
         st.caption(
-            "Players who practiced in full or were cleared off the injury report resolve to ● [ACTIVE / CLEARED] with 0.000 EPA drag. "
+            "Players who practiced in full or were cleared off the injury report resolve to [ACTIVE / CLEARED] with 0.000 EPA drag. "
             "Use the Quick Status Override bar below or click any underlined player name to inspect their full season Injury History."
         )
 
-        # Quick Real-Time Status Override Bar directly inside the Injury tab
         with st.expander("Real-Time Injury Status Override & Clearance Control", expanded=False):
             ov_candidates = []
             if not inj_matchup.empty:
@@ -4584,8 +4575,8 @@ with subtab_players:
                 cleared_n = int(inj_matchup["is_cleared"].sum())
                 render_html(
                     f'<div style="text-align:right; padding-top:8px;">'
-                    f'<span class="badge-bad">● [{lingering_n} LINGERING DESIGNATIONS]</span> '
-                    f'<span class="badge-elite">● [{cleared_n} ACTIVE / CLEARED]</span>'
+                    f'<span class="badge-bad">[{lingering_n} LINGERING DESIGNATIONS]</span> '
+                    f'<span class="badge-elite">[{cleared_n} ACTIVE / CLEARED]</span>'
                     f"</div>"
                 )
 
@@ -4593,7 +4584,7 @@ with subtab_players:
             render_html(
                 f"""
                 <div class="terminal-card-elite">
-                    <span class="badge-elite">● [CLEAN INJURY REPORT]</span>
+                    <span class="badge-elite">[CLEAN INJURY REPORT]</span>
                     <p style="margin:6px 0 0 0;" class="metric-subtext">
                         No active Out, Doubtful, or Questionable designations found for {away_tm} or {home_tm} in Week {selected_week}.
                     </p>
@@ -4630,8 +4621,8 @@ with subtab_players:
                             <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:6px;">
                                 <h4 style="margin:0;">{render_inline_logo(tm, 22)}{tm} Injury Impact</h4>
                                 <div>
-                                    <span class="{badge_cls}">● [{anchor_count} ANCHORS FLAGGED]</span>
-                                    <span class="badge-elite">● [{cleared_tm_count} CLEARED]</span>
+                                    <span class="{badge_cls}">[{anchor_count} ANCHORS FLAGGED]</span>
+                                    <span class="badge-elite">[{cleared_tm_count} CLEARED]</span>
                                 </div>
                             </div>
                             <p style="margin:8px 0 0 0;" class="metric-subtext">
@@ -4653,11 +4644,17 @@ with subtab_players:
                             pos_str = str(r_inj.get("position", "POS"))
                             is_clr = bool(r_inj.get("is_cleared", False))
                             epa_color = "#00FF87" if is_clr else "#FF4D6D"
-                            epa_str = "0.000/play (Cleared — Baseline Talent Only)" if is_clr else f"-{r_inj['est_epa_penalty']:.3f}/play"
+                            epa_str = "0.000/play (Cleared)" if is_clr else f"-{r_inj['est_epa_penalty']:.3f}/play"
 
                             with st.container(border=True):
-                                ic1, ic2 = st.columns([1.4, 1.2])
-                                with ic1:
+                                i_img_c, i_txt_c, i_b_c = st.columns([0.36, 1.45, 1.15])
+                                with i_img_c:
+                                    render_html(
+                                        render_mismatch_headshot_html(
+                                            r_inj["player_display"], tm, headshot_lookup
+                                        )
+                                    )
+                                with i_txt_c:
                                     render_inline_player_trigger(
                                         r_inj["player_display"],
                                         tm,
@@ -4665,17 +4662,17 @@ with subtab_players:
                                         f"inj_{tm}_{i_idx}",
                                         f"[{tm} {pos_str}]",
                                     )
-                                with ic2:
+                                    render_html(
+                                        f"""
+                                        <span class="metric-subtext">
+                                            {r_inj['role_tier']} • <b>{r_inj['primary_injury']}</b> •
+                                            Snaps: <b>{snap_pct:.0f}%</b> | Tgt: <b>{tgt_pct:.1f}%</b> |
+                                            EPA: <span style="color:{epa_color}; font-weight:700;">{epa_str}</span>
+                                        </span>
+                                        """
+                                    )
+                                with i_b_c:
                                     render_html(f'<div style="text-align:right;">{badge_html} {prac_html}</div>')
-                                render_html(
-                                    f"""
-                                    <div class="metric-subtext" style="margin-top:4px;">
-                                        {r_inj['role_tier']} | Ailment: <b>{r_inj['primary_injury']}</b> |
-                                        Snaps: <b>{snap_pct:.0f}%</b> | Tgt Share: <b>{tgt_pct:.1f}%</b> |
-                                        EPA Impact: <span style="color:{epa_color}; font-weight:700;">{epa_str}</span>
-                                    </div>
-                                    """
-                                )
 
 # =============================================================================
 # SUB-TAB 3: TRENCH & AIR EFFICIENCY
@@ -5013,12 +5010,12 @@ with subtab_props:
 
         opp_badge_html = render_rank_badge(opp_def_rk, f"{opp_def_tm} {def_type_str}")
         hit_badge_html = (
-            f'<span class="badge-elite">● [{hits_count}/{sample_n} OVER ({hit_rate_pct:.0f}%)]</span>'
+            f'<span class="badge-elite">[{hits_count}/{sample_n} OVER ({hit_rate_pct:.0f}%)]</span>'
             if hit_rate_pct >= 60
             else (
-                f'<span class="badge-bad">● [{hits_count}/{sample_n} OVER ({hit_rate_pct:.0f}%)]</span>'
+                f'<span class="badge-bad">[{hits_count}/{sample_n} OVER ({hit_rate_pct:.0f}%)]</span>'
                 if hit_rate_pct <= 40
-                else f'<span class="badge-mid">● [{hits_count}/{sample_n} OVER ({hit_rate_pct:.0f}%)]</span>'
+                else f'<span class="badge-mid">[{hits_count}/{sample_n} OVER ({hit_rate_pct:.0f}%)]</span>'
             )
         )
 
@@ -5324,7 +5321,7 @@ with subtab_roster:
 with subtab_backtest:
     st.markdown(f"#### {selected_season} Season Historical Backtest & Edge Grading")
     st.caption(
-        "Grades all completed games in the selected season where extreme unit mismatches (`● ELITE [#1-#5]` vs `● BAD [#23-#32]`), "
+        "Grades all completed games in the selected season where extreme unit mismatches (`ELITE [#1-#5]` vs `BAD [#23-#32]`), "
         "situational rest edges (`3+ days`), or high-conviction Net EPA edges occurred."
     )
 
