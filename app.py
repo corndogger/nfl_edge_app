@@ -699,6 +699,23 @@ OFFENSE_POSITIONS = {"QB", "RB", "FB", "WR", "TE", "OL", "T", "OT", "LT", "RT", 
 DEFENSE_POSITIONS = {"DL", "DE", "DT", "NT", "EDGE", "LB", "ILB", "OLB", "MLB", "DB", "CB", "S", "FS", "SS"}
 SPECIAL_TEAMS_POSITIONS = {"K", "P", "LS"}
 
+# Strict Injury Mismatch Logic Gate sets:
+# - Unavailables force starter-absence / backup-elevation penalties.
+# - Active gameday questionable statuses apply a minor gameday limitation factor.
+# - Cleared / Active statuses trigger ZERO injury or backup penalties.
+UNAVAILABLE_DESIGNATIONS = {"OUT", "DOUBTFUL", "IR", "PUP", "SUSPENDED", "NFI"}
+ACTIVE_INJURY_DESIGNATIONS = {"OUT", "DOUBTFUL", "QUESTIONABLE", "IR", "PUP", "SUSPENDED", "NFI"}
+CLEARED_DESIGNATIONS = {
+    "ACTIVE",
+    "CLEARED",
+    "ACTIVE / CLEARED",
+    "ACTIVE / CLEAN REPORT",
+    "FULL STRENGTH",
+    "GOOD TO GO",
+    "PROBABLE",
+    "AVAILABLE",
+}
+
 # Ensure session state stores real-time injury overrides and cache-busting token
 if "injury_status_overrides" not in st.session_state:
     st.session_state["injury_status_overrides"] = {}
@@ -842,13 +859,40 @@ def render_rank_badge(rank: int, prefix: str = "") -> str:
     return f'<span class="badge-mid">● {lbl}MID [#{rank}]</span>'
 
 
+def is_active_unresolved_injury(status_str: str) -> bool:
+    """
+    Strict gate helper: Returns True ONLY when a player's status is an active,
+    unresolved injury designation ('OUT', 'DOUBTFUL', 'QUESTIONABLE', 'IR', 'PUP', 'SUSPENDED', 'NFI').
+    Returns False if the player is cleared, active, or removed from the injury designation.
+    """
+    if not status_str or pd.isna(status_str):
+        return False
+    s_clean = str(status_str).strip().upper()
+    if s_clean in CLEARED_DESIGNATIONS or "CLEARED" in s_clean or "PLAYED" in s_clean:
+        return False
+    return s_clean in ACTIVE_INJURY_DESIGNATIONS
+
+
+def is_unavailable_injury(status_str: str) -> bool:
+    """
+    Strict gate helper: Returns True ONLY when a player is ruled out or doubtful
+    ('OUT', 'DOUBTFUL', 'IR', 'PUP', 'SUSPENDED', 'NFI').
+    """
+    if not status_str or pd.isna(status_str):
+        return False
+    s_clean = str(status_str).strip().upper()
+    if s_clean in CLEARED_DESIGNATIONS or "CLEARED" in s_clean or "PLAYED" in s_clean:
+        return False
+    return s_clean in UNAVAILABLE_DESIGNATIONS
+
+
 def normalize_injury_designation(
     raw_status: str,
     practice_status: str = "",
 ) -> str:
     """
     Normalizes raw nflverse injury designations and practice participation so that
-    players cleared from the injury report (blank game status with Full Participation,
+    players cleared from the injury report (blank official game_status / report_status,
     Active, Probable, or Cleared) immediately resolve to 'ACTIVE / CLEARED' rather than
     defaulting to 'Questionable'.
     """
@@ -858,8 +902,6 @@ def normalize_injury_designation(
         s_clean = str(raw_status).strip().upper()
         if s_clean in ["NAN", "NONE", "NULL", "--", "-"]:
             s_clean = ""
-
-    p_clean = "" if pd.isna(practice_status) else str(practice_status).strip().upper()
 
     if s_clean in ["ACTIVE", "CLEARED", "ACTIVE / CLEARED", "PROBABLE", "AVAILABLE", "GOOD TO GO"]:
         return "ACTIVE / CLEARED"
@@ -871,12 +913,9 @@ def normalize_injury_designation(
         return "QUESTIONABLE"
 
     # When official game_status / report_status is blank:
-    # A player listed on the weekly practice log with Full Participation (or no game tag) is cleared.
+    # Under NFL reporting rules, a player with no game-status designation on the final report
+    # (even if they had mid-week practice management/limitations) is officially cleared to play.
     if not s_clean:
-        if "DID NOT" in p_clean or p_clean == "DNP":
-            return "QUESTIONABLE"
-        if "LIMITED" in p_clean or p_clean == "LP":
-            return "QUESTIONABLE"
         return "ACTIVE / CLEARED"
 
     return s_clean
@@ -888,11 +927,9 @@ def render_injury_badge(status: str) -> str:
     Clearly distinguishes ACTIVE / CLEARED players from lingering designations.
     """
     status_clean = str(status).strip().upper()
-    if status_clean in ["ACTIVE", "CLEARED", "ACTIVE / CLEARED", "ACTIVE / GOOD TO GO"]:
+    if status_clean in CLEARED_DESIGNATIONS or "CLEARED" in status_clean or "PLAYED" in status_clean:
         return '<span class="badge-elite">● [ACTIVE / CLEARED]</span>'
-    if status_clean in ["ACTIVE / CLEAN REPORT", "FULL STRENGTH"]:
-        return '<span class="badge-elite">● [ACTIVE / CLEAN REPORT]</span>'
-    if status_clean in ["OUT", "IR", "PUP", "SUSPENDED"]:
+    if status_clean in ["OUT", "IR", "PUP", "SUSPENDED", "NFI"]:
         return f'<span class="badge-bad">● [{status_clean}]</span>'
     if status_clean == "DOUBTFUL":
         return f'<span class="badge-bad">● [{status_clean}]</span>'
@@ -1479,7 +1516,6 @@ def load_injuries_csv(season: int, refresh_token: int = 0) -> tuple[pd.DataFrame
                     suffixes=("", "_roster"),
                 )
                 roster_st = inj_df["status"].fillna("").astype(str).str.upper()
-                # If raw report status was empty and weekly roster status is ACT, mark ACTIVE / CLEARED
                 raw_empty_mask = raw_statuses.isna() | (raw_statuses.astype(str).str.strip().isin(["", "nan", "None"]))
                 inj_df.loc[raw_empty_mask & (roster_st == "ACT"), "normalized_status"] = "ACTIVE / CLEARED"
                 inj_df.loc[roster_st.isin(["RES", "IR", "PUP", "NFI"]), "normalized_status"] = "IR"
@@ -1804,21 +1840,42 @@ def build_cb_wr_matchup_battles(
     """
     Automatically calculates and surfaces top 1-on-1 Wide Receiver vs. Cornerback
     individual battles for (off_tm WRs vs def_tm CBs).
-    Factors in L4 receiving streaks, defensive pass EPA rank, and CB injuries
-    (automatically ignoring CBs whose status is ACTIVE / CLEARED).
+    Strict Injury Mismatch Gate:
+      - An injury or backup-elevation penalty ONLY triggers if a player's official
+        report_status is strictly active/unresolved ('OUT', 'DOUBTFUL', 'IR', 'PUP',
+        'SUSPENDED', or active gameday 'QUESTIONABLE').
+      - If a player is cleared, marked active, or removed from the weekly injury designation,
+        zero backup/injury penalties are applied and the matchup is graded strictly on
+        baseline talent, target volume, L4 form, and defensive pass efficiency.
+      - Excludes offensive WRs who are ruled OUT/DOUBTFUL/IR from active 1-on-1 projections.
     """
     if usage_df.empty:
         return []
 
-    tm_wrs = usage_df[
+    # Build lookup of offensive skill players who are unavailable (OUT / DOUBTFUL / IR / PUP)
+    unavailable_off_players: set[str] = set()
+    if not inj_df.empty and "team" in inj_df.columns:
+        o_inj = inj_df[inj_df["team"] == off_tm]
+        for _, r_o in o_inj.iterrows():
+            st_o = str(r_o.get("report_status", "")).strip().upper()
+            if is_unavailable_injury(st_o):
+                unavailable_off_players.add(str(r_o.get("player_display", "")).strip().lower())
+
+    tm_wrs_all = usage_df[
         (usage_df["team"] == off_tm)
         & (usage_df["position"].astype(str).str.upper().isin(["WR"]))
+    ].copy()
+    tm_wrs = tm_wrs_all[
+        ~tm_wrs_all["player_name"].astype(str).str.strip().str.lower().isin(unavailable_off_players)
     ].sort_values(by=["calc_target_share", "air_yards"], ascending=False)
 
     if len(tm_wrs) < 2:
-        tm_wrs = usage_df[
+        tm_wrs_fallback = usage_df[
             (usage_df["team"] == off_tm)
             & (usage_df["position"].astype(str).str.upper().isin(["WR", "TE"]))
+        ].copy()
+        tm_wrs = tm_wrs_fallback[
+            ~tm_wrs_fallback["player_name"].astype(str).str.strip().str.lower().isin(unavailable_off_players)
         ].sort_values(by=["calc_target_share", "air_yards"], ascending=False)
 
     top_wrs = tm_wrs.head(3).copy()
@@ -1861,13 +1918,14 @@ def build_cb_wr_matchup_battles(
         )
         cb_roster["clean_name"] = cb_roster["player"].astype(str).str.strip().str.lower()
 
-    sec_inj_map = {}
+    # Map defensive secondary injury statuses strictly for players on the report
+    sec_inj_map: dict[str, tuple[str, str]] = {}
     if not inj_df.empty and "team" in inj_df.columns:
         d_inj = inj_df[inj_df["team"] == def_tm].copy()
         for _, r_i in d_inj.iterrows():
             c_nm = str(r_i.get("player_display", "")).strip().lower()
             st_str = str(r_i.get("report_status", "")).strip().upper()
-            inj_type = str(r_i.get("primary_injury", "Injury")).strip()
+            inj_type = str(r_i.get("primary_injury", "")).strip()
             sec_inj_map[c_nm] = (st_str, inj_type)
 
     active_cbs = []
@@ -1879,26 +1937,32 @@ def build_cb_wr_matchup_battles(
             snap_sh = float(cb_row["def_snap_share"])
             p_disp = cb_row["player"]
             pos_u = cb_row["pos_upper"]
-            inj_status, inj_desc = sec_inj_map.get(c_nm, ("ACTIVE", ""))
+            raw_inj_status, inj_desc = sec_inj_map.get(c_nm, ("ACTIVE", ""))
 
-            if inj_status in ["OUT", "IR", "PUP", "DOUBTFUL"] and snap_sh >= 0.50:
+            # Strict gate: Only classify as a missing starter if status is strictly in UNAVAILABLE_DESIGNATIONS
+            if is_unavailable_injury(raw_inj_status) and snap_sh >= 0.50:
                 missing_starting_cbs.append(
                     {
                         "name": p_disp,
-                        "status": inj_status,
+                        "status": raw_inj_status,
                         "snap_pct": snap_sh * 100.0,
                         "injury": inj_desc,
                     }
                 )
-            else:
+            elif not is_unavailable_injury(raw_inj_status):
+                # Player is available to play (either ACTIVE, ACTIVE / CLEARED, or gameday QUESTIONABLE)
+                resolved_status = (
+                    "QUESTIONABLE"
+                    if raw_inj_status == "QUESTIONABLE"
+                    else ("ACTIVE / CLEARED" if raw_inj_status in CLEARED_DESIGNATIONS and c_nm in sec_inj_map else "ACTIVE")
+                )
                 active_cbs.append(
                     {
                         "name": p_disp,
                         "pos": pos_u,
                         "snap_pct": snap_sh * 100.0,
-                        "status": inj_status,
-                        "injury": inj_desc,
-                        "is_backup_elevated": snap_sh < 0.52,
+                        "status": resolved_status,
+                        "injury": inj_desc if resolved_status == "QUESTIONABLE" else "",
                     }
                 )
 
@@ -1911,7 +1975,6 @@ def build_cb_wr_matchup_battles(
                 "snap_pct": 55.0,
                 "status": "ACTIVE",
                 "injury": "",
-                "is_backup_elevated": False,
             }
         )
 
@@ -1935,6 +1998,7 @@ def build_cb_wr_matchup_battles(
             wr_clean, ("STEADY", wr_ypg, wr_ypg, 0.0)
         )
 
+        # Baseline talent, volume, L4 form, and unit efficiency score
         score = 50.0
         if wr_tgt_sh >= 24.0:
             score += 14.0
@@ -1955,36 +2019,40 @@ def build_cb_wr_matchup_battles(
         elif streak_type == "COLD":
             score -= 8.0
 
-        cb_trigger_notes = []
+        # Strict Injury & Backup Penalty Gate:
+        # 1. Starter Absence / Backup Elevation ONLY triggers if `missing_starting_cbs` is non-empty
+        #    (meaning a primary starter >=50% snaps is strictly OUT, DOUBTFUL, IR, PUP, or SUSPENDED).
+        # 2. Assigned CB injury penalty ONLY triggers if `cb_assigned["status"] == "QUESTIONABLE"`.
+        # 3. Healthy/cleared CBs never trigger injury or backup penalties and never produce contradictory rationale text.
+        rationale_clauses = []
+        has_injury_or_backup_trigger = False
+
         if missing_starting_cbs and idx < len(missing_starting_cbs):
             out_cb = missing_starting_cbs[idx]
             score += 18.0
-            cb_trigger_notes.append(
+            has_injury_or_backup_trigger = True
+            rationale_clauses.append(
                 f"Primary {def_tm} starter {out_cb['name']} ({out_cb['snap_pct']:.0f}% snaps) is [{out_cb['status']}]; "
-                f"{cb_assigned['name']} forced into elevated coverage assignment."
+                f"{cb_assigned['name']} ({cb_assigned['snap_pct']:.0f}% snaps) elevated into primary coverage."
             )
         elif missing_starting_cbs:
             out_cb = missing_starting_cbs[0]
             score += 10.0
-            cb_trigger_notes.append(
-                f"Secondary rotation shifted due to {out_cb['name']} [{out_cb['status']}]."
+            has_injury_or_backup_trigger = True
+            rationale_clauses.append(
+                f"Secondary rotation shifted with {out_cb['name']} [{out_cb['status']}]; "
+                f"{cb_assigned['name']} ({cb_assigned['snap_pct']:.0f}% snaps) draws coverage."
             )
 
         if cb_assigned["status"] == "QUESTIONABLE":
             score += 9.0
-            cb_trigger_notes.append(
-                f"Assigned cover man {cb_assigned['name']} is [QUESTIONABLE] ({cb_assigned['injury']})."
-            )
-        elif cb_assigned["status"] in ["ACTIVE / CLEARED", "CLEARED"]:
-            cb_trigger_notes.append(
-                f"Assigned cover man {cb_assigned['name']} is officially [ACTIVE / CLEARED] to play."
-            )
-        elif cb_assigned["is_backup_elevated"]:
-            score += 8.0
-            cb_trigger_notes.append(
-                f"Matched against sub-package/backup DB {cb_assigned['name']} ({cb_assigned['snap_pct']:.0f}% snap share)."
+            has_injury_or_backup_trigger = True
+            inj_detail = f" ({cb_assigned['injury']})" if cb_assigned.get("injury") else ""
+            rationale_clauses.append(
+                f"Assigned cover man {cb_assigned['name']} carries an active [QUESTIONABLE]{inj_detail} designation."
             )
 
+        # Determine Callout Tier Badge
         if score >= 74.0:
             tier_badge = '<span class="badge-elite">● [ELITE MISMATCH]</span>'
             tier_plain = "[ELITE MISMATCH]"
@@ -2009,31 +2077,39 @@ def build_cb_wr_matchup_battles(
         else:
             wr_streak_badge = f'<span class="badge-mid">● [WR L4: {l4_val:.1f} YPG]</span>'
 
-        if missing_starting_cbs and idx == 0:
+        # Clean, non-contradictory CB status badge
+        if missing_starting_cbs and idx < len(missing_starting_cbs):
             cb_status_badge = '<span class="badge-bad">● [BACKUP CB ELEVATED]</span>'
         elif cb_assigned["status"] == "QUESTIONABLE":
             cb_status_badge = '<span class="badge-amber">● [CB QUESTIONABLE]</span>'
-        elif cb_assigned["status"] in ["ACTIVE / CLEARED", "CLEARED"]:
-            cb_status_badge = '<span class="badge-elite">● [CB ACTIVE / CLEARED]</span>'
-        elif cb_assigned["is_backup_elevated"]:
-            cb_status_badge = '<span class="badge-amber">● [ROTATIONAL DB]</span>'
         elif def_pass_rk <= 5:
-            cb_status_badge = '<span class="badge-bad">● [SHUTDOWN COVERAGE]</span>'
+            cb_status_badge = f'<span class="badge-bad">● [SHUTDOWN COVERAGE • {cb_assigned["snap_pct"]:.0f}% SNAPS]</span>'
+        elif cb_assigned["status"] == "ACTIVE / CLEARED":
+            cb_status_badge = f'<span class="badge-elite">● [CB CLEARED / ACTIVE • {cb_assigned["snap_pct"]:.0f}% SNAPS]</span>'
         else:
-            cb_status_badge = f'<span class="badge-mid">● [{cb_assigned["snap_pct"]:.0f}% DEF SNAPS]</span>'
+            cb_status_badge = f'<span class="badge-mid">● [ACTIVE • {cb_assigned["snap_pct"]:.0f}% DEF SNAPS]</span>'
 
-        if not cb_trigger_notes:
+        # Clean baseline rationale when no unresolved injury or backup penalty is active
+        if not rationale_clauses:
+            clearance_prefix = (
+                f"{cb_assigned['name']} is officially cleared/active ({cb_assigned['snap_pct']:.0f}% snaps, no injury penalty). "
+                if cb_assigned["status"] == "ACTIVE / CLEARED"
+                else ""
+            )
             if score >= 70.0:
-                cb_trigger_notes.append(
-                    f"High-volume alpha target ({wr_tgt_sh:.1f}% share) attacking #{def_pass_rk} {def_tm} pass defense ({def_pass_epa:+.3f} EPA)."
+                rationale_clauses.append(
+                    f"{clearance_prefix}Baseline volume & efficiency edge: {wr_name} ({wr_tgt_sh:.1f}% target share, {wr_ypg:.1f} YPG) "
+                    f"attacks #{def_pass_rk} {def_tm} pass defense ({def_pass_epa:+.3f} EPA/play)."
                 )
             elif score <= 38.0:
-                cb_trigger_notes.append(
-                    f"Shadowed by #{def_pass_rk} {def_tm} secondary allowing {def_pass_epa:+.3f} Pass EPA/play."
+                rationale_clauses.append(
+                    f"{clearance_prefix}Baseline coverage edge: {cb_assigned['name']} and #{def_pass_rk} {def_tm} pass defense "
+                    f"({def_pass_epa:+.3f} EPA/play allowed) project to contain {wr_name}."
                 )
             else:
-                cb_trigger_notes.append(
-                    f"Head-to-head perimeter battle vs {cb_assigned['name']} ({cb_assigned['snap_pct']:.0f}% snaps)."
+                rationale_clauses.append(
+                    f"{clearance_prefix}Baseline talent matchup: {wr_name} ({wr_tgt_sh:.1f}% target share, {wr_ypg:.1f} YPG) "
+                    f"vs {cb_assigned['name']} ({cb_assigned['snap_pct']:.0f}% snaps, #{def_pass_rk} {def_tm} pass defense)."
                 )
 
         battles.append(
@@ -2052,12 +2128,13 @@ def build_cb_wr_matchup_battles(
                 "cb_pos": cb_assigned["pos"],
                 "cb_snap_pct": cb_assigned["snap_pct"],
                 "cb_status_badge": cb_status_badge,
+                "has_injury_trigger": has_injury_or_backup_trigger,
                 "def_pass_rk": def_pass_rk,
                 "tier_badge": tier_badge,
                 "tier_plain": tier_plain,
                 "card_style": card_style,
                 "mismatch_score": round(score, 1),
-                "trigger_note": " ".join(cb_trigger_notes),
+                "trigger_note": " ".join(rationale_clauses),
             }
         )
 
@@ -2211,10 +2288,10 @@ def build_roster_usage_table(
             nm_k = str(r_inj.get("clean_name", "")).strip().lower()
             st_v = str(r_inj.get("report_status", "ACTIVE / CLEARED")).strip().upper()
             inj_v = str(r_inj.get("primary_injury", "")).strip()
-            if st_v in ["ACTIVE / CLEARED", "ACTIVE", "CLEARED"]:
+            if not is_active_unresolved_injury(st_v):
                 status_map[(tm_k, nm_k)] = "● ACTIVE [CLEARED]"
             else:
-                suffix = f" ({inj_v})" if inj_v and inj_v != "Undisclosed" else ""
+                suffix = f" ({inj_v})" if inj_v and inj_v not in ["Undisclosed", "None / Cleared"] else ""
                 status_map[(tm_k, nm_k)] = f"● {st_v}{suffix}"
 
     merged["health_status"] = [
@@ -2234,13 +2311,14 @@ def build_injury_impact_report(
     status_overrides: dict[str, str] | None = None,
 ) -> pd.DataFrame:
     """
-    Cross-references official weekly injury designations (Out, Doubtful, Questionable, and
-    Active/Cleared) with snap counts, recent game participation, and manual real-time overrides.
-    - Never blindly fills blank report_status as 'Questionable'; players with Full Participation
-      and no game status designation resolve to 'ACTIVE / CLEARED' with 0.000 EPA drag.
-    - If a player has already logged snaps or stats in `selected_week` (or a later week),
-      or if an earlier week's report is being used as fallback and the player was only Questionable,
-      recognizes when they are active/cleared.
+    Cross-references official weekly injury designations with snap counts, recent game
+    participation, and manual real-time overrides.
+    Strict Injury Mismatch Gate:
+    - An EPA penalty is ONLY applied if `is_active_unresolved_injury(report_status)` is True
+      (i.e. status is strictly in ['OUT', 'DOUBTFUL', 'QUESTIONABLE', 'IR', 'PUP', 'SUSPENDED', 'NFI']).
+    - If a player is cleared, marked active, or removed from the weekly injury report
+      (e.g., when a prior week's report is used as a fallback and the player is not on a long-term
+      reserve list like IR/PUP), they are marked 'ACTIVE / CLEARED' with 0.000 EPA penalty.
     """
     status_overrides = status_overrides or {}
 
@@ -2307,8 +2385,8 @@ def build_injury_impact_report(
             else "N/A"
         )
 
-        # If a player actually took snaps in selected_week, or if an older week's Questionable tag
-        # was followed by active participation, mark them ACTIVE / CLEARED
+        # Resolve current week statuses so cleared players or players who suited up in selected_week
+        # never carry stale injury penalties
         updated_statuses = []
         status_notes = []
         for _, r_inj in team_inj.iterrows():
@@ -2321,17 +2399,18 @@ def build_injury_impact_report(
                 ov_st = status_overrides[override_key].strip().upper()
                 updated_statuses.append(ov_st)
                 status_notes.append("Real-Time Manual Override Applied")
-            elif (tm_u, nm_l) in played_in_selected_week and cur_st in ["QUESTIONABLE", "DOUBTFUL"]:
+            elif (tm_u, nm_l) in played_in_selected_week:
                 updated_statuses.append("ACTIVE / CLEARED")
                 status_notes.append(f"Confirmed Active on Field (Wk {selected_week} Snaps Logged)")
-            elif used_fallback_week and cur_st == "QUESTIONABLE" and "FULL" in str(r_inj.get("practice_status_clean", "")).upper():
+            elif used_fallback_week and cur_st in ["QUESTIONABLE", "DOUBTFUL"]:
+                # Do not carry stale single-week Questionable/Doubtful tags into a new week
                 updated_statuses.append("ACTIVE / CLEARED")
-                status_notes.append("Full Practice Participation — Cleared from Prior Report")
+                status_notes.append("Cleared from Prior Week Report")
             else:
                 updated_statuses.append(cur_st)
                 status_notes.append(
                     "Cleared from Weekly Practice Report"
-                    if cur_st == "ACTIVE / CLEARED"
+                    if not is_active_unresolved_injury(cur_st)
                     else "Official NFL Injury Report"
                 )
 
@@ -2376,14 +2455,14 @@ def build_injury_impact_report(
                         "position": pos_guess,
                         "report_status": ov_status.strip().upper(),
                         "practice_status_clean": "Real-Time Override",
-                        "report_primary_injury": "Cleared / Coach Update" if "ACTIVE" in ov_status.upper() else "Updated Status",
+                        "report_primary_injury": "Cleared / Coach Update" if not is_active_unresolved_injury(ov_status) else "Updated Status",
                         "status_source_note": "Real-Time Manual Override Applied",
                     }
                 ]
             )
             team_inj = pd.concat([team_inj, new_row], ignore_index=True)
 
-    valid_statuses = ["OUT", "DOUBTFUL", "QUESTIONABLE", "IR", "PUP", "SUSPENDED", "ACTIVE / CLEARED"]
+    valid_statuses = list(ACTIVE_INJURY_DESIGNATIONS | CLEARED_DESIGNATIONS)
     team_inj = team_inj[
         team_inj["report_status"].astype(str).str.upper().str.strip().isin(valid_statuses)
     ].copy()
@@ -2445,11 +2524,9 @@ def build_injury_impact_report(
         "IR": 1.0,
         "PUP": 1.0,
         "SUSPENDED": 1.0,
+        "NFI": 1.0,
         "DOUBTFUL": 0.75,
         "QUESTIONABLE": 0.35,
-        "ACTIVE / CLEARED": 0.0,
-        "ACTIVE": 0.0,
-        "CLEARED": 0.0,
     }
 
     roles, epa_penalties, impact_units, is_anchor_flags, is_cleared_flags = [], [], [], [], []
@@ -2459,38 +2536,45 @@ def build_injury_impact_report(
         snap = float(row["snap_share"])
         tgt = float(row["calc_target_share"])
         status_str = str(row["report_status"]).upper().strip()
-        is_cleared = status_str in ["ACTIVE / CLEARED", "ACTIVE", "CLEARED"]
+
+        # Strict Injury Mismatch Gate:
+        # Only unresolved injury designations ('OUT', 'DOUBTFUL', 'QUESTIONABLE', 'IR', 'PUP', 'SUSPENDED', 'NFI')
+        # can receive an EPA penalty or be flagged as an injured anchor.
+        has_active_injury = is_active_unresolved_injury(status_str)
+        is_cleared = not has_active_injury
         is_cleared_flags.append(is_cleared)
 
         is_key_player = (snap >= 0.65) or (tgt >= 0.18) or (pos == "QB" and snap >= 0.40)
-        # Only count as a flagged missing/questionable anchor if NOT already cleared
-        is_anchor = bool(is_key_player and not is_cleared)
+        is_anchor = bool(is_key_player and has_active_injury)
         is_anchor_flags.append(is_anchor)
 
         if is_cleared:
             roles.append("● [CLEARED TO PLAY / NO EPA DRAG]")
-        elif is_key_player:
-            if pos in ["T", "LT", "RT", "G", "C"]:
-                roles.append("● [STARTING OL ANCHOR]")
-            elif pos == "WR" or tgt >= 0.18:
-                roles.append("● [PRIMARY TARGET / WR1]")
-            elif pos in ["DE", "EDGE", "DT"]:
-                roles.append("● [PRIMARY PASS RUSHER]")
-            elif pos in ["CB", "S"]:
-                roles.append("● [STARTING COVERAGE ANCHOR]")
-            elif pos == "QB":
-                roles.append("● [STARTING QUARTERBACK]")
-            else:
-                roles.append("● [KEY STARTING ANCHOR]")
-        elif snap >= 0.35 or tgt >= 0.10:
-            roles.append("● [ROTATIONAL CONTRIBUTOR]")
+            penalty = 0.0
         else:
-            roles.append("[DEPTH / SPECIAL TEAMS]")
+            if is_key_player:
+                if pos in ["T", "LT", "RT", "G", "C"]:
+                    roles.append("● [STARTING OL ANCHOR]")
+                elif pos == "WR" or tgt >= 0.18:
+                    roles.append("● [PRIMARY TARGET / WR1]")
+                elif pos in ["DE", "EDGE", "DT"]:
+                    roles.append("● [PRIMARY PASS RUSHER]")
+                elif pos in ["CB", "S"]:
+                    roles.append("● [STARTING COVERAGE ANCHOR]")
+                elif pos == "QB":
+                    roles.append("● [STARTING QUARTERBACK]")
+                else:
+                    roles.append("● [KEY STARTING ANCHOR]")
+            elif snap >= 0.35 or tgt >= 0.10:
+                roles.append("● [ROTATIONAL CONTRIBUTOR]")
+            else:
+                roles.append("[DEPTH / SPECIAL TEAMS]")
 
-        base_w = pos_weights.get(pos, 0.015)
-        usage_boost = 1.35 if tgt >= 0.20 else (1.15 if snap >= 0.75 else 0.75)
-        prob_miss = status_prob_missing.get(status_str, 0.0)
-        penalty = round(base_w * snap * usage_boost * prob_miss, 3)
+            base_w = pos_weights.get(pos, 0.015)
+            usage_boost = 1.35 if tgt >= 0.20 else (1.15 if snap >= 0.75 else 0.75)
+            prob_miss = status_prob_missing.get(status_str, 0.0)
+            penalty = round(base_w * snap * usage_boost * prob_miss, 3)
+
         epa_penalties.append(penalty)
 
         if pos in ["QB", "WR", "TE", "T", "LT", "RT", "G", "C", "RB"]:
@@ -2615,9 +2699,9 @@ def get_player_season_injury_history(
                 gameday_outcome = f"ACTIVE ({tot_snaps} Snaps / {snap_pct:.0f}%)"
                 if norm_st in ["QUESTIONABLE", "DOUBTFUL"]:
                     norm_st = f"{norm_st} -> PLAYED"
-            elif norm_st in ["OUT", "IR", "PUP", "SUSPENDED"]:
+            elif norm_st in ["OUT", "IR", "PUP", "SUSPENDED", "NFI"]:
                 gameday_outcome = "DID NOT PLAY (INACTIVE)"
-            elif norm_st == "ACTIVE / CLEARED":
+            elif not is_active_unresolved_injury(norm_st):
                 gameday_outcome = "CLEARED FOR GAMEDAY"
             else:
                 gameday_outcome = "PENDING / LOGGED"
@@ -2918,7 +3002,6 @@ def render_player_popup_contents(
 
     # Determine current week status badge (clearly distinguishing Active/Cleared vs Lingering Designation)
     current_status_str = "ACTIVE / CLEAN REPORT"
-    current_injury_detail = ""
     current_prac_badge = ""
     if not inj_matchup.empty and "player_display" in inj_matchup.columns:
         i_sub = inj_matchup[
@@ -2930,14 +3013,13 @@ def render_player_popup_contents(
             prim_inj_val = str(i_row.get("primary_injury", "")).strip()
             prac_val = str(i_row.get("practice_status_clean", "")).strip()
             current_prac_badge = render_practice_badge(prac_val) if prac_val and prac_val != "N/A" else ""
-            if current_status_str in ["ACTIVE / CLEARED", "ACTIVE", "CLEARED"]:
+            if not is_active_unresolved_injury(current_status_str):
                 inj_badge_html = (
                     f'{render_injury_badge("ACTIVE / CLEARED")} '
                     f'<span class="badge-sage">● [CLEARED FROM {prim_inj_val.upper() if prim_inj_val else "REPORT"} — 0.000 EPA DRAG]</span> '
                     f'{current_prac_badge}'
                 )
             else:
-                current_injury_detail = prim_inj_val
                 inj_badge_html = (
                     f'{render_injury_badge(current_status_str)} '
                     f'<span class="badge-bad">[{prim_inj_val}]</span> '
@@ -3664,9 +3746,21 @@ prop_logs_matchup = prepare_matchup_player_prop_logs(player_df, [away_tm, home_t
 
 
 def get_unit_penalty(tm: str, side: str) -> float:
+    """
+    Strictly sums unit EPA penalties ONLY for rows that are NOT cleared
+    and carry an active unresolved injury designation ('OUT', 'DOUBTFUL',
+    'QUESTIONABLE', 'IR', 'PUP', 'SUSPENDED', 'NFI').
+    """
     if inj_matchup.empty:
         return 0.0
-    sub = inj_matchup[(inj_matchup["team"] == tm) & (inj_matchup["unit_side"] == side)]
+    sub = inj_matchup[
+        (inj_matchup["team"] == tm)
+        & (inj_matchup["unit_side"] == side)
+        & (~inj_matchup["is_cleared"])
+        & (inj_matchup["report_status"].apply(is_active_unresolved_injury))
+    ]
+    if sub.empty:
+        return 0.0
     return float(sub["est_epa_penalty"].sum())
 
 
@@ -3801,11 +3895,31 @@ with subtab_brief:
 
         top_inj_row = None
         if not inj_matchup.empty and int(inj_matchup["is_anchor"].sum()) > 0:
-            top_inj_row = inj_matchup[inj_matchup["is_anchor"]].iloc[0]
+            active_anchor_rows = inj_matchup[
+                inj_matchup["is_anchor"] & (~inj_matchup["is_cleared"])
+            ]
+            if not active_anchor_rows.empty:
+                top_inj_row = active_anchor_rows.iloc[0]
+
+        # Exclude unavailable offensive players from focal weapon projection
+        unavailable_off_set: set[tuple[str, str]] = set()
+        if not inj_matchup.empty:
+            for _, r_u in inj_matchup.iterrows():
+                if is_unavailable_injury(str(r_u.get("report_status", ""))):
+                    unavailable_off_set.add(
+                        (str(r_u.get("team", "")).strip().upper(), str(r_u.get("player_display", "")).strip().lower())
+                    )
 
         top_weapon_row = None
         if not usage_matchup.empty:
-            top_weapon_row = usage_matchup.sort_values(by="calc_target_share", ascending=False).iloc[0]
+            avail_weapons = usage_matchup[
+                ~usage_matchup.apply(
+                    lambda r: (str(r["team"]).strip().upper(), str(r["player_name"]).strip().lower()) in unavailable_off_set,
+                    axis=1,
+                )
+            ]
+            if not avail_weapons.empty:
+                top_weapon_row = avail_weapons.sort_values(by="calc_target_share", ascending=False).iloc[0]
 
         with col_brief_left:
             a_pass_rk, a_rush_rk = int(a_eff["off_pass_epa_rank"]), int(a_eff["off_rush_epa_rank"])
@@ -4115,11 +4229,7 @@ with subtab_players:
             st.info("Insufficient wide receiver or cornerback snap data to project 1-on-1 battles.")
         else:
             elite_battles = [b for b in all_battles if b["mismatch_score"] >= 74.0]
-            backup_triggers = [
-                b
-                for b in all_battles
-                if "BACKUP" in b["cb_status_badge"] or "ROTATIONAL" in b["cb_status_badge"]
-            ]
+            backup_triggers = [b for b in all_battles if b.get("has_injury_trigger", False)]
             hot_wrs = [b for b in all_battles if "WR HOT" in b["wr_streak_badge"]]
             top_battle = sorted(all_battles, key=lambda x: x["mismatch_score"], reverse=True)[0]
 
@@ -4135,9 +4245,9 @@ with subtab_players:
                 delta="Score >= 74/100 Threshold",
             )
             c_k3.metric(
-                "Secondary Injury / Backup Triggers",
+                "Active Secondary Injury / Backup Triggers",
                 f"{len(backup_triggers)} Matchups",
-                delta="Backup or Rotational DB Targeted",
+                delta="Out / Doubtful / Questionable CBs Only",
             )
             c_k4.metric(
                 "Wideouts on L4 Hot Streak",
@@ -4201,7 +4311,7 @@ with subtab_players:
                                     {b['cb_status_badge']}
                                 </div>
                                 <div class="metric-subtext" style="color:#CBD5E1;">
-                                    <b>Trigger:</b> {b['trigger_note']}
+                                    <b>Rationale:</b> {b['trigger_note']}
                                 </div>
                                 """
                             )
@@ -4423,8 +4533,12 @@ with subtab_players:
             for col_obj, tm in [(col_away_inj, away_tm), (col_home_inj, home_tm)]:
                 with col_obj:
                     tm_inj_all = inj_matchup[inj_matchup["team"] == tm].copy()
-                    total_off_drop = tm_inj_all[tm_inj_all["unit_side"] == "Offense"]["est_epa_penalty"].sum()
-                    total_def_drop = tm_inj_all[tm_inj_all["unit_side"] == "Defense"]["est_epa_penalty"].sum()
+                    total_off_drop = tm_inj_all[
+                        (tm_inj_all["unit_side"] == "Offense") & (~tm_inj_all["is_cleared"])
+                    ]["est_epa_penalty"].sum()
+                    total_def_drop = tm_inj_all[
+                        (tm_inj_all["unit_side"] == "Defense") & (~tm_inj_all["is_cleared"])
+                    ]["est_epa_penalty"].sum()
                     anchor_count = int(tm_inj_all["is_anchor"].sum()) if not tm_inj_all.empty else 0
                     cleared_tm_count = int(tm_inj_all["is_cleared"].sum()) if not tm_inj_all.empty else 0
 
@@ -4466,7 +4580,7 @@ with subtab_players:
                             pos_str = str(r_inj.get("position", "POS"))
                             is_clr = bool(r_inj.get("is_cleared", False))
                             epa_color = "#00FF87" if is_clr else "#FF4D6D"
-                            epa_str = "0.000/play (Cleared)" if is_clr else f"-{r_inj['est_epa_penalty']:.3f}/play"
+                            epa_str = "0.000/play (Cleared — Baseline Talent Only)" if is_clr else f"-{r_inj['est_epa_penalty']:.3f}/play"
 
                             with st.container(border=True):
                                 ic1, ic2 = st.columns([1.4, 1.2])
@@ -4617,13 +4731,13 @@ with subtab_trench:
                     m_a.metric(
                         f"{off_tm} Adj Off EPA",
                         f"{adj_off_epa:+.3f}",
-                        delta=f"{-off_pen:+.3f} Inj Drag" if off_pen > 0 else "Full Strength",
+                        delta=f"{-off_pen:+.3f} Inj Drag" if off_pen > 0 else "Full Strength (0.000 Drag)",
                         delta_color="normal" if off_pen == 0 else "inverse",
                     )
                     m_b.metric(
                         f"{def_tm} Adj Def EPA",
                         f"{adj_def_epa:+.3f}",
-                        delta=f"+{def_pen:.3f} Inj Drag" if def_pen > 0 else "Full Strength",
+                        delta=f"+{def_pen:.3f} Inj Drag" if def_pen > 0 else "Full Strength (0.000 Drag)",
                         delta_color="normal" if def_pen == 0 else "inverse",
                     )
                     st.caption(
