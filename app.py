@@ -7,7 +7,7 @@ import streamlit as st
 import streamlit.components.v1 as components
 
 # -----------------------------------------------------------------------------
-# 1. PAGE CONFIGURATION & TERMINAL CSS THEME (STRICT NO-EMOJI UI)
+# 1. PAGE CONFIGURATION & CLEAN SLATE TERMINAL CSS THEME (STRICT NO-EMOJI UI)
 # -----------------------------------------------------------------------------
 st.set_page_config(
     page_title="Football Edger",
@@ -18,48 +18,48 @@ st.set_page_config(
 st.markdown(
     """
 <style>
-/* Master-Detail Terminal Cards */
+/* Clean, Toned-Down Sports Analytics Terminal Cards */
 .terminal-card {
-    background-color: #12161F;
-    border: 1px solid #262D3D;
-    border-left: 4px solid #4A90E2;
+    background-color: #121722;
+    border: 1px solid #222B3A;
+    border-left: 3px solid #4B83BD;
     border-radius: 8px;
-    padding: 16px;
-    margin-bottom: 12px;
+    padding: 14px 16px;
+    margin-bottom: 10px;
     color: #E2E8F0;
 }
 .terminal-card-elite {
-    background-color: #0F1E19;
-    border: 1px solid #1E4635;
-    border-left: 4px solid #00FF87;
+    background-color: #111A1E;
+    border: 1px solid #1E3532;
+    border-left: 3px solid #34D399;
     border-radius: 8px;
-    padding: 16px;
-    margin-bottom: 12px;
+    padding: 14px 16px;
+    margin-bottom: 10px;
     color: #E2E8F0;
 }
 .terminal-card-vuln {
-    background-color: #211316;
-    border: 1px solid #4A2026;
-    border-left: 4px solid #DC143C;
+    background-color: #1B1519;
+    border: 1px solid #3B2329;
+    border-left: 3px solid #F87171;
     border-radius: 8px;
-    padding: 16px;
-    margin-bottom: 12px;
+    padding: 14px 16px;
+    margin-bottom: 10px;
     color: #E2E8F0;
 }
 
 /* Inline Hyperlinked Player Names (HTML <a> and Streamlit Tertiary Buttons) */
 a.player-name-link {
-    color: #F8FAFC !important;
-    font-weight: 800;
+    color: #F1F5F9 !important;
+    font-weight: 700;
     text-decoration: underline;
-    text-decoration-color: rgba(0, 255, 135, 0.65);
+    text-decoration-color: rgba(148, 163, 184, 0.55);
     text-underline-offset: 3px;
     cursor: pointer;
     transition: color 0.14s ease, text-decoration-color 0.14s ease;
 }
 a.player-name-link:hover {
-    color: #00FF87 !important;
-    text-decoration-color: #00FF87;
+    color: #34D399 !important;
+    text-decoration-color: #34D399;
 }
 
 /* Style Streamlit tertiary buttons to look like clean inline hyperlinked player names */
@@ -71,71 +71,38 @@ button[kind="tertiary"] {
     margin: 0px !important;
     min-height: unset !important;
     height: auto !important;
-    color: #F8FAFC !important;
+    color: #F1F5F9 !important;
     font-family: monospace !important;
-    font-weight: 800 !important;
-    font-size: 0.92rem !important;
+    font-weight: 700 !important;
+    font-size: 0.90rem !important;
     text-decoration: underline !important;
-    text-decoration-color: rgba(0, 255, 135, 0.65) !important;
+    text-decoration-color: rgba(148, 163, 184, 0.55) !important;
     text-underline-offset: 3px !important;
     line-height: 1.3 !important;
     display: inline-flex !important;
     align-items: center !important;
 }
 button[kind="tertiary"]:hover {
-    color: #00FF87 !important;
-    text-decoration-color: #00FF87 !important;
-    background: rgba(0, 255, 135, 0.08) !important;
+    color: #34D399 !important;
+    text-decoration-color: #34D399 !important;
+    background: rgba(52, 211, 153, 0.08) !important;
     border-radius: 3px !important;
 }
 button[kind="tertiary"] p {
     font-family: monospace !important;
-    font-weight: 800 !important;
-    font-size: 0.92rem !important;
+    font-weight: 700 !important;
+    font-size: 0.90rem !important;
     color: inherit !important;
     margin: 0 !important;
     text-decoration: underline !important;
-    text-decoration-color: rgba(0, 255, 135, 0.65) !important;
+    text-decoration-color: rgba(148, 163, 184, 0.55) !important;
     text-underline-offset: 3px !important;
 }
 
 /* ============================================================================
-   1. PURE ST.MARKDOWN FLEXBOX TICKER CONTAINER
-   Uses display: flex; overflow-x: auto; white-space: nowrap;
-   ============================================================================ */
-.nfl-ticker-flexbox-container {
-    display: flex;
-    flex-direction: row;
-    flex-wrap: nowrap;
-    overflow-x: auto;
-    overflow-y: hidden;
-    white-space: nowrap;
-    gap: 10px;
-    padding: 10px 10px 12px 10px;
-    margin-bottom: 8px;
-    background-color: #0B0E14;
-    border: 1px solid #1E293B;
-    border-radius: 10px;
-    scrollbar-width: thin;
-    scrollbar-color: #334155 #0B0E14;
-    -webkit-overflow-scrolling: touch;
-}
-.nfl-ticker-flexbox-container::-webkit-scrollbar {
-    height: 8px;
-}
-.nfl-ticker-flexbox-container::-webkit-scrollbar-track {
-    background: #0B0E14;
-    border-radius: 4px;
-}
-.nfl-ticker-flexbox-container::-webkit-scrollbar-thumb {
-    background-color: #334155;
-    border-radius: 4px;
-}
-
-/* ============================================================================
-   2. STREAMLIT HORIZONTAL BLOCK TICKER OVERRIDE (Interactive Button Strip)
+   STREAMLIT HORIZONTAL BLOCK TICKER OVERRIDE (Interactive Button Strip)
    Forces Streamlit's column row containing .nfl-ticker-marker into a single
-   non-wrapping horizontal scroll strip with compact 196px game cards.
+   non-wrapping horizontal scroll strip with compact 192px game cards.
    ============================================================================ */
 div[data-testid="stHorizontalBlock"]:has(.nfl-ticker-marker) {
     display: flex !important;
@@ -144,21 +111,21 @@ div[data-testid="stHorizontalBlock"]:has(.nfl-ticker-marker) {
     overflow-x: auto !important;
     overflow-y: hidden !important;
     white-space: nowrap !important;
-    gap: 10px !important;
-    padding: 8px 8px 14px 8px !important;
-    margin-bottom: 10px !important;
-    background: #0B0E14 !important;
-    border: 1px solid #1E293B !important;
-    border-radius: 10px !important;
+    gap: 8px !important;
+    padding: 8px 8px 12px 8px !important;
+    margin-bottom: 8px !important;
+    background: #0D1118 !important;
+    border: 1px solid #1E2736 !important;
+    border-radius: 8px !important;
     scrollbar-width: thin;
-    scrollbar-color: #334155 #0B0E14;
+    scrollbar-color: #334155 #0D1118;
     -webkit-overflow-scrolling: touch;
 }
 div[data-testid="stHorizontalBlock"]:has(.nfl-ticker-marker)::-webkit-scrollbar {
-    height: 8px;
+    height: 7px;
 }
 div[data-testid="stHorizontalBlock"]:has(.nfl-ticker-marker)::-webkit-scrollbar-track {
-    background: #0B0E14;
+    background: #0D1118;
     border-radius: 4px;
 }
 div[data-testid="stHorizontalBlock"]:has(.nfl-ticker-marker)::-webkit-scrollbar-thumb {
@@ -167,31 +134,30 @@ div[data-testid="stHorizontalBlock"]:has(.nfl-ticker-marker)::-webkit-scrollbar-
 }
 div[data-testid="stHorizontalBlock"]:has(.nfl-ticker-marker) > div[data-testid="stColumn"],
 div[data-testid="stHorizontalBlock"]:has(.nfl-ticker-marker) > div[data-testid="column"] {
-    flex: 0 0 196px !important;
-    min-width: 196px !important;
-    max-width: 196px !important;
-    width: 196px !important;
+    flex: 0 0 192px !important;
+    min-width: 192px !important;
+    max-width: 192px !important;
+    width: 192px !important;
     white-space: nowrap !important;
 }
 
 /* Individual Ticker Card Visuals */
 .ticker-card {
-    background-color: #131822;
-    border: 1px solid #283246;
-    border-top: 3px solid #3B475E;
-    border-radius: 7px 7px 0 0;
-    padding: 8px 10px;
+    background-color: #131823;
+    border: 1px solid #242E3E;
+    border-top: 2px solid #334155;
+    border-radius: 6px 6px 0 0;
+    padding: 7px 10px;
     margin-bottom: -14px;
     white-space: nowrap;
     transition: all 0.14s ease-in-out;
 }
 .ticker-card-active {
-    background: linear-gradient(180deg, #0F2920 0%, #121A26 100%);
-    border: 1px solid #00FF87;
-    border-top: 3px solid #00FF87;
-    box-shadow: 0 0 14px rgba(0, 255, 135, 0.22);
-    border-radius: 7px 7px 0 0;
-    padding: 8px 10px;
+    background-color: #142225;
+    border: 1px solid #34D399;
+    border-top: 2px solid #34D399;
+    border-radius: 6px 6px 0 0;
+    padding: 7px 10px;
     margin-bottom: -14px;
     white-space: nowrap;
 }
@@ -199,52 +165,22 @@ div[data-testid="stHorizontalBlock"]:has(.nfl-ticker-marker) > div[data-testid="
     display: flex;
     justify-content: space-between;
     align-items: center;
-    font-size: 0.67rem;
+    font-size: 0.66rem;
     font-family: monospace;
     color: #94A3B8;
-    margin-bottom: 5px;
-    padding-bottom: 4px;
+    margin-bottom: 4px;
+    padding-bottom: 3px;
     border-bottom: 1px solid #1E293B;
     white-space: nowrap;
 }
-.ticker-slot-tag-tnf {
-    background-color: rgba(255, 176, 32, 0.16);
-    color: #FFB020;
-    border: 1px solid #FFB020;
+.ticker-slot-tag {
+    background-color: rgba(148, 163, 184, 0.12);
+    color: #CBD5E1;
+    border: 1px solid #334155;
     padding: 0px 5px;
     border-radius: 3px;
-    font-size: 0.63rem;
-    font-weight: 800;
-    font-family: monospace;
-}
-.ticker-slot-tag-snf {
-    background-color: rgba(0, 255, 135, 0.15);
-    color: #00FF87;
-    border: 1px solid #00FF87;
-    padding: 0px 5px;
-    border-radius: 3px;
-    font-size: 0.63rem;
-    font-weight: 800;
-    font-family: monospace;
-}
-.ticker-slot-tag-mnf {
-    background-color: rgba(56, 189, 248, 0.16);
-    color: #38BDF8;
-    border: 1px solid #38BDF8;
-    padding: 0px 5px;
-    border-radius: 3px;
-    font-size: 0.63rem;
-    font-weight: 800;
-    font-family: monospace;
-}
-.ticker-slot-tag-spc {
-    background-color: rgba(192, 132, 252, 0.16);
-    color: #C084FC;
-    border: 1px solid #C084FC;
-    padding: 0px 5px;
-    border-radius: 3px;
-    font-size: 0.63rem;
-    font-weight: 800;
+    font-size: 0.62rem;
+    font-weight: 700;
     font-family: monospace;
 }
 .ticker-team-row {
@@ -253,9 +189,9 @@ div[data-testid="stHorizontalBlock"]:has(.nfl-ticker-marker) > div[data-testid="
     align-items: center;
     margin: 3px 0;
     font-family: monospace;
-    font-size: 0.84rem;
+    font-size: 0.83rem;
     font-weight: 700;
-    color: #F8FAFC;
+    color: #F1F5F9;
     white-space: nowrap;
 }
 .ticker-team-left {
@@ -266,36 +202,36 @@ div[data-testid="stHorizontalBlock"]:has(.nfl-ticker-marker) > div[data-testid="
 }
 .ticker-team-record {
     font-family: monospace;
-    font-size: 0.72rem;
+    font-size: 0.71rem;
     font-weight: 600;
-    color: #94A3B8;
+    color: #64748B;
     margin-left: 2px;
 }
 .ticker-score-win {
     font-family: monospace;
-    font-size: 0.88rem;
+    font-size: 0.86rem;
     font-weight: 800;
-    color: #00FF87;
+    color: #34D399;
 }
 .ticker-score {
     font-family: monospace;
-    font-size: 0.86rem;
+    font-size: 0.84rem;
     font-weight: 700;
     color: #CBD5E1;
 }
 .ticker-score-muted {
     font-family: monospace;
-    font-size: 0.75rem;
+    font-size: 0.74rem;
     color: #64748B;
 }
 .ticker-footer {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-top: 6px;
+    margin-top: 5px;
     padding-top: 4px;
-    border-top: 1px dashed #263042;
-    font-size: 0.66rem;
+    border-top: 1px solid #1E293B;
+    font-size: 0.65rem;
     font-family: monospace;
     color: #94A3B8;
     white-space: nowrap;
@@ -303,51 +239,51 @@ div[data-testid="stHorizontalBlock"]:has(.nfl-ticker-marker) > div[data-testid="
 
 /* Style the action button docked seamlessly at the bottom of each ticker card */
 div[data-testid="stHorizontalBlock"]:has(.nfl-ticker-marker) div[data-testid="stButton"] > button {
-    border-radius: 0 0 7px 7px !important;
+    border-radius: 0 0 6px 6px !important;
     font-family: monospace !important;
-    font-size: 0.71rem !important;
+    font-size: 0.70rem !important;
     font-weight: 700 !important;
-    height: 28px !important;
-    min-height: 28px !important;
+    height: 26px !important;
+    min-height: 26px !important;
     padding: 0 8px !important;
     margin-top: 0 !important;
     white-space: nowrap !important;
 }
 
-/* High-Visibility Active Game Selection Banner */
+/* Streamlined Active Game Selection Banner */
 .active-game-spotlight {
-    background: linear-gradient(135deg, #0D1B2A 0%, #112233 55%, #0F1E19 100%);
-    border: 2px solid #00FF87;
-    box-shadow: 0 0 22px rgba(0, 255, 135, 0.18);
-    border-radius: 12px;
-    padding: 18px 22px;
-    margin: 6px 0 16px 0;
+    background-color: #121824;
+    border: 1px solid #2A364B;
+    border-left: 4px solid #34D399;
+    border-radius: 10px;
+    padding: 14px 18px;
+    margin: 4px 0 12px 0;
     color: #F8FAFC;
 }
 .active-lock-pill {
-    background-color: rgba(0, 255, 135, 0.18);
-    color: #00FF87;
-    border: 1px solid #00FF87;
-    padding: 3px 10px;
-    border-radius: 999px;
-    font-size: 0.74rem;
-    font-weight: 800;
-    letter-spacing: 0.06em;
+    background-color: rgba(52, 211, 153, 0.12);
+    color: #34D399;
+    border: 1px solid rgba(52, 211, 153, 0.35);
+    padding: 2px 9px;
+    border-radius: 4px;
+    font-size: 0.71rem;
+    font-weight: 700;
+    letter-spacing: 0.04em;
     font-family: monospace;
     display: inline-block;
     text-transform: uppercase;
 }
 
 /* ============================================================================
-   COMPACT PLAYER HEADSHOT AVATARS FOR MISMATCH CARDS
+   COMPACT PLAYER HEADSHOT AVATARS FOR MISMATCH & PICK CARDS
    Clean 48x48 cutout frame that never overrides parent Streamlit column widths.
    ============================================================================ */
 .mismatch-headshot-wrap {
     width: 48px;
     height: 48px;
-    border-radius: 8px;
-    background: linear-gradient(180deg, #161F2E 0%, #0D121B 100%);
-    border: 1px solid #283246;
+    border-radius: 7px;
+    background-color: #161E2C;
+    border: 1px solid #263144;
     display: flex;
     align-items: flex-end;
     justify-content: center;
@@ -372,38 +308,37 @@ div[data-testid="stHorizontalBlock"]:has(.nfl-ticker-marker) div[data-testid="st
     align-items: center;
     justify-content: center;
     font-family: monospace;
-    font-size: 0.85rem;
-    font-weight: 800;
+    font-size: 0.82rem;
+    font-weight: 700;
     color: #94A3B8;
     background: #141B26;
 }
 
 /* ============================================================================
    PLAYER POP-OUT DOSSIER HEADER & BORDERLESS FLUSH HEADSHOT
-   No circular ring; larger proportioned cutout flush against the bottom edge.
    ============================================================================ */
 .player-modal-banner {
-    background: linear-gradient(135deg, #0F172A 0%, #162234 60%, #0F2920 100%);
-    border: 1px solid #00FF87;
-    border-left: 5px solid #00FF87;
-    border-radius: 10px;
-    padding: 14px 24px 0 20px;
-    margin-bottom: 14px;
+    background-color: #121824;
+    border: 1px solid #263246;
+    border-left: 4px solid #34D399;
+    border-radius: 8px;
+    padding: 12px 20px 0 18px;
+    margin-bottom: 12px;
     display: flex;
     align-items: flex-end;
     justify-content: space-between;
-    gap: 20px;
+    gap: 18px;
     flex-wrap: wrap;
     overflow: hidden;
 }
 .player-modal-left {
     display: flex;
     align-items: flex-end;
-    gap: 22px;
+    gap: 18px;
 }
 .player-headshot-wrap {
-    width: 172px;
-    height: 136px;
+    width: 156px;
+    height: 124px;
     display: flex;
     align-items: flex-end;
     justify-content: center;
@@ -412,13 +347,12 @@ div[data-testid="stHorizontalBlock"]:has(.nfl-ticker-marker) div[data-testid="st
     padding: 0;
     background: transparent;
     border: none;
-    box-shadow: none;
     overflow: hidden;
 }
 .player-headshot-img {
-    height: 136px;
+    height: 124px;
     width: auto;
-    max-width: 172px;
+    max-width: 156px;
     object-fit: contain;
     object-position: bottom center;
     display: block;
@@ -427,196 +361,195 @@ div[data-testid="stHorizontalBlock"]:has(.nfl-ticker-marker) div[data-testid="st
     border: none;
 }
 .player-headshot-fallback {
-    width: 118px;
-    height: 104px;
-    background: rgba(30, 41, 59, 0.65);
-    border-radius: 8px 8px 0 0;
+    width: 108px;
+    height: 96px;
+    background: #1A2232;
+    border-radius: 6px 6px 0 0;
     display: flex;
     align-items: center;
     justify-content: center;
     font-family: monospace;
-    font-size: 1.65rem;
+    font-size: 1.5rem;
     font-weight: 800;
     color: #94A3B8;
-    letter-spacing: 0.05em;
 }
 .player-modal-meta {
-    padding-bottom: 16px;
+    padding-bottom: 14px;
 }
 
-/* Unit Ranking & Status Badges (Clean Tag Format — No Leading Dot) */
+/* Toned-Down, Cohesive Unit Ranking & Status Badges (No Leading Dots) */
 .badge-elite {
-    background-color: rgba(0, 255, 135, 0.14);
-    color: #00FF87;
-    border: 1px solid #00FF87;
-    padding: 2px 8px;
+    background-color: rgba(52, 211, 153, 0.10);
+    color: #34D399;
+    border: 1px solid rgba(52, 211, 153, 0.35);
+    padding: 2px 7px;
     border-radius: 4px;
-    font-size: 0.74rem;
+    font-size: 0.72rem;
     font-weight: 700;
     font-family: monospace;
     display: inline-block;
-    margin: 2px 2px;
+    margin: 1px 2px;
 }
 .badge-cleared {
-    background-color: rgba(56, 189, 248, 0.16);
-    color: #38BDF8;
-    border: 1px solid #00FF87;
-    padding: 2px 8px;
+    background-color: rgba(52, 211, 153, 0.10);
+    color: #34D399;
+    border: 1px solid rgba(52, 211, 153, 0.35);
+    padding: 2px 7px;
     border-radius: 4px;
-    font-size: 0.74rem;
-    font-weight: 800;
+    font-size: 0.72rem;
+    font-weight: 700;
     font-family: monospace;
     display: inline-block;
-    margin: 2px 2px;
+    margin: 1px 2px;
 }
 .badge-mid {
-    background-color: rgba(148, 163, 184, 0.12);
+    background-color: rgba(148, 163, 184, 0.08);
     color: #94A3B8;
-    border: 1px solid #475569;
-    padding: 2px 8px;
+    border: 1px solid #334155;
+    padding: 2px 7px;
     border-radius: 4px;
-    font-size: 0.74rem;
+    font-size: 0.72rem;
     font-weight: 600;
     font-family: monospace;
     display: inline-block;
-    margin: 2px 2px;
+    margin: 1px 2px;
 }
 .badge-bad {
-    background-color: rgba(220, 20, 60, 0.18);
-    color: #FF4D6D;
-    border: 1px solid #DC143C;
-    padding: 2px 8px;
+    background-color: rgba(248, 113, 113, 0.10);
+    color: #F87171;
+    border: 1px solid rgba(248, 113, 113, 0.35);
+    padding: 2px 7px;
     border-radius: 4px;
-    font-size: 0.74rem;
+    font-size: 0.72rem;
     font-weight: 700;
     font-family: monospace;
     display: inline-block;
-    margin: 2px 2px;
+    margin: 1px 2px;
 }
 .badge-amber {
-    background-color: rgba(255, 176, 32, 0.15);
-    color: #FFB020;
-    border: 1px solid #FFB020;
-    padding: 2px 8px;
+    background-color: rgba(251, 191, 36, 0.10);
+    color: #FBBF24;
+    border: 1px solid rgba(251, 191, 36, 0.35);
+    padding: 2px 7px;
     border-radius: 4px;
-    font-size: 0.74rem;
+    font-size: 0.72rem;
     font-weight: 700;
     font-family: monospace;
     display: inline-block;
-    margin: 2px 2px;
+    margin: 1px 2px;
 }
 .badge-sage {
-    background-color: rgba(110, 168, 150, 0.15);
-    color: #7FD1B9;
-    border: 1px solid #7FD1B9;
-    padding: 2px 8px;
+    background-color: rgba(96, 165, 250, 0.10);
+    color: #93C5FD;
+    border: 1px solid rgba(96, 165, 250, 0.30);
+    padding: 2px 7px;
     border-radius: 4px;
-    font-size: 0.74rem;
+    font-size: 0.72rem;
     font-weight: 600;
     font-family: monospace;
     display: inline-block;
-    margin: 2px 2px;
+    margin: 1px 2px;
 }
 .badge-hot {
-    background-color: rgba(255, 107, 53, 0.18);
-    color: #FF8C42;
-    border: 1px solid #FF6B35;
-    padding: 2px 8px;
+    background-color: rgba(52, 211, 153, 0.12);
+    color: #34D399;
+    border: 1px solid rgba(52, 211, 153, 0.40);
+    padding: 2px 7px;
     border-radius: 4px;
-    font-size: 0.74rem;
+    font-size: 0.72rem;
     font-weight: 700;
     font-family: monospace;
     display: inline-block;
-    margin: 2px 2px;
+    margin: 1px 2px;
 }
 .badge-cold {
-    background-color: rgba(56, 189, 248, 0.16);
-    color: #38BDF8;
-    border: 1px solid #0284C7;
-    padding: 2px 8px;
+    background-color: rgba(148, 163, 184, 0.10);
+    color: #94A3B8;
+    border: 1px solid #475569;
+    padding: 2px 7px;
     border-radius: 4px;
-    font-size: 0.74rem;
-    font-weight: 700;
+    font-size: 0.72rem;
+    font-weight: 600;
     font-family: monospace;
     display: inline-block;
-    margin: 2px 2px;
+    margin: 1px 2px;
 }
 .team-pill {
-    background-color: #1E293B;
-    color: #F8FAFC;
-    border: 1px solid #475569;
-    padding: 3px 10px;
-    border-radius: 999px;
-    font-size: 0.85rem;
+    background-color: #18202F;
+    color: #F1F5F9;
+    border: 1px solid #2E3A4F;
+    padding: 2px 9px;
+    border-radius: 6px;
+    font-size: 0.82rem;
     font-weight: 700;
     font-family: monospace;
     display: inline-flex;
     align-items: center;
     gap: 6px;
-    margin: 0 4px;
+    margin: 0 3px;
 }
 .team-pill-lg {
-    background-color: #162234;
-    color: #FFFFFF;
-    border: 1px solid #3B82F6;
-    padding: 6px 14px;
-    border-radius: 10px;
-    font-size: 1.3rem;
+    background-color: #161F2E;
+    color: #F8FAFC;
+    border: 1px solid #2E3D52;
+    padding: 5px 12px;
+    border-radius: 8px;
+    font-size: 1.18rem;
     font-weight: 800;
     font-family: monospace;
     display: inline-flex;
     align-items: center;
-    gap: 10px;
-    margin: 0 6px;
+    gap: 8px;
+    margin: 0 4px;
 }
 .metric-subtext {
-    font-size: 0.80rem;
+    font-size: 0.79rem;
     color: #94A3B8;
     font-family: monospace;
 }
 
-/* Comparative Brief Pillars & Tactical Timeline */
+/* Comparative Brief Pillars */
 .brief-grid {
     display: grid;
     grid-template-columns: 1fr 1fr;
-    gap: 12px;
-    margin-bottom: 12px;
+    gap: 10px;
+    margin-bottom: 10px;
 }
 .unit-pillar {
     background-color: #151B26;
-    border: 1px solid #263042;
-    border-radius: 8px;
-    padding: 12px 14px;
+    border: 1px solid #232C3D;
+    border-radius: 7px;
+    padding: 10px 12px;
 }
 .unit-pillar-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    border-bottom: 1px solid #263042;
-    padding-bottom: 8px;
-    margin-bottom: 10px;
+    border-bottom: 1px solid #232C3D;
+    padding-bottom: 6px;
+    margin-bottom: 8px;
     font-weight: 700;
-    font-size: 0.92rem;
-    color: #F8FAFC;
+    font-size: 0.88rem;
+    color: #F1F5F9;
 }
 .unit-tier-row {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 5px 0;
-    font-size: 0.84rem;
-    border-bottom: 1px dashed rgba(71, 85, 105, 0.35);
+    padding: 4px 0;
+    font-size: 0.82rem;
+    border-bottom: 1px dashed rgba(71, 85, 105, 0.30);
 }
 .unit-tier-label {
     color: #94A3B8;
     font-family: monospace;
     font-weight: 600;
-    min-width: 58px;
+    min-width: 54px;
 }
 .unit-lever-footer {
-    margin-top: 9px;
-    padding-top: 6px;
-    font-size: 0.82rem;
+    margin-top: 8px;
+    padding-top: 4px;
+    font-size: 0.80rem;
     color: #E2E8F0;
     display: flex;
     justify-content: space-between;
@@ -625,76 +558,29 @@ div[data-testid="stHorizontalBlock"]:has(.nfl-ticker-marker) div[data-testid="st
 .brief-context-strip {
     display: grid;
     grid-template-columns: 1fr 1fr;
-    gap: 12px;
-    background-color: #141A24;
-    border: 1px solid #262D3D;
-    border-radius: 8px;
-    padding: 10px 14px;
+    gap: 10px;
+    background-color: #151B26;
+    border: 1px solid #232C3D;
+    border-radius: 7px;
+    padding: 9px 12px;
 }
 .context-cell-title {
-    font-size: 0.72rem;
+    font-size: 0.70rem;
     font-family: monospace;
     color: #94A3B8;
     text-transform: uppercase;
-    letter-spacing: 0.05em;
-    margin-bottom: 4px;
-}
-.tactical-step {
-    background-color: #151B26;
-    border: 1px solid #263042;
-    border-left: 3px solid #7FD1B9;
-    border-radius: 6px;
-    padding: 10px 14px;
-    margin-bottom: 10px;
-}
-.tactical-step-last {
-    background-color: #151B26;
-    border: 1px solid #263042;
-    border-left: 3px solid #FFB020;
-    border-radius: 6px;
-    padding: 10px 14px;
-    margin-bottom: 0;
-}
-.tactical-phase-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 5px;
-}
-.tactical-phase-tag {
-    font-size: 0.73rem;
-    font-family: monospace;
-    font-weight: 800;
-    color: #7FD1B9;
-    letter-spacing: 0.05em;
-    text-transform: uppercase;
-}
-.tactical-body {
-    font-size: 0.88rem;
-    color: #F1F5F9;
-    line-height: 1.45;
-}
-
-/* 1-on-1 CB vs WR Battle Cards */
-.cb-wr-vs-row {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    background-color: #161D2A;
-    border: 1px solid #283246;
-    border-radius: 6px;
-    padding: 8px 12px;
-    margin: 8px 0;
+    letter-spacing: 0.04em;
+    margin-bottom: 3px;
 }
 
 /* Historical Injury Timeline Row Cards */
 .injury-history-row {
     background-color: #141A24;
-    border: 1px solid #263042;
-    border-left: 3px solid #4A90E2;
+    border: 1px solid #242E3E;
+    border-left: 3px solid #4B83BD;
     border-radius: 6px;
-    padding: 9px 14px;
-    margin-bottom: 8px;
+    padding: 8px 12px;
+    margin-bottom: 7px;
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -798,10 +684,7 @@ def trigger_player_popup(
 
 
 def render_player_link(player_name: str, team_abbr: str = "", pos: str = "") -> str:
-    """
-    Renders a clean inline hyperlinked player name inside HTML cards.
-    Preserves active game/season/week in query params and works with the zero-reload JS bridge.
-    """
+    """Renders a clean inline hyperlinked player name inside HTML cards."""
     clean_p = str(player_name).strip()
     if not clean_p or "Rotation" in clean_p:
         return f"<b>{clean_p}</b>"
@@ -824,8 +707,7 @@ def render_inline_player_trigger(
 ) -> None:
     """
     Renders a native Streamlit tertiary button styled as an underlined inline text link.
-    Clicking the player's name directly updates st.session_state['active_player']
-    and opens the pop-out dossier in-place without any page reload.
+    Clicking the player's name directly opens the pop-out dossier in-place.
     """
     clean_p = str(player_name).strip()
     if not clean_p or "Rotation" in clean_p:
@@ -864,7 +746,7 @@ def render_team_pill(team_abbr: str, role_tag: str = "", large: bool = False) ->
     """Renders an inline HTML team pill with embedded logo and optional clean record/role tag."""
     logo = get_team_logo_url(team_abbr)
     cls = "team-pill-lg" if large else "team-pill"
-    img_sz = 34 if large else 18
+    img_sz = 28 if large else 17
     role_html = (
         f'<span style="color:#94A3B8; font-size:0.75em; font-weight:600;">({role_tag})</span>'
         if role_tag
@@ -896,7 +778,6 @@ def is_active_unresolved_injury(status_str: str) -> bool:
     """
     Strict gate helper: Returns True ONLY when a player's status is an active,
     unresolved injury designation ('OUT', 'DOUBTFUL', 'QUESTIONABLE', 'IR', 'PUP', 'SUSPENDED', 'NFI').
-    Returns False if the player is cleared, active, or removed from the injury designation.
     """
     if not status_str or pd.isna(status_str):
         return False
@@ -925,9 +806,7 @@ def normalize_injury_designation(
 ) -> str:
     """
     Normalizes raw nflverse injury designations and practice participation so that
-    players cleared from the injury report (blank official game_status / report_status,
-    Active, Probable, or Cleared) immediately resolve to 'ACTIVE / CLEARED' rather than
-    defaulting to 'Questionable'.
+    players cleared from the injury report immediately resolve to 'ACTIVE / CLEARED'.
     """
     if pd.isna(raw_status):
         s_clean = ""
@@ -952,10 +831,7 @@ def normalize_injury_designation(
 
 
 def render_injury_badge(status: str) -> str:
-    """
-    Renders an HTML badge for official NFL injury report designations without leading dots.
-    Clearly distinguishes ACTIVE / CLEARED players from lingering designations.
-    """
+    """Renders an HTML badge for official NFL injury report designations without leading dots."""
     status_clean = str(status).strip().upper()
     if status_clean in CLEARED_DESIGNATIONS or "CLEARED" in status_clean or "PLAYED" in status_clean:
         return '<span class="badge-elite">[ACTIVE / CLEARED]</span>'
@@ -969,26 +845,23 @@ def render_injury_badge(status: str) -> str:
 
 
 def render_practice_badge(practice_status: str) -> str:
-    """Renders a clean tag badge for weekly practice participation (FP, LP, DNP) without leading dots."""
+    """Renders a clean tag badge for weekly practice participation (FP, LP, DNP)."""
     if pd.isna(practice_status) or not str(practice_status).strip():
         return '<span class="badge-mid">[PRACTICE: N/A]</span>'
     p_clean = str(practice_status).strip().upper()
     if p_clean in ["NAN", "NONE", "NULL"]:
         return '<span class="badge-mid">[PRACTICE: N/A]</span>'
     if "FULL" in p_clean or p_clean == "FP":
-        return '<span class="badge-elite">[FULL PRACTICE (FP)]</span>'
+        return '<span class="badge-elite">[FP]</span>'
     if "LIMITED" in p_clean or p_clean == "LP":
-        return '<span class="badge-amber">[LIMITED PRACTICE (LP)]</span>'
+        return '<span class="badge-amber">[LP]</span>'
     if "DID NOT" in p_clean or "DNP" in p_clean or "NONE" in p_clean:
-        return '<span class="badge-bad">[DID NOT PARTICIPATE (DNP)]</span>'
+        return '<span class="badge-bad">[DNP]</span>'
     return f'<span class="badge-mid">[{p_clean}]</span>'
 
 
 def classify_primetime_code(row: pd.Series) -> str:
-    """
-    Detects compact broadcast tags for the NFL.com-style ticker:
-    Returns [TNF], [SNF], [MNF], [SPC], or empty string for standard Sunday daytime games.
-    """
+    """Detects compact broadcast tags ([TNF], [SNF], [MNF], [SPC])."""
     weekday = str(row.get("weekday", "")).strip().lower()
     gameday = str(row.get("gameday", "")).strip()
     gametime = str(row.get("gametime", "")).strip()
@@ -1018,25 +891,16 @@ def classify_primetime_code(row: pd.Series) -> str:
 
 
 def render_slot_badge_html(slot_code: str) -> str:
-    """Returns color-coded HTML badge for [TNF], [SNF], [MNF], or [SPC]."""
-    if slot_code == "[TNF]":
-        return '<span class="ticker-slot-tag-tnf">[TNF]</span>'
-    if slot_code == "[SNF]":
-        return '<span class="ticker-slot-tag-snf">[SNF]</span>'
-    if slot_code == "[MNF]":
-        return '<span class="ticker-slot-tag-mnf">[MNF]</span>'
-    if slot_code == "[SPC]":
-        return '<span class="ticker-slot-tag-spc">[SPC]</span>'
+    """Returns a clean, uniform slate badge for broadcast slots."""
+    if slot_code in ["[TNF]", "[SNF]", "[MNF]", "[SPC]"]:
+        return f'<span class="ticker-slot-tag">{slot_code}</span>'
     return '<span class="ticker-score-muted">[SUN]</span>'
 
 
 def compute_team_records(
     schedule_df: pd.DataFrame, through_week: int | None = None
 ) -> dict[str, str]:
-    """
-    Dynamically computes each NFL team's season record (e.g., '4-1' or '3-2-1')
-    from the schedule/results DataFrame up through the selected week.
-    """
+    """Dynamically computes each NFL team's season record up through the selected week."""
     records: dict[str, list[int]] = {}
     if schedule_df.empty:
         return {}
@@ -1085,9 +949,7 @@ def compute_team_records(
 def render_nfl_horizontal_ticker(
     week_games: pd.DataFrame, team_records: dict[str, str]
 ) -> None:
-    """
-    Renders the horizontally scrollable NFL.com-style weekly game strip at the top of the page.
-    """
+    """Renders the horizontally scrollable weekly game strip at the top of the page."""
     if week_games.empty:
         st.info("No games match the current filter criteria.")
         return
@@ -1166,9 +1028,9 @@ def render_nfl_horizontal_ticker(
                 """
             )
             btn_label = (
-                f"[ACTIVE: {away_tm} vs {home_tm}]"
+                f"[ACTIVE: {away_tm} @ {home_tm}]"
                 if is_selected
-                else f"SELECT {away_tm} vs {home_tm}"
+                else f"{away_tm} @ {home_tm}"
             )
             if st.button(
                 btn_label,
@@ -1178,41 +1040,101 @@ def render_nfl_horizontal_ticker(
             ):
                 st.session_state["selected_game"] = game_id
                 st.session_state["selected_game_idx"] = idx
+                st.session_state["_user_manually_picked_game"] = True
                 st.rerun()
+
+
+def _parse_game_kickoff_ts(df: pd.DataFrame) -> pd.Series:
+    """Builds a parsed kickoff Timestamp Series from gameday + gametime columns."""
+    if "gameday" not in df.columns:
+        return pd.Series([pd.NaT] * len(df), index=df.index)
+    gday = df["gameday"].fillna("").astype(str).str.strip()
+    gtime = (
+        df["gametime"].fillna("13:00").astype(str).str.strip()
+        if "gametime" in df.columns
+        else pd.Series(["13:00"] * len(df), index=df.index)
+    )
+    gtime = gtime.replace({"": "13:00", "nan": "13:00", "TBD": "13:00"})
+    return pd.to_datetime(gday + " " + gtime, errors="coerce")
 
 
 def get_default_nfl_week_index(schedule_df: pd.DataFrame, available_weeks: list[int]) -> int:
     """
-    Calculates the current active NFL week dynamically based on today's date
-    or the first week with unplayed games so the app opens on the active slate.
+    Automatically selects the active/upcoming NFL week:
+    1. First week that has unplayed games (no final score) or upcoming kickoff >= now.
+    2. Otherwise, first week with gameday >= today.
+    3. Otherwise, the final week of the season.
     """
     if schedule_df.empty or not available_weeks:
         return 0
 
-    today = pd.Timestamp.now().normalize()
+    now_ts = pd.Timestamp.now()
+    today = now_ts.normalize()
 
-    if "gameday" in schedule_df.columns:
-        temp = schedule_df.copy()
-        temp["parsed_date"] = pd.to_datetime(temp["gameday"], errors="coerce")
-        valid_dates = temp.dropna(subset=["parsed_date", "week"])
+    temp = schedule_df.copy()
+    temp["kickoff_ts"] = _parse_game_kickoff_ts(temp)
+    temp["parsed_date"] = pd.to_datetime(temp.get("gameday"), errors="coerce")
 
-        if not valid_dates.empty:
-            upcoming = valid_dates[valid_dates["parsed_date"] >= (today - pd.Timedelta(days=1))]
-            if not upcoming.empty:
-                target_wk = int(upcoming.sort_values("parsed_date").iloc[0]["week"])
-                if target_wk in available_weeks:
-                    return available_weeks.index(target_wk)
-
-            max_date = valid_dates["parsed_date"].max()
-            if today > max_date:
-                return len(available_weeks) - 1
-
-    if "home_score" in schedule_df.columns:
-        unplayed = schedule_df[schedule_df["home_score"].isna()]
+    if {"home_score", "away_score"}.issubset(temp.columns):
+        unplayed = temp[temp["home_score"].isna() | temp["away_score"].isna()]
         if not unplayed.empty:
-            first_unplayed_wk = int(unplayed["week"].dropna().min())
-            if first_unplayed_wk in available_weeks:
-                return available_weeks.index(first_unplayed_wk)
+            future_unplayed = unplayed[
+                unplayed["kickoff_ts"].isna() | (unplayed["kickoff_ts"] >= (now_ts - pd.Timedelta(hours=4)))
+            ]
+            target_pool = future_unplayed if not future_unplayed.empty else unplayed
+            first_wk = int(target_pool["week"].dropna().min())
+            if first_wk in available_weeks:
+                return available_weeks.index(first_wk)
+
+    valid_dates = temp.dropna(subset=["parsed_date", "week"])
+    if not valid_dates.empty:
+        upcoming = valid_dates[valid_dates["parsed_date"] >= today]
+        if not upcoming.empty:
+            target_wk = int(upcoming.sort_values("parsed_date").iloc[0]["week"])
+            if target_wk in available_weeks:
+                return available_weeks.index(target_wk)
+        return len(available_weeks) - 1
+
+    return 0
+
+
+def get_default_next_game_index(week_games: pd.DataFrame) -> int:
+    """
+    Within the selected week's games, automatically defaults to the next upcoming
+    or active game rather than lingering on already-completed games (like finished TNF).
+    Priority:
+      1. First unplayed game (`home_score` or `away_score` is NaN) with kickoff >= now - 4h.
+      2. First unplayed game in the week.
+      3. First game with kickoff >= today.
+      4. Fallback to the last game in the week (or 0).
+    """
+    if week_games.empty:
+        return 0
+
+    now_ts = pd.Timestamp.now()
+    temp = week_games.copy()
+    temp["kickoff_ts"] = _parse_game_kickoff_ts(temp)
+
+    if {"home_score", "away_score"}.issubset(temp.columns):
+        unplayed_mask = temp["home_score"].isna() | temp["away_score"].isna()
+        unplayed = temp[unplayed_mask]
+        if not unplayed.empty:
+            upcoming_unplayed = unplayed[
+                unplayed["kickoff_ts"].isna() | (unplayed["kickoff_ts"] >= (now_ts - pd.Timedelta(hours=4)))
+            ]
+            if not upcoming_unplayed.empty:
+                upcoming_sorted = upcoming_unplayed.sort_values(
+                    by="kickoff_ts", na_position="last"
+                )
+                return int(upcoming_sorted.index[0])
+            unplayed_sorted = unplayed.sort_values(by="kickoff_ts", na_position="last")
+            return int(unplayed_sorted.index[0])
+
+    valid_ts = temp.dropna(subset=["kickoff_ts"])
+    if not valid_ts.empty:
+        future_games = valid_ts[valid_ts["kickoff_ts"] >= (now_ts - pd.Timedelta(hours=4))]
+        if not future_games.empty:
+            return int(future_games.sort_values("kickoff_ts").index[0])
 
     return 0
 
@@ -1245,16 +1167,16 @@ def evaluate_player_streak_badge(
 
     if rel_pct >= 15.0 or (season_avg < 1.5 and diff >= 0.35):
         return (
-            f'<span class="badge-hot">[HOT STREAK: L3 Avg {l3_avg:.1f} vs {season_avg:.1f} Season]</span>',
+            f'<span class="badge-hot">[HOT L3: {l3_avg:.1f} vs {season_avg:.1f} Avg]</span>',
             f"{diff:+.1f} L3 Surge ({rel_pct:+.0f}%)",
         )
     if rel_pct <= -15.0 or (season_avg < 1.5 and diff <= -0.35):
         return (
-            f'<span class="badge-cold">[COLD STREAK: L3 Avg {l3_avg:.1f} vs {season_avg:.1f} Season]</span>',
+            f'<span class="badge-cold">[COLD L3: {l3_avg:.1f} vs {season_avg:.1f} Avg]</span>',
             f"{diff:+.1f} L3 Dip ({rel_pct:+.0f}%)",
         )
     return (
-        f'<span class="badge-sage">[STEADY FORM: L3 Avg {l3_avg:.1f} vs {season_avg:.1f} Season]</span>',
+        f'<span class="badge-sage">[STEADY L3: {l3_avg:.1f} vs {season_avg:.1f} Avg]</span>',
         f"{diff:+.1f} vs Season Avg",
     )
 
@@ -1456,8 +1378,6 @@ def load_snap_counts_csv(season: int) -> tuple[pd.DataFrame, int]:
 def load_injuries_csv(season: int, refresh_token: int = 0) -> tuple[pd.DataFrame, int]:
     """
     Fetches official weekly NFL injury reports AND weekly roster status feeds via pd.read_csv.
-    Uses a short 300s TTL plus an explicit `refresh_token` cache-buster so real-time
-    mid-week and game-day injury clearances update immediately without stale cache lag.
     """
     inj_df = pd.DataFrame()
     loaded_yr = season
@@ -1548,10 +1468,7 @@ def load_injuries_csv(season: int, refresh_token: int = 0) -> tuple[pd.DataFrame
 
 @st.cache_data(ttl=3600)
 def load_rosters_headshots_csv(season: int) -> dict[str, dict]:
-    """
-    Fetches official NFL player high-resolution headshot URLs and metadata
-    from nflverse rosters (covering Offense, Defense, and Special Teams).
-    """
+    """Fetches official NFL player headshot URLs and metadata from nflverse rosters."""
     for yr in [season, season - 1, 2024]:
         urls = [
             f"https://github.com/nflverse/nflverse-data/releases/download/rosters/roster_{yr}.csv",
@@ -1652,7 +1569,7 @@ def render_mismatch_headshot_html(
     player_name: str, team_abbr: str, headshot_lookup: dict[str, dict]
 ) -> str:
     """
-    Renders a clean 48x48px player headshot box for the mismatch area cards,
+    Renders a clean 48x48px player headshot box for mismatch and pick cards,
     with graceful fallback to monogram initials if a photo is unavailable.
     """
     clean_p = str(player_name).strip()
@@ -1673,15 +1590,12 @@ def render_mismatch_headshot_html(
 
 
 # -----------------------------------------------------------------------------
-# 3. ANALYTICS, 1-ON-1 CB vs WR MISMATCH, 5-YR H2H, ROSTER & BACKTEST ENGINES
+# 3. ANALYTICS, TOP 3 PLAYER PICKS, CB vs WR MISMATCH, H2H, ROSTER & BACKTEST
 # -----------------------------------------------------------------------------
 def get_five_year_h2h_history(
     master_df: pd.DataFrame, away_tm: str, home_tm: str, current_season: int
 ) -> pd.DataFrame:
-    """
-    Filters the master nflverse schedule to the dedicated 5-year matchup window
-    (current_season - 5 through current_season) between the selected teams.
-    """
+    """Filters the master nflverse schedule to the dedicated 5-year matchup window."""
     if master_df.empty or "season" not in master_df.columns:
         return pd.DataFrame()
 
@@ -1737,10 +1651,7 @@ def get_five_year_h2h_history(
 
 
 def prepare_matchup_player_prop_logs(player_df: pd.DataFrame, teams: list[str]) -> pd.DataFrame:
-    """
-    Prepares week-by-week player game logs for the selected matchup teams,
-    including Anytime TD, Receiving TDs, Interceptions (INT), and yardage/reception props.
-    """
+    """Prepares week-by-week player game logs for the selected matchup teams."""
     if player_df.empty or "team" not in player_df.columns:
         return pd.DataFrame()
 
@@ -1874,6 +1785,187 @@ def aggregate_team_skill_usage(player_df: pd.DataFrame, teams: list[str]) -> pd.
     return grouped
 
 
+def build_top_player_picks(
+    usage_df: pd.DataFrame,
+    prop_logs: pd.DataFrame,
+    inj_df: pd.DataFrame,
+    eff_df: pd.DataFrame,
+    away_tm: str,
+    home_tm: str,
+) -> list[dict]:
+    """
+    Evaluates all available skill players (WR, RB, QB, TE) across both teams in the selected
+    matchup and surfaces the Top 3 projected player picks based on model edge, target/touch
+    share, recent L3 form, and opposing defensive unit favorability.
+    """
+    if usage_df.empty or eff_df.empty:
+        return []
+
+    unavailable_players: set[tuple[str, str]] = set()
+    questionable_players: set[tuple[str, str]] = set()
+    if not inj_df.empty and "team" in inj_df.columns:
+        for _, r_i in inj_df.iterrows():
+            tm_i = str(r_i.get("team", "")).strip().upper()
+            nm_i = str(r_i.get("player_display", "")).strip().lower()
+            st_i = str(r_i.get("report_status", "")).strip().upper()
+            if is_unavailable_injury(st_i):
+                unavailable_players.add((tm_i, nm_i))
+            elif st_i == "QUESTIONABLE":
+                questionable_players.add((tm_i, nm_i))
+
+    candidates = usage_df[
+        usage_df["team"].isin([away_tm, home_tm])
+        & usage_df["position"].astype(str).str.upper().isin(["WR", "RB", "QB", "TE"])
+    ].copy()
+
+    if candidates.empty:
+        return []
+
+    picks: list[dict] = []
+
+    for _, row in candidates.iterrows():
+        p_name = str(row["player_name"]).strip()
+        p_clean = p_name.lower()
+        p_tm = str(row["team"]).strip().upper()
+        p_pos = str(row["position"]).strip().upper()
+        opp_tm = home_tm if p_tm == away_tm else away_tm
+
+        if (p_tm, p_clean) in unavailable_players:
+            continue
+
+        games = max(1, int(row.get("games", 1)))
+        tgt_sh = float(row.get("calc_target_share", 0.0)) * 100.0
+        air_sh = float(row.get("calc_air_share", 0.0)) * 100.0
+        rush_sh = float(row.get("calc_rush_share", 0.0)) * 100.0
+        rec_ypg = float(row.get("rec_yards", 0.0)) / games
+        rush_ypg = float(row.get("rush_yards", 0.0)) / games
+        pass_ypg = float(row.get("pass_yards", 0.0)) / games
+        scrim_ypg = float(row.get("scrimmage_yards", 0.0)) / games
+        touches_pg = float(row.get("touches", 0.0)) / games
+        total_epa = float(row.get("total_epa", 0.0))
+        epa_pg = total_epa / games
+
+        # Filter out low-usage depth players
+        if p_pos in ["WR", "TE"] and tgt_sh < 10.0 and rec_ypg < 25.0:
+            continue
+        if p_pos == "RB" and rush_sh < 20.0 and touches_pg < 7.0:
+            continue
+        if p_pos == "QB" and pass_ypg < 120.0:
+            continue
+
+        opp_pass_rk = int(eff_df.loc[opp_tm, "def_pass_epa_rank"]) if opp_tm in eff_df.index else 16
+        opp_rush_rk = int(eff_df.loc[opp_tm, "def_rush_epa_rank"]) if opp_tm in eff_df.index else 16
+        opp_pass_epa = float(eff_df.loc[opp_tm, "def_pass_epa"]) if opp_tm in eff_df.index else 0.0
+        opp_rush_epa = float(eff_df.loc[opp_tm, "def_rush_epa"]) if opp_tm in eff_df.index else 0.0
+
+        # Compute L3 form and prop hit rate from weekly game logs
+        p_logs = pd.DataFrame()
+        if not prop_logs.empty and "player_label" in prop_logs.columns:
+            p_logs = prop_logs[
+                (prop_logs["player_label"].astype(str).str.strip().str.lower() == p_clean)
+                & (prop_logs["team"] == p_tm)
+            ].sort_values(by="week")
+
+        score = 50.0
+
+        if p_pos in ["WR", "TE"]:
+            stat_col = "receiving_yards"
+            mkt_label = "Rec Yds"
+            season_val = rec_ypg
+            l3_val = float(p_logs.tail(3)[stat_col].mean()) if not p_logs.empty else season_val
+            med_val = float(p_logs[stat_col].median()) if not p_logs.empty else season_val
+            line_val = max(19.5, round(med_val - 0.5) + 0.5)
+            hits = int((p_logs[stat_col] >= line_val).sum()) if not p_logs.empty else 0
+            n_g = len(p_logs) if not p_logs.empty else games
+
+            vol_pts = float(np.clip((tgt_sh - 15.0) * 0.65, -4.0, 12.0))
+            prod_pts = float(np.clip((rec_ypg - 45.0) * 0.20, -4.0, 10.0))
+            air_pts = float(np.clip((air_sh - 22.0) * 0.12, -1.5, 3.5)) if p_pos == "WR" else 1.0
+            def_pts = float(np.clip(((opp_pass_rk - 16.5) / 15.5) * 14.0, -12.0, 14.0))
+            form_pts = float(np.clip((l3_val - season_val) * 0.25, -5.0, 6.5))
+            epa_pts = float(np.clip(epa_pg * 1.5, -2.5, 4.0))
+            score += vol_pts + prod_pts + air_pts + def_pts + form_pts + epa_pts
+
+            usage_tag = f"[{tgt_sh:.1f}% TGT SHARE]"
+            matchup_tag = f"[VS #{opp_pass_rk} {opp_tm} PASS DEF]"
+            rationale = (
+                f"{tgt_sh:.1f}% tgt share ({rec_ypg:.1f} YPG, {l3_val:.1f} L3) "
+                f"vs #{opp_pass_rk} {opp_tm} pass def ({opp_pass_epa:+.2f} EPA)."
+            )
+
+        elif p_pos == "RB":
+            use_scrim = tgt_sh >= 10.0 and (rec_ypg >= 18.0)
+            stat_col = "scrimmage_yards" if use_scrim else "rushing_yards"
+            mkt_label = "Scrim Yds" if use_scrim else "Rush Yds"
+            season_val = scrim_ypg if use_scrim else rush_ypg
+            l3_val = float(p_logs.tail(3)[stat_col].mean()) if not p_logs.empty else season_val
+            med_val = float(p_logs[stat_col].median()) if not p_logs.empty else season_val
+            line_val = max(29.5, round(med_val - 0.5) + 0.5)
+            hits = int((p_logs[stat_col] >= line_val).sum()) if not p_logs.empty else 0
+            n_g = len(p_logs) if not p_logs.empty else games
+
+            vol_pts = float(np.clip((rush_sh - 38.0) * 0.28 + (touches_pg - 12.0) * 0.55, -5.0, 13.0))
+            prod_pts = float(np.clip((season_val - 55.0) * 0.16, -4.0, 9.5))
+            def_pts = float(np.clip(((opp_rush_rk - 16.5) / 15.5) * 14.0, -12.0, 14.0))
+            form_pts = float(np.clip((l3_val - season_val) * 0.22, -5.0, 6.0))
+            epa_pts = float(np.clip(epa_pg * 1.4, -2.5, 4.0))
+            score += vol_pts + prod_pts + def_pts + form_pts + epa_pts
+
+            usage_tag = f"[{touches_pg:.1f} TOUCHES/G • {rush_sh:.0f}% RUSH]"
+            matchup_tag = f"[VS #{opp_rush_rk} {opp_tm} RUSH DEF]"
+            rationale = (
+                f"{touches_pg:.1f} touches/g ({season_val:.1f} YPG, {l3_val:.1f} L3) "
+                f"vs #{opp_rush_rk} {opp_tm} rush def ({opp_rush_epa:+.2f} EPA)."
+            )
+
+        else:  # QB
+            stat_col = "passing_yards"
+            mkt_label = "Pass Yds"
+            season_val = pass_ypg
+            l3_val = float(p_logs.tail(3)[stat_col].mean()) if not p_logs.empty else season_val
+            med_val = float(p_logs[stat_col].median()) if not p_logs.empty else season_val
+            line_val = max(189.5, round(med_val - 0.5) + 0.5)
+            hits = int((p_logs[stat_col] >= line_val).sum()) if not p_logs.empty else 0
+            n_g = len(p_logs) if not p_logs.empty else games
+
+            prod_pts = float(np.clip((pass_ypg - 225.0) * 0.14 + (rush_ypg * 0.12), -5.0, 12.0))
+            def_pts = float(np.clip(((opp_pass_rk - 16.5) / 15.5) * 14.5, -12.0, 14.5))
+            form_pts = float(np.clip((l3_val - season_val) * 0.10, -4.5, 5.5))
+            epa_pts = float(np.clip(epa_pg * 1.2, -3.5, 6.0))
+            score += prod_pts + def_pts + form_pts + epa_pts
+
+            usage_tag = f"[{pass_ypg:.1f} PASS YPG]"
+            matchup_tag = f"[VS #{opp_pass_rk} {opp_tm} PASS DEF]"
+            rationale = (
+                f"{pass_ypg:.1f} pass YPG ({l3_val:.1f} L3, {epa_pg:+.2f} EPA/g) "
+                f"vs #{opp_pass_rk} {opp_tm} pass def ({opp_pass_epa:+.2f} EPA)."
+            )
+
+        if (p_tm, p_clean) in questionable_players:
+            score -= 5.5
+
+        score = float(np.clip(round(score, 1), 25.0, 96.0))
+        hit_pct = (hits / n_g * 100.0) if n_g > 0 else 0.0
+
+        picks.append(
+            {
+                "player_name": p_name,
+                "team": p_tm,
+                "opp_team": opp_tm,
+                "position": p_pos,
+                "edge_score": score,
+                "play_label": f"OVER {line_val:.1f} {mkt_label}",
+                "hit_record": f"{hits}/{n_g} ({hit_pct:.0f}%)",
+                "usage_tag": usage_tag,
+                "matchup_tag": matchup_tag,
+                "rationale": rationale,
+            }
+        )
+
+    picks_sorted = sorted(picks, key=lambda x: x["edge_score"], reverse=True)
+    return picks_sorted[:3]
+
+
 def build_cb_wr_matchup_battles(
     usage_df: pd.DataFrame,
     player_df: pd.DataFrame,
@@ -1884,12 +1976,7 @@ def build_cb_wr_matchup_battles(
     def_tm: str,
 ) -> list[dict]:
     """
-    Calibrated 1-on-1 Wide Receiver vs. Cornerback Mismatch Engine (0-100 scale):
-      1. Continuous Volume & Production Composite (Target Share + YPG + Air Yards Share).
-      2. Magnitude-Weighted L4 Form Adjustment.
-      3. Continuous Opposing Pass Defense Efficiency + Primary CB1 Anchor Resistance.
-      4. Strict Injury Mismatch Gate & Elite Mismatch Guardrail.
-      5. Shortened, concise single-line rationale strings so cards cleanly fit player headshots.
+    Calibrated 1-on-1 Wide Receiver vs. Cornerback Mismatch Engine (0-100 scale).
     """
     if usage_df.empty:
         return []
@@ -2042,32 +2129,24 @@ def build_cb_wr_matchup_battles(
             wr_clean, ("STEADY", wr_ypg, wr_ypg, 0.0, 0.0)
         )
 
-        # ---------------------------------------------------------------------
-        # CALIBRATED MISMATCH SCORING ENGINE (Base = 50.0)
-        # ---------------------------------------------------------------------
         score = 50.0
 
-        # 1. Continuous WR Volume & Production Composite (-12.0 to +18.0 pts)
         tgt_pts = float(np.clip((wr_tgt_sh_frac - 0.16) * 48.0, -6.0, 10.0))
         ypg_pts = float(np.clip((wr_ypg - 55.0) * 0.18, -7.0, 9.0))
         air_pts = float(np.clip((wr_air_sh_frac - 0.26) * 15.0, -2.5, 3.5))
         wr_talent_pts = float(np.clip(tgt_pts + ypg_pts + air_pts, -12.0, 18.0))
         score += wr_talent_pts
 
-        # 2. Continuous Opposing Pass Defense Rank Curve (-13.0 to +13.0 pts)
         def_unit_pts = float(np.clip(((def_pass_rk - 16.5) / 15.5) * 13.0, -13.0, 13.0))
         score += def_unit_pts
 
-        # 3. Healthy Every-Down Cornerback Resistance (-1.5 pts)
         cb_snap_pct = float(cb_assigned["snap_pct"])
         if not missing_starting_cbs and cb_assigned["status"] != "QUESTIONABLE" and cb_snap_pct >= 85.0:
             score -= 1.5
 
-        # 4. Magnitude-Scaled L4 Form Adjustment (-8.0 to +8.0 pts)
         form_pts = float(np.clip(diff_yds * 0.30, -8.0, 8.0))
         score += form_pts
 
-        # 5. Strict Injury & Backup Penalty Gate + Shortened Single-Line Rationale
         rationale_clauses = []
         has_injury_or_backup_trigger = False
 
@@ -2103,7 +2182,6 @@ def build_cb_wr_matchup_battles(
 
         score = float(np.clip(round(score, 1), 15.0, 96.0))
 
-        # Elite Mismatch Guardrail
         has_elite_catalyst = (
             (def_pass_rk >= 25)
             or has_injury_or_backup_trigger
@@ -2150,7 +2228,6 @@ def build_cb_wr_matchup_battles(
         else:
             cb_status_badge = f'<span class="badge-mid">[ACTIVE • {cb_assigned["snap_pct"]:.0f}% DEF SNAPS]</span>'
 
-        # Concise, single-line baseline rationale when no unresolved injury penalty is active
         if not rationale_clauses:
             clr_prefix = "CB cleared (0 inj drag) • " if cb_assigned["status"] == "ACTIVE / CLEARED" else ""
             if score >= 75.0:
@@ -2226,11 +2303,7 @@ def build_roster_usage_table(
     teams: list[str],
     inj_matchup: pd.DataFrame | None = None,
 ) -> pd.DataFrame:
-    """
-    Merges full active roster snap counts (offense/defense/ST snaps & snap %) with
-    skill usage metrics (targets, touches, air yards, scrimmage yards, EPA), unit side,
-    and real-time injury/active status indicator.
-    """
+    """Merges full active roster snap counts with skill usage metrics and health status."""
     roster_base = pd.DataFrame()
 
     if not snaps_df.empty and {"player", "team"}.issubset(snaps_df.columns):
@@ -2592,7 +2665,7 @@ def build_injury_impact_report(
         is_anchor_flags.append(is_anchor)
 
         if is_cleared:
-            roles.append("[CLEARED TO PLAY / NO EPA DRAG]")
+            roles.append("[CLEARED / 0 EPA DRAG]")
             penalty = 0.0
         else:
             if is_key_player:
@@ -2653,9 +2726,7 @@ def get_player_season_injury_history(
     status_overrides: dict[str, str] | None = None,
     selected_week: int | None = None,
 ) -> pd.DataFrame:
-    """
-    Extracts a player's week-by-week historical injury log across the entire season.
-    """
+    """Extracts a player's week-by-week historical injury log across the entire season."""
     status_overrides = status_overrides or {}
     clean_nm = str(player_name).strip().lower()
     clean_tm = str(team_abbr).strip().upper()
@@ -2769,10 +2840,7 @@ def get_player_season_injury_history(
 def run_season_backtest(
     schedule_df: pd.DataFrame, eff_df: pd.DataFrame
 ) -> tuple[pd.DataFrame, pd.DataFrame]:
-    """
-    Grades all completed games in the selected season where extreme unit mismatches
-    (ELITE vs BAD) or rest edges occurred.
-    """
+    """Grades all completed games in the selected season where extreme unit mismatches occurred."""
     if schedule_df.empty or eff_df.empty:
         return pd.DataFrame(), pd.DataFrame()
 
@@ -2806,7 +2874,6 @@ def run_season_backtest(
             ats_win = (home_margin > sp) if is_home else (home_margin < sp)
             return su_win, ats_win, is_push
 
-        # 1. ELITE (<=5) vs BAD (>=23) Pass Mismatch
         h_pass_elite_mm = (h_eff["off_pass_epa_rank"] <= 5) and (a_eff["def_pass_epa_rank"] >= 23)
         a_pass_elite_mm = (a_eff["off_pass_epa_rank"] <= 5) and (h_eff["def_pass_epa_rank"] >= 23)
         if h_pass_elite_mm != a_pass_elite_mm:
@@ -2826,7 +2893,6 @@ def run_season_backtest(
                 }
             )
 
-        # 2. ELITE (<=5) vs BAD (>=23) Rush Mismatch
         h_rush_elite_mm = (h_eff["off_rush_epa_rank"] <= 5) and (a_eff["def_rush_epa_rank"] >= 23)
         a_rush_elite_mm = (a_eff["off_rush_epa_rank"] <= 5) and (h_eff["def_rush_epa_rank"] >= 23)
         if h_rush_elite_mm != a_rush_elite_mm:
@@ -2846,7 +2912,6 @@ def run_season_backtest(
                 }
             )
 
-        # 3. Top-10 Offense vs Bottom-10 Defense (Any Phase)
         h_top10_mm = ((h_eff["off_pass_epa_rank"] <= 10) and (a_eff["def_pass_epa_rank"] >= 23)) or (
             (h_eff["off_rush_epa_rank"] <= 10) and (a_eff["def_rush_epa_rank"] >= 23)
         )
@@ -2870,7 +2935,6 @@ def run_season_backtest(
                 }
             )
 
-        # 4. Situational Rest Edge (3+ Days)
         rest_diff = row.get("rest_edge_home", 0)
         if pd.notna(rest_diff) and abs(rest_diff) >= 3:
             backed = ht if rest_diff > 0 else at
@@ -2889,7 +2953,6 @@ def run_season_backtest(
                 }
             )
 
-        # 5. High-Conviction Net EPA Model Edge (>= 0.08 EPA/play differential)
         net_home_epa = (h_eff["off_epa"] - a_eff["def_epa"]) - (a_eff["off_epa"] - h_eff["def_epa"])
         if abs(net_home_epa) >= 0.08:
             backed = ht if net_home_epa > 0 else at
@@ -2941,7 +3004,7 @@ def run_season_backtest(
 
 
 # -----------------------------------------------------------------------------
-# 4. INTERACTIVE PLAYER POP-OUT MODAL (FLUSH HEADSHOT + 3 TABS INCL. INJURY LOG)
+# 4. INTERACTIVE PLAYER POP-OUT MODAL (FLUSH HEADSHOT + CONCISE TABS)
 # -----------------------------------------------------------------------------
 if "inspect_player" in st.query_params:
     qp_name = st.query_params.get("inspect_player", "")
@@ -2970,10 +3033,7 @@ def render_player_popup_contents(
     inj_season: int,
     selected_week: int,
 ) -> None:
-    """
-    Renders the header (with borderless flush cutout headshot, real-time active/injury status badge)
-    and 3 tabs inside the player pop-out dossier.
-    """
+    """Renders the player pop-out dossier with concise tab names."""
     p_name = str(active_info.get("name", "")).strip()
     p_team = str(active_info.get("team", "")).strip().upper()
     p_pos = str(active_info.get("position", "")).strip().upper()
@@ -3049,7 +3109,7 @@ def render_player_popup_contents(
             if not is_active_unresolved_injury(current_status_str):
                 inj_badge_html = (
                     f'{render_injury_badge("ACTIVE / CLEARED")} '
-                    f'<span class="badge-sage">[CLEARED FROM {prim_inj_val.upper() if prim_inj_val else "REPORT"} — 0.000 EPA DRAG]</span> '
+                    f'<span class="badge-sage">[CLEARED — 0.000 EPA DRAG]</span> '
                     f'{current_prac_badge}'
                 )
             else:
@@ -3059,23 +3119,9 @@ def render_player_popup_contents(
                     f'{current_prac_badge}'
                 )
         else:
-            if not player_inj_history.empty:
-                last_hist = player_inj_history.iloc[0]
-                inj_badge_html = (
-                    f'{render_injury_badge("ACTIVE / CLEARED")} '
-                    f'<span class="badge-sage">[OFF WK {selected_week} REPORT — LAST LISTED WK {int(last_hist["Week"])} ({last_hist["Injury / Ailment"]})]</span>'
-                )
-            else:
-                inj_badge_html = '<span class="badge-elite">[ACTIVE / CLEAN SEASON REPORT]</span>'
+            inj_badge_html = '<span class="badge-elite">[ACTIVE / CLEAN REPORT]</span>'
     else:
-        if not player_inj_history.empty:
-            last_hist = player_inj_history.iloc[0]
-            inj_badge_html = (
-                f'{render_injury_badge("ACTIVE / CLEARED")} '
-                f'<span class="badge-sage">[OFF WK {selected_week} REPORT — LAST LISTED WK {int(last_hist["Week"])} ({last_hist["Injury / Ailment"]})]</span>'
-            )
-        else:
-            inj_badge_html = '<span class="badge-elite">[ACTIVE / CLEAN SEASON REPORT]</span>'
+        inj_badge_html = '<span class="badge-elite">[ACTIVE / CLEAN REPORT]</span>'
 
     opp_tm = home_tm if p_team == away_tm else away_tm
     render_html(
@@ -3085,17 +3131,17 @@ def render_player_popup_contents(
                 {headshot_html}
                 <div class="player-modal-meta">
                     <div style="display:flex; align-items:center; flex-wrap:wrap; gap:6px;">
-                        <span style="font-size:1.45rem; font-weight:800; color:#F8FAFC; font-family:monospace;">
+                        <span style="font-size:1.35rem; font-weight:800; color:#F8FAFC; font-family:monospace;">
                             {p_name}
                         </span>
                         {render_team_pill(p_team) if p_team else ""}
                         <span class="badge-sage">[{p_pos or "NFL"}]</span>
                         <span class="badge-mid">[{unit_side.upper()}]</span>
                     </div>
-                    <div class="metric-subtext" style="margin-top:6px;">
-                        {jersey_tag}{stat_season} Season Dossier • Matchup vs {opp_tm}{college_tag}
+                    <div class="metric-subtext" style="margin-top:4px;">
+                        {jersey_tag}{stat_season} Season • vs {opp_tm}{college_tag}
                     </div>
-                    <div style="margin-top:8px;">
+                    <div style="margin-top:6px;">
                         {inj_badge_html}
                     </div>
                 </div>
@@ -3107,9 +3153,9 @@ def render_player_popup_contents(
     hist_count = len(player_inj_history)
     tab_stats, tab_props, tab_inj_hist = st.tabs(
         [
-            "Tab 1: Season & Game Stats",
-            "Tab 2: Player Props",
-            f"Tab 3: Injury History & Status Log ({hist_count} Wks)" if hist_count > 0 else "Tab 3: Injury History & Status Log (Clean)",
+            "Game Logs",
+            "Props",
+            f"Injuries ({hist_count})" if hist_count > 0 else "Injuries",
         ]
     )
 
@@ -3131,9 +3177,6 @@ def render_player_popup_contents(
             p_snaps["week"] = pd.to_numeric(p_snaps["week"], errors="coerce").fillna(1).astype(int)
             p_snaps = p_snaps.sort_values(by="week")
 
-    # -------------------------------------------------------------------------
-    # TAB 1: SEASON & GAME STATS
-    # -------------------------------------------------------------------------
     with tab_stats:
         if r_row is not None:
             s_games = int(r_row.get("games_played", 1))
@@ -3149,32 +3192,30 @@ def render_player_popup_contents(
             s_epa = float(r_row.get("total_epa", 0.0))
 
             m1, m2, m3, m4 = st.columns(4)
-            m1.metric("Games Active", f"{s_games} GP", delta=f"{s_tot_snaps} Total Snaps", delta_color="off")
-            m2.metric("Primary Snap Share", f"{s_snap_pct:.1f}%", delta=f"{unit_side} Unit", delta_color="off")
+            m1.metric("Games Active", f"{s_games} GP", delta=f"{s_tot_snaps} Snaps", delta_color="off")
+            m2.metric("Snap Share", f"{s_snap_pct:.1f}%", delta=f"{unit_side}", delta_color="off")
             if p_pos == "QB":
-                m3.metric("Season Passing Yards", f"{s_pass} Yds", delta=f"{s_scrim} Rush Yds", delta_color="off")
+                m3.metric("Passing Yards", f"{s_pass} Yds", delta=f"{s_scrim} Rush Yds", delta_color="off")
             elif unit_side == "Defense":
                 def_s = int(r_row.get("def_snaps", s_tot_snaps))
                 st_s = int(r_row.get("st_snaps", 0))
-                m3.metric("Defensive Snaps", f"{def_s}", delta=f"{st_s} Special Teams Snaps", delta_color="off")
+                m3.metric("Defensive Snaps", f"{def_s}", delta=f"{st_s} ST Snaps", delta_color="off")
             else:
                 m3.metric(
-                    "Target / Rush Share",
+                    "Volume Share",
                     f"{s_tgt_sh:.1f}% Tgt",
-                    delta=f"{s_rush_sh:.1f}% Rush Share ({s_tgts} Tgts)",
+                    delta=f"{s_rush_sh:.1f}% Rush ({s_tgts} Tgts)",
                     delta_color="off",
                 )
             m4.metric(
                 "Scrimmage & EPA",
                 f"{s_scrim} Yds ({s_tds} TD)",
-                delta=f"{s_epa:+.2f} Total EPA ({s_touches} Touches)",
+                delta=f"{s_epa:+.2f} EPA ({s_touches} Touches)",
                 delta_color="normal" if s_epa >= 0 else "inverse",
             )
-        else:
-            st.caption("Season aggregate summary derived from weekly logs below.")
 
         if not p_logs.empty:
-            st.markdown(f"##### {stat_season} Week-by-Week Game Logs ({len(p_logs)} Games)")
+            st.markdown(f"##### {stat_season} Weekly Game Logs ({len(p_logs)} Games)")
             log_disp_cols = [
                 "week",
                 "opp_label",
@@ -3196,26 +3237,10 @@ def render_player_popup_contents(
                 p_logs[avail_c].sort_values(by="week", ascending=False),
                 width="stretch",
                 hide_index=True,
-                column_config={
-                    "week": st.column_config.NumberColumn("Week", format="%d"),
-                    "opp_label": "Opponent",
-                    "targets": st.column_config.NumberColumn("Tgts", format="%d"),
-                    "receptions": st.column_config.NumberColumn("Rec", format="%d"),
-                    "receiving_yards": st.column_config.NumberColumn("Rec Yds", format="%.0f"),
-                    "receiving_tds": st.column_config.NumberColumn("Rec TD", format="%.0f"),
-                    "carries": st.column_config.NumberColumn("Carries", format="%d"),
-                    "rushing_yards": st.column_config.NumberColumn("Rush Yds", format="%.0f"),
-                    "rushing_tds": st.column_config.NumberColumn("Rush TD", format="%.0f"),
-                    "scrimmage_yards": st.column_config.NumberColumn("Scrim Yds", format="%.0f"),
-                    "anytime_td": st.column_config.NumberColumn("Total TD", format="%.0f"),
-                    "passing_yards": st.column_config.NumberColumn("Pass Yds", format="%.0f"),
-                    "passing_tds": st.column_config.NumberColumn("Pass TD", format="%.0f"),
-                    "interceptions": st.column_config.NumberColumn("INT", format="%.0f"),
-                },
             )
 
         if not p_snaps.empty:
-            st.markdown(f"##### {stat_season} Weekly Snap Count Participation Log")
+            st.markdown(f"##### {stat_season} Snap Participation Log")
             snap_copy = p_snaps.copy()
             for pct_c in ["offense_pct", "defense_pct", "st_pct"]:
                 if pct_c in snap_copy.columns:
@@ -3229,30 +3254,14 @@ def render_player_popup_contents(
                 snap_copy[snap_cols].sort_values(by="week", ascending=False),
                 width="stretch",
                 hide_index=True,
-                column_config={
-                    "week": st.column_config.NumberColumn("Week", format="%d"),
-                    "opponent": "Opponent",
-                    "offense_snaps": st.column_config.NumberColumn("Off Snaps", format="%d"),
-                    "offense_pct": st.column_config.ProgressColumn("Off Snap %", format="%.1f%%", min_value=0, max_value=100),
-                    "defense_snaps": st.column_config.NumberColumn("Def Snaps", format="%d"),
-                    "defense_pct": st.column_config.ProgressColumn("Def Snap %", format="%.1f%%", min_value=0, max_value=100),
-                    "st_snaps": st.column_config.NumberColumn("ST Snaps", format="%d"),
-                    "st_pct": st.column_config.ProgressColumn("ST Snap %", format="%.1f%%", min_value=0, max_value=100),
-                },
             )
 
         if p_logs.empty and p_snaps.empty:
             st.info(f"No weekly stat or snap logs recorded for {p_name} in {stat_season}.")
 
-    # -------------------------------------------------------------------------
-    # TAB 2: PLAYER PROPS
-    # -------------------------------------------------------------------------
     with tab_props:
         if p_logs.empty:
-            st.info(
-                f"No offensive/skill prop game logs recorded for {p_name} ({p_pos}). "
-                "Inspect Tab 1 for defensive/snap participation metrics or Tab 3 for Injury History."
-            )
+            st.info(f"No skill prop logs recorded for {p_name} ({p_pos}).")
         else:
             default_mkt = "Receiving Yards"
             if p_pos == "QB":
@@ -3263,57 +3272,10 @@ def render_player_popup_contents(
             market_keys = list(PROP_MARKETS.keys())
             default_idx = market_keys.index(default_mkt) if default_mkt in market_keys else 0
 
-            summary_prop_rows = []
-            for m_label, (col_nm, def_line, _, _) in PROP_MARKETS.items():
-                if col_nm not in p_logs.columns:
-                    continue
-                vals = p_logs[col_nm]
-                if vals.max() <= 0 and m_label != default_mkt:
-                    continue
-                is_td_m = col_nm in ["anytime_td", "receiving_tds", "interceptions"]
-                med_line = 0.5 if is_td_m else max(0.5, round(float(vals.median()) * 2) / 2)
-                if med_line <= 0:
-                    med_line = def_line
-                hits_all = int((vals >= med_line).sum())
-                n_all = len(vals)
-                l5_vals = vals.tail(5)
-                hits_l5 = int((l5_vals >= med_line).sum())
-                l3_v = float(vals.tail(3).mean())
-                s_v = float(vals.mean())
-                summary_prop_rows.append(
-                    {
-                        "Prop Market": m_label,
-                        "Active Benchmark Line": med_line,
-                        "Season Avg": round(s_v, 2 if is_td_m else 1),
-                        "L3 Avg": round(l3_v, 2 if is_td_m else 1),
-                        "Season Hit Rate %": round(hits_all / n_all * 100.0, 1) if n_all > 0 else 0.0,
-                        "Season Over Record": f"{hits_all}/{n_all}",
-                        "Last 5 Hit Rate %": round(hits_l5 / len(l5_vals) * 100.0, 1) if len(l5_vals) > 0 else 0.0,
-                    }
-                )
-
-            if summary_prop_rows:
-                st.markdown(f"##### {p_name} — Multi-Market Prop Hit-Rate Summary")
-                st.dataframe(
-                    pd.DataFrame(summary_prop_rows),
-                    width="stretch",
-                    hide_index=True,
-                    column_config={
-                        "Active Benchmark Line": st.column_config.NumberColumn("Line", format="%.1f"),
-                        "Season Hit Rate %": st.column_config.ProgressColumn(
-                            "Season Hit Rate", format="%.1f%%", min_value=0, max_value=100
-                        ),
-                        "Last 5 Hit Rate %": st.column_config.ProgressColumn(
-                            "L5 Hit Rate", format="%.1f%%", min_value=0, max_value=100
-                        ),
-                    },
-                )
-
-            st.divider()
             mc1, mc2 = st.columns([1.3, 1.3])
             with mc1:
                 sel_mkt = st.selectbox(
-                    "Select Prop Market to Chart",
+                    "Prop Market",
                     options=market_keys,
                     index=default_idx,
                     key=f"modal_prop_mkt_{clean_nm}",
@@ -3326,7 +3288,7 @@ def render_player_popup_contents(
 
             with mc2:
                 modal_line = st.slider(
-                    f"Target Threshold ({sel_mkt})",
+                    f"Line ({sel_mkt})",
                     min_value=0.5,
                     max_value=float(round(dyn_max, 0) + 0.5),
                     value=float(min(max(0.5, smart_line), dyn_max)),
@@ -3342,7 +3304,7 @@ def render_player_popup_contents(
 
             p_logs_chart = p_logs.copy()
             p_logs_chart["hit"] = p_logs_chart[stat_col] >= modal_line
-            p_logs_chart["bar_color"] = np.where(p_logs_chart["hit"], "#00FF87", "#FF4D6D")
+            p_logs_chart["bar_color"] = np.where(p_logs_chart["hit"], "#34D399", "#F87171")
             p_logs_chart["rolling_avg"] = p_logs_chart[stat_col].expanding().mean()
 
             hits_n = int(p_logs_chart["hit"].sum())
@@ -3358,20 +3320,20 @@ def render_player_popup_contents(
 
             pk1, pk2, pk3 = st.columns(3)
             pk1.metric(
-                f"Season Hit Rate (vs {modal_line})",
+                f"Hit Rate (vs {modal_line})",
                 f"{hit_pct:.1f}% ({hits_n}/{tot_n})",
                 delta="Over Trend" if hit_pct >= 55 else "Under Trend",
                 delta_color="normal" if hit_pct >= 55 else "inverse",
             )
             pk2.metric(
-                "L3 Form vs Season Avg",
+                "L3 Form vs Season",
                 f"{l3_avg:.2f} L3" if is_td_int else f"{l3_avg:.1f} L3",
                 delta=streak_delta,
             )
             pk3.metric(
-                f"Opposing {opp_tm} Defense Rank",
+                f"vs {opp_tm} Defense",
                 f"Rank #{opp_def_rk}",
-                delta="Smash Spot" if opp_def_rk >= 23 else ("Tough Draw" if opp_def_rk <= 5 else "Neutral"),
+                delta="Favorable" if opp_def_rk >= 23 else ("Tough" if opp_def_rk <= 5 else "Neutral"),
                 delta_color="normal" if opp_def_rk >= 23 else ("inverse" if opp_def_rk <= 5 else "off"),
             )
 
@@ -3396,7 +3358,7 @@ def render_player_popup_contents(
                     x=p_logs_chart["game_tag"],
                     y=p_logs_chart["rolling_avg"],
                     mode="lines+markers",
-                    line=dict(color="#4A90E2", width=2, dash="dot"),
+                    line=dict(color="#60A5FA", width=2, dash="dot"),
                     name="Cumulative Avg",
                 )
             )
@@ -3404,34 +3366,25 @@ def render_player_popup_contents(
                 y=modal_line,
                 line_width=2,
                 line_dash="dash",
-                line_color="#FFB020",
+                line_color="#FBBF24",
                 annotation_text=f"Line: {modal_line} ({hit_pct:.0f}% Hit)",
                 annotation_position="top left",
-                annotation_font=dict(color="#FFB020", size=11),
+                annotation_font=dict(color="#FBBF24", size=11),
             )
             y_max = max(float(p_logs_chart[stat_col].max()), modal_line) * 1.28 + 1.0
             fig_m.update_layout(
-                paper_bgcolor="#12161F",
-                plot_bgcolor="#12161F",
+                paper_bgcolor="#121722",
+                plot_bgcolor="#121722",
                 font=dict(color="#E2E8F0"),
-                xaxis=dict(title="Game Week & Opponent", gridcolor="#262D3D"),
-                yaxis=dict(title=sel_mkt, range=[0, y_max], gridcolor="#262D3D"),
+                xaxis=dict(title="Week & Opponent", gridcolor="#222B3A"),
+                yaxis=dict(title=sel_mkt, range=[0, y_max], gridcolor="#222B3A"),
                 legend=dict(orientation="h", yanchor="bottom", y=1.02, xanchor="right", x=1),
-                height=340,
-                margin=dict(l=16, r=16, t=36, b=24),
+                height=320,
+                margin=dict(l=16, r=16, t=32, b=24),
             )
             st.plotly_chart(fig_m, width="stretch", key=f"modal_plotly_{clean_nm}_{stat_col}")
 
-    # -------------------------------------------------------------------------
-    # TAB 3: INJURY HISTORY & REAL-TIME STATUS OVERRIDE
-    # -------------------------------------------------------------------------
     with tab_inj_hist:
-        st.markdown(f"##### {p_name} — {inj_season} Season Injury History & Status Log")
-        st.caption(
-            "Tracks weekly official NFL injury designations (Questionable, Doubtful, Out, IR, Active/Cleared), "
-            "practice participation levels (FP, LP, DNP), and real-time gameday clearance overrides."
-        )
-
         ov_key = f"{clean_nm}|{p_team}"
         current_ov = st.session_state["injury_status_overrides"].get(ov_key, "Auto (Official Feed)")
         ov_options = [
@@ -3447,16 +3400,15 @@ def render_player_popup_contents(
         ov_col1, ov_col2 = st.columns([1.6, 1.4])
         with ov_col1:
             selected_ov = st.selectbox(
-                f"Real-Time Week {selected_week} Status Override for {p_name}",
+                f"Week {selected_week} Status Override",
                 options=ov_options,
                 index=ov_idx,
                 key=f"dossier_ov_select_{clean_nm}_{p_team}",
-                help="Instantly clear a player who was upgraded to Active/Good-to-Go or flag a late scratch.",
             )
         with ov_col2:
             st.write("")
             if st.button(
-                "Apply Status Update Now",
+                "Apply Status Update",
                 key=f"dossier_ov_btn_{clean_nm}_{p_team}",
                 type="primary",
                 use_container_width=True,
@@ -3472,111 +3424,23 @@ def render_player_popup_contents(
             render_html(
                 f"""
                 <div class="terminal-card-elite" style="margin-top:8px;">
-                    <span class="badge-elite">[CLEAN {inj_season} INJURY LOG — 0 WEEKS LISTED]</span>
+                    <span class="badge-elite">[CLEAN {inj_season} INJURY LOG]</span>
                     <p class="metric-subtext" style="margin:6px 0 0 0;">
-                        {p_name} ({p_team} {p_pos}) has not appeared on any weekly NFL injury or practice restriction report during the {inj_season} season.
+                        {p_name} ({p_team} {p_pos}) has no weekly injury report entries in {inj_season}.
                     </p>
                 </div>
                 """
             )
         else:
-            wks_listed = len(player_inj_history)
-            wks_missed = int(
-                player_inj_history["Gameday Participation"]
-                .astype(str)
-                .str.contains("DID NOT PLAY", case=False)
-                .sum()
-            )
-            wks_played_through = int(
-                player_inj_history["Gameday Participation"]
-                .astype(str)
-                .str.contains("ACTIVE|CLEARED", case=False)
-                .sum()
-            )
-            latest_entry = player_inj_history.iloc[0]
-
-            ih1, ih2, ih3, ih4 = st.columns(4)
-            ih1.metric(
-                "Weeks on Injury Report",
-                f"{wks_listed} Wks",
-                delta=f"{inj_season} Season Log",
-                delta_color="off",
-            )
-            ih2.metric(
-                "Games Missed (Out / IR)",
-                f"{wks_missed} Games",
-                delta="Inactive / DNP" if wks_missed > 0 else "Zero Games Missed",
-                delta_color="inverse" if wks_missed > 0 else "normal",
-            )
-            ih3.metric(
-                "Weeks Cleared / Played Through",
-                f"{wks_played_through} Wks",
-                delta="Active on Gameday",
-                delta_color="normal",
-            )
-            ih4.metric(
-                f"Latest Logged Status (Wk {int(latest_entry['Week'])})",
-                str(latest_entry["Report Designation"]),
-                delta=str(latest_entry["Injury / Ailment"]),
-                delta_color="off",
-            )
-
-            st.markdown(f"##### {inj_season} Week-by-Week Injury & Practice Timeline")
-            for _, h_row in player_inj_history.iterrows():
-                wk_num = int(h_row["Week"])
-                desig_str = str(h_row["Report Designation"])
-                prac_str = str(h_row["Practice Participation"])
-                ailment_str = str(h_row["Injury / Ailment"])
-                outcome_str = str(h_row["Gameday Participation"])
-                upd_str = str(h_row["Updated"])
-
-                desig_badge = render_injury_badge(
-                    "ACTIVE / CLEARED" if "PLAYED" in desig_str or "CLEARED" in desig_str else desig_str
-                )
-                prac_badge = render_practice_badge(prac_str)
-                outcome_cls = (
-                    "badge-elite"
-                    if ("ACTIVE" in outcome_str or "CLEARED" in outcome_str)
-                    else ("badge-bad" if "DID NOT PLAY" in outcome_str else "badge-mid")
-                )
-
-                render_html(
-                    f"""
-                    <div class="injury-history-row">
-                        <div>
-                            <span style="font-family:monospace; font-weight:800; color:#F8FAFC; font-size:0.92rem;">
-                                WEEK {wk_num}
-                            </span>
-                            <span class="badge-sage">[{ailment_str}]</span>
-                            <span class="metric-subtext" style="margin-left:6px;">Updated: {upd_str}</span>
-                        </div>
-                        <div style="display:flex; align-items:center; flex-wrap:wrap; gap:6px;">
-                            {prac_badge}
-                            {desig_badge}
-                            <span class="{outcome_cls}">[{outcome_str}]</span>
-                        </div>
-                    </div>
-                    """
-                )
-
             st.dataframe(
                 player_inj_history,
                 width="stretch",
                 hide_index=True,
-                column_config={
-                    "Week": st.column_config.NumberColumn("Week", format="Wk %d"),
-                    "Team": "Team",
-                    "Injury / Ailment": "Reported Injury / Ailment",
-                    "Practice Participation": "Practice Participation",
-                    "Report Designation": "Official Game Status",
-                    "Gameday Participation": "Gameday Outcome & Snaps",
-                    "Updated": "Report Date",
-                },
             )
 
 
 # -----------------------------------------------------------------------------
-# 5. SIDEBAR CONTROLS, REAL-TIME INJURY REFRESH & OVERRIDE MANAGER
+# 5. SIDEBAR CONTROLS & AUTOMATIC NEXT GAME SELECTION
 # -----------------------------------------------------------------------------
 st.sidebar.markdown("## Controls")
 
@@ -3587,11 +3451,11 @@ backtest_mode = st.sidebar.toggle(
 )
 
 if backtest_mode:
-    selected_season = st.sidebar.selectbox("Select NFL Season", [2025, 2024, 2026], index=0)
+    selected_season = st.sidebar.selectbox("Season", [2025, 2024, 2026], index=0)
 else:
-    selected_season = st.sidebar.selectbox("Select NFL Season", [2026, 2025, 2024], index=0)
+    selected_season = st.sidebar.selectbox("Season", [2026, 2025, 2024], index=0)
 
-with st.spinner(f"Loading {selected_season} nflverse CSV feeds..."):
+with st.spinner(f"Loading {selected_season} nflverse feeds..."):
     master_games_df = load_master_games_csv()
     schedule_df = load_season_schedule(selected_season)
     eff_df, eff_season = load_team_efficiency_csv(selected_season)
@@ -3604,13 +3468,13 @@ with st.spinner(f"Loading {selected_season} nflverse CSV feeds..."):
     headshot_lookup = build_headshot_lookup(player_df, roster_headshots_raw)
 
 if schedule_df.empty:
-    st.error("Could not load NFL schedule CSV from nflverse. Please verify your internet connection.")
+    st.error("Could not load NFL schedule CSV from nflverse.")
     st.stop()
 
 available_weeks = sorted(schedule_df["week"].dropna().astype(int).unique())
 default_week_idx = get_default_nfl_week_index(schedule_df, available_weeks)
 selected_week = st.sidebar.selectbox(
-    "Select NFL Week (Auto-Synced to Active Week)",
+    "Week (Auto-Synced)",
     available_weeks,
     index=default_week_idx,
 )
@@ -3618,16 +3482,13 @@ selected_week = st.sidebar.selectbox(
 all_teams = sorted(
     pd.concat([schedule_df["home_team"], schedule_df["away_team"]]).dropna().unique()
 )
-selected_team = st.sidebar.selectbox("Filter by Team (Optional)", ["All Teams"] + all_teams)
-
-only_primetime = st.sidebar.checkbox("Filter Primetime Games Only", value=False)
+selected_team = st.sidebar.selectbox("Team Filter", ["All Teams"] + all_teams)
+only_primetime = st.sidebar.checkbox("Primetime Only", value=False)
 
 st.sidebar.divider()
-st.sidebar.markdown("### Real-Time Injury Sync")
 if st.sidebar.button(
-    "Refresh Live Injury Feed Now",
+    "Refresh Injury Feed",
     use_container_width=True,
-    help="Bypasses cache to pull the latest nflverse injury & weekly roster status updates immediately.",
 ):
     st.session_state["injury_refresh_token"] += 1
     load_injuries_csv.clear()
@@ -3635,31 +3496,10 @@ if st.sidebar.button(
 
 active_ov_count = len(st.session_state.get("injury_status_overrides", {}))
 if active_ov_count > 0:
-    st.sidebar.caption(f"`{active_ov_count}` manual status override(s) active.")
-    if st.sidebar.button("Reset All Status Overrides", use_container_width=True):
+    st.sidebar.caption(f"`{active_ov_count}` status override(s) active.")
+    if st.sidebar.button("Reset Overrides", use_container_width=True):
         st.session_state["injury_status_overrides"] = {}
         st.rerun()
-
-st.sidebar.divider()
-st.sidebar.markdown("### Unit & Status Legend")
-render_html(
-    f"{render_rank_badge(2)} Top 5 NFL Unit<br>"
-    f"{render_rank_badge(14)} Ranks 6–22 Unit<br>"
-    f"{render_rank_badge(28)} Bottom 10 Unit (23–32)<br>"
-    f"{render_injury_badge('ACTIVE / CLEARED')} Active / Cleared<br>"
-    f"{render_injury_badge('QUESTIONABLE')} Questionable<br>"
-    f"{render_injury_badge('OUT')} Out / IR"
-)
-
-st.sidebar.divider()
-st.sidebar.markdown("### Active Feeds")
-st.sidebar.caption(
-    f"- **Season:** `{selected_season}` (Default Week `{available_weeks[default_week_idx]}`)\n"
-    f"- **Efficiency PBP:** `{eff_season} CSV.gz`\n"
-    f"- **Player Usage:** `{player_season} CSV`\n"
-    f"- **Snap Counts:** `{snaps_season} CSV`\n"
-    f"- **Injury Report:** `{inj_season} CSV` (TTL 300s)"
-)
 
 week_games = schedule_df[schedule_df["week"] == selected_week].copy()
 if selected_team != "All Teams":
@@ -3675,13 +3515,19 @@ if week_games.empty:
     st.warning("No games found for the selected filter combination.")
     st.stop()
 
+# Automatically default to the next upcoming/unplayed game when loading or switching weeks/filters
 valid_game_ids = week_games["game_id"].astype(str).tolist()
+filter_sig = f"{selected_season}_{selected_week}_{selected_team}_{only_primetime}"
+next_game_idx = get_default_next_game_index(week_games)
+
 if (
     "selected_game" not in st.session_state
     or st.session_state["selected_game"] not in valid_game_ids
+    or st.session_state.get("_last_week_filter_sig") != filter_sig
 ):
-    st.session_state["selected_game"] = valid_game_ids[0]
-    st.session_state["selected_game_idx"] = 0
+    st.session_state["_last_week_filter_sig"] = filter_sig
+    st.session_state["selected_game_idx"] = next_game_idx
+    st.session_state["selected_game"] = valid_game_ids[next_game_idx]
 else:
     st.session_state["selected_game_idx"] = valid_game_ids.index(
         st.session_state["selected_game"]
@@ -3691,40 +3537,22 @@ active_game = week_games.iloc[st.session_state["selected_game_idx"]]
 team_records_map = compute_team_records(schedule_df, through_week=selected_week)
 
 # -----------------------------------------------------------------------------
-# 6. PINNED TOP VIEW: HORIZONTAL SCROLLABLE NFL GAME TICKER
+# 6. PINNED TOP VIEW: STREAMLINED HEADER & HORIZONTAL GAME TICKER
 # -----------------------------------------------------------------------------
-mode_tag = (
-    f'<span class="badge-amber">[BACKTEST MODE: {selected_season}]</span>'
-    if backtest_mode or selected_season < 2026
-    else '<span class="badge-elite">[LIVE 2026 SEASON]</span>'
-)
-
-st.title("Football Edger")
-render_html(
-    f"{mode_tag} "
-    f"{render_rank_badge(1, 'Top-5')} "
-    f"{render_rank_badge(12, 'Ranks 6-22')} "
-    f"{render_rank_badge(28, 'Bottom-10')} "
-    '<span class="badge-sage">[Click any underlined player name or table row to open their Player Pop-Out Dossier & Injury History]</span>'
-)
-
-ticker_head_col1, ticker_head_col2 = st.columns([1.4, 1])
-with ticker_head_col1:
-    st.subheader(f"{selected_season} Week {selected_week} — Weekly Game Ticker")
-with ticker_head_col2:
+top_hdr_left, top_hdr_right = st.columns([1.4, 1])
+with top_hdr_left:
+    st.markdown(f"### Football Edger — {selected_season} Week {selected_week}")
+with top_hdr_right:
     render_html(
-        f'<div style="text-align:right; padding-top:10px;">'
-        f'<span class="active-lock-pill">SELECTED GAME: {st.session_state["selected_game"]}</span> '
-        f'{render_team_pill(active_game["away_team"])} '
-        f'<span style="color:#94A3B8; font-weight:700;">@</span> '
-        f'{render_team_pill(active_game["home_team"])}'
+        f'<div style="text-align:right; padding-top:8px;">'
+        f'<span class="active-lock-pill">ACTIVE: {active_game["away_team"]} @ {active_game["home_team"]}</span>'
         f"</div>"
     )
 
 render_nfl_horizontal_ticker(week_games, team_records_map)
 
 # -----------------------------------------------------------------------------
-# 7. DETAIL VIEW: HIGH-PROMINENCE SELECTED MATCHUP SPOTLIGHT
+# 7. DETAIL VIEW: STREAMLINED SELECTED MATCHUP SPOTLIGHT
 # -----------------------------------------------------------------------------
 if eff_df.empty:
     st.info("Efficiency data unavailable for this season.")
@@ -3746,16 +3574,16 @@ total_str = f"O/U {total_v:.1f}" if pd.notna(total_v) else "Total TBD"
 final_score_badge = (
     f'<span class="badge-amber">[FINAL: {away_tm} {int(away_pts)} - {home_tm} {int(home_pts)}]</span>'
     if pd.notna(away_pts) and pd.notna(home_pts)
-    else ""
+    else '<span class="badge-elite">[UPCOMING]</span>'
 )
-slot_badge = f'<span class="badge-amber">{slot_str}</span>' if slot_str else ""
+slot_badge = f'<span class="badge-mid">{slot_str}</span>' if slot_str else ""
 
 if pd.notna(rest_v) and rest_v > 0:
-    rest_badge = f'<span class="badge-elite">[REST EDGE: {home_tm} +{int(rest_v)}d]</span>'
+    rest_badge = f'<span class="badge-elite">[REST: {home_tm} +{int(rest_v)}d]</span>'
 elif pd.notna(rest_v) and rest_v < 0:
-    rest_badge = f'<span class="badge-elite">[REST EDGE: {away_tm} +{int(abs(rest_v))}d]</span>'
+    rest_badge = f'<span class="badge-elite">[REST: {away_tm} +{int(abs(rest_v))}d]</span>'
 else:
-    rest_badge = '<span class="badge-mid">[EVEN REST: 0d]</span>'
+    rest_badge = '<span class="badge-mid">[EVEN REST]</span>'
 
 a_eff = eff_df.loc[away_tm] if away_tm in eff_df.index else None
 h_eff = eff_df.loc[home_tm] if home_tm in eff_df.index else None
@@ -3776,10 +3604,7 @@ prop_logs_matchup = prepare_matchup_player_prop_logs(player_df, [away_tm, home_t
 
 
 def get_unit_penalty(tm: str, side: str) -> float:
-    """
-    Strictly sums unit EPA penalties ONLY for rows that are NOT cleared
-    and carry an active unresolved injury designation.
-    """
+    """Strictly sums unit EPA penalties ONLY for active unresolved injury designations."""
     if inj_matchup.empty:
         return 0.0
     sub = inj_matchup[
@@ -3809,24 +3634,21 @@ home_rec_str = team_records_map.get(str(home_tm).strip().upper(), "0-0")
 render_html(
     f"""
     <div class="active-game-spotlight">
-        <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:14px;">
+        <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:12px;">
             <div>
-                <div style="margin-bottom:8px;">
-                    <span class="active-lock-pill">ACTIVE MATCHUP SELECTED ({st.session_state["selected_game_idx"] + 1} OF {len(week_games)})</span>
-                    <span class="metric-subtext" style="margin-left:8px;">{selected_season} WEEK {selected_week} • {stadium_str} ({roof_str})</span>
-                </div>
-                <div style="display:flex; align-items:center; flex-wrap:wrap; gap:10px; margin:8px 0;">
+                <div style="display:flex; align-items:center; flex-wrap:wrap; gap:8px;">
                     {render_team_pill(away_tm, away_rec_str, large=True)}
-                    <span style="font-size:1.35rem; font-weight:800; color:#64748B; font-family:monospace;">AT</span>
+                    <span style="font-size:1.1rem; font-weight:700; color:#64748B; font-family:monospace;">AT</span>
                     {render_team_pill(home_tm, home_rec_str, large=True)}
+                    <span class="metric-subtext" style="margin-left:6px;">{stadium_str} ({roof_str})</span>
                 </div>
                 <div style="margin-top:8px;">
                     {a_ovr_badge} {a_def_badge}
-                    <span style="color:#475569; margin:0 6px;">|</span>
+                    <span style="color:#334155; margin:0 5px;">|</span>
                     {h_ovr_badge} {h_def_badge}
                 </div>
             </div>
-            <div style="display:flex; flex-direction:column; align-items:flex-end; gap:8px;">
+            <div style="display:flex; flex-direction:column; align-items:flex-end; gap:6px;">
                 <div>{slot_badge} {final_score_badge}</div>
                 <div>
                     <span class="badge-sage">[SPREAD: {spread_str}]</span>
@@ -3839,20 +3661,20 @@ render_html(
     """
 )
 
-# 6 Main Sub-Tabs (Strict No-Emoji Labels)
+# Shortened, Concise Main Sub-Tab Names
 subtab_brief, subtab_players, subtab_trench, subtab_props, subtab_roster, subtab_backtest = st.tabs(
     [
-        "Brief Summary & 5-Yr H2H",
-        "Player Mismatches & Injuries",
-        "Trench & Air Efficiency",
-        "Player Prop Trend Explorer",
-        "Team Roster & Usage Explorer",
-        "Backtest Performance",
+        "Overview",
+        "Mismatches",
+        "Unit EPA",
+        "Props",
+        "Rosters",
+        "Backtest",
     ]
 )
 
 # =============================================================================
-# SUB-TAB 1: BRIEF SUMMARY & TACTICAL GAME SCRIPT
+# SUB-TAB 1: OVERVIEW (UNIT TIER MATRIX + TOP 3 PLAYER PICKS + 5-YR H2H)
 # =============================================================================
 with subtab_brief:
     if a_eff is None or h_eff is None:
@@ -3871,7 +3693,7 @@ with subtab_brief:
         k1, k2, k3, k4 = st.columns(4)
         with k1:
             st.metric(
-                "Efficiency Model Lean",
+                "Model Lean",
                 f"{model_lean_team} Edge",
                 delta=f"+{model_edge_mag:.3f} Net EPA/Play",
                 delta_color="normal",
@@ -3887,17 +3709,17 @@ with subtab_brief:
                 key=lambda x: x[1],
             )
             st.metric(
-                "Primary Schematic Lever",
+                "Top Schematic Lever",
                 best_phase_val[0],
-                delta=f"{best_phase_val[1]:+.3f} Matchup Delta",
+                delta=f"{best_phase_val[1]:+.3f} EPA Delta",
                 delta_color="normal",
             )
         with k3:
             total_anchors_out = int(inj_matchup["is_anchor"].sum()) if not inj_matchup.empty else 0
             cleared_count = int(inj_matchup["is_cleared"].sum()) if not inj_matchup.empty and "is_cleared" in inj_matchup.columns else 0
             st.metric(
-                "Flagged Starters on Report",
-                f"{total_anchors_out} Anchors ({cleared_count} Cleared)",
+                "Injury Report Anchors",
+                f"{total_anchors_out} Flagged ({cleared_count} Cleared)",
                 delta=f"Away -{away_off_pen + away_def_pen:.2f} | Home -{home_off_pen + home_def_pen:.2f} EPA",
                 delta_color="inverse" if total_anchors_out > 0 else "normal",
             )
@@ -3916,11 +3738,11 @@ with subtab_brief:
                 st.metric(
                     f"5-Yr H2H ({selected_season - 5}–{selected_season})",
                     "0 Meetings",
-                    delta="No games in 5-yr window",
+                    delta="No recent meetings",
                     delta_color="off",
                 )
 
-        col_brief_left, col_brief_right = st.columns([1.2, 1])
+        col_brief_left, col_brief_right = st.columns([1.15, 1.05])
 
         top_inj_row = None
         if not inj_matchup.empty and int(inj_matchup["is_anchor"].sum()) > 0:
@@ -3929,25 +3751,6 @@ with subtab_brief:
             ]
             if not active_anchor_rows.empty:
                 top_inj_row = active_anchor_rows.iloc[0]
-
-        unavailable_off_set: set[tuple[str, str]] = set()
-        if not inj_matchup.empty:
-            for _, r_u in inj_matchup.iterrows():
-                if is_unavailable_injury(str(r_u.get("report_status", ""))):
-                    unavailable_off_set.add(
-                        (str(r_u.get("team", "")).strip().upper(), str(r_u.get("player_display", "")).strip().lower())
-                    )
-
-        top_weapon_row = None
-        if not usage_matchup.empty:
-            avail_weapons = usage_matchup[
-                ~usage_matchup.apply(
-                    lambda r: (str(r["team"]).strip().upper(), str(r["player_name"]).strip().lower()) in unavailable_off_set,
-                    axis=1,
-                )
-            ]
-            if not avail_weapons.empty:
-                top_weapon_row = avail_weapons.sort_values(by="calc_target_share", ascending=False).iloc[0]
 
         with col_brief_left:
             a_pass_rk, a_rush_rk = int(a_eff["off_pass_epa_rank"]), int(a_eff["off_rush_epa_rank"])
@@ -3960,41 +3763,41 @@ with subtab_brief:
             away_grd_gap = h_rdef_rk - a_rush_rk
             if away_air_gap >= away_grd_gap:
                 away_lever_tag = (
-                    f'<span class="badge-elite">[AIR EDGE: {away_air_gap:+d} RANK GAP]</span>'
+                    f'<span class="badge-elite">[AIR EDGE: {away_air_gap:+d} RK]</span>'
                     if away_air_gap >= 6
-                    else f'<span class="badge-sage">[LEAN PASS: {a_eff["off_pass_epa"]:+.2f} EPA]</span>'
+                    else f'<span class="badge-sage">[PASS: {a_eff["off_pass_epa"]:+.2f} EPA]</span>'
                 )
             else:
                 away_lever_tag = (
-                    f'<span class="badge-elite">[GROUND EDGE: {away_grd_gap:+d} RANK GAP]</span>'
+                    f'<span class="badge-elite">[GROUND EDGE: {away_grd_gap:+d} RK]</span>'
                     if away_grd_gap >= 6
-                    else f'<span class="badge-sage">[LEAN RUSH: {a_eff["off_rush_epa"]:+.2f} EPA]</span>'
+                    else f'<span class="badge-sage">[RUSH: {a_eff["off_rush_epa"]:+.2f} EPA]</span>'
                 )
 
             home_air_gap = a_pdef_rk - h_pass_rk
             home_grd_gap = a_rdef_rk - h_rush_rk
             if home_air_gap >= home_grd_gap:
                 home_lever_tag = (
-                    f'<span class="badge-elite">[AIR EDGE: {home_air_gap:+d} RANK GAP]</span>'
+                    f'<span class="badge-elite">[AIR EDGE: {home_air_gap:+d} RK]</span>'
                     if home_air_gap >= 6
-                    else f'<span class="badge-sage">[LEAN PASS: {h_eff["off_pass_epa"]:+.2f} EPA]</span>'
+                    else f'<span class="badge-sage">[PASS: {h_eff["off_pass_epa"]:+.2f} EPA]</span>'
                 )
             else:
                 home_lever_tag = (
-                    f'<span class="badge-elite">[GROUND EDGE: {home_grd_gap:+d} RANK GAP]</span>'
+                    f'<span class="badge-elite">[GROUND EDGE: {home_grd_gap:+d} RK]</span>'
                     if home_grd_gap >= 6
-                    else f'<span class="badge-sage">[LEAN RUSH: {h_eff["off_rush_epa"]:+.2f} EPA]</span>'
+                    else f'<span class="badge-sage">[RUSH: {h_eff["off_rush_epa"]:+.2f} EPA]</span>'
                 )
 
             if pd.notna(rest_v) and abs(rest_v) >= 1:
                 adv_rest_tm = home_tm if rest_v > 0 else away_tm
                 rest_cell_html = (
-                    f'{render_inline_logo(adv_rest_tm, 16)}<b>+{int(abs(rest_v))}d Rest Advantage</b> '
+                    f'{render_inline_logo(adv_rest_tm, 16)}<b>+{int(abs(rest_v))}d Rest Edge</b> '
                     f'<span class="metric-subtext">• {roof_str}</span>'
                 )
             else:
                 rest_cell_html = (
-                    f'<span class="badge-mid">[EVEN REST: 0d]</span> '
+                    f'<span class="badge-mid">[EVEN REST]</span> '
                     f'<span class="metric-subtext">{stadium_str} ({roof_str})</span>'
                 )
 
@@ -4007,71 +3810,71 @@ with subtab_brief:
                 inj_cell_html = (
                     f'{render_inline_logo(top_inj_row["team"], 16)}{inj_link_html} '
                     f'({top_inj_row.get("position", "POS")}) {render_injury_badge(top_inj_row["report_status"])} '
-                    f'<span style="color:#FF4D6D; font-family:monospace; font-weight:700;">-{top_inj_row["est_epa_penalty"]:.3f} EPA</span>'
+                    f'<span style="color:#F87171; font-family:monospace; font-weight:700;">-{top_inj_row["est_epa_penalty"]:.3f} EPA</span>'
                 )
             else:
-                inj_cell_html = '<span class="badge-elite">[FULL STRENGTH / ALL ANCHORS CLEARED]</span>'
+                inj_cell_html = '<span class="badge-elite">[ALL ANCHORS CLEARED]</span>'
 
             render_html(
                 f"""
-                <div class="terminal-card-elite">
-                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
-                        <h4 style="margin:0; color:#00FF87;">Brief Summary — Unit Tier Matrix</h4>
-                        <span class="metric-subtext">Offense Tier [EPA] vs Opposing Defense Tier</span>
+                <div class="terminal-card">
+                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
+                        <h4 style="margin:0; color:#F1F5F9;">Unit Tier Matrix</h4>
+                        <span class="metric-subtext">Offense Tier vs Defense Tier</span>
                     </div>
                     <div class="brief-grid">
                         <div class="unit-pillar">
                             <div class="unit-pillar-header">
-                                <span>{render_inline_logo(away_tm, 20)}{away_tm} Possession ({away_rec_str})</span>
+                                <span>{render_inline_logo(away_tm, 18)}{away_tm} ({away_rec_str})</span>
                                 <span class="metric-subtext">vs {home_tm} Def</span>
                             </div>
                             <div class="unit-tier-row">
                                 <span class="unit-tier-label">AIR</span>
-                                <span>{render_rank_badge(a_pass_rk, "Off")} <span class="metric-subtext">({a_eff["off_pass_epa"]:+.2f})</span></span>
+                                <span>{render_rank_badge(a_pass_rk, "Off")}</span>
                                 <span class="metric-subtext">vs</span>
                                 <span>{render_rank_badge(h_pdef_rk, "Def")}</span>
                             </div>
                             <div class="unit-tier-row">
                                 <span class="unit-tier-label">GROUND</span>
-                                <span>{render_rank_badge(a_rush_rk, "Off")} <span class="metric-subtext">({a_eff["off_rush_epa"]:+.2f})</span></span>
+                                <span>{render_rank_badge(a_rush_rk, "Off")}</span>
                                 <span class="metric-subtext">vs</span>
                                 <span>{render_rank_badge(h_rdef_rk, "Def")}</span>
                             </div>
                             <div class="unit-lever-footer">
-                                <span class="metric-subtext">Primary Lever</span>
+                                <span class="metric-subtext">Lever</span>
                                 {away_lever_tag}
                             </div>
                         </div>
                         <div class="unit-pillar">
                             <div class="unit-pillar-header">
-                                <span>{render_inline_logo(home_tm, 20)}{home_tm} Possession ({home_rec_str})</span>
+                                <span>{render_inline_logo(home_tm, 18)}{home_tm} ({home_rec_str})</span>
                                 <span class="metric-subtext">vs {away_tm} Def</span>
                             </div>
                             <div class="unit-tier-row">
                                 <span class="unit-tier-label">AIR</span>
-                                <span>{render_rank_badge(h_pass_rk, "Off")} <span class="metric-subtext">({h_eff["off_pass_epa"]:+.2f})</span></span>
+                                <span>{render_rank_badge(h_pass_rk, "Off")}</span>
                                 <span class="metric-subtext">vs</span>
                                 <span>{render_rank_badge(a_pdef_rk, "Def")}</span>
                             </div>
                             <div class="unit-tier-row">
                                 <span class="unit-tier-label">GROUND</span>
-                                <span>{render_rank_badge(h_rush_rk, "Off")} <span class="metric-subtext">({h_eff["off_rush_epa"]:+.2f})</span></span>
+                                <span>{render_rank_badge(h_rush_rk, "Off")}</span>
                                 <span class="metric-subtext">vs</span>
                                 <span>{render_rank_badge(a_rdef_rk, "Def")}</span>
                             </div>
                             <div class="unit-lever-footer">
-                                <span class="metric-subtext">Primary Lever</span>
+                                <span class="metric-subtext">Lever</span>
                                 {home_lever_tag}
                             </div>
                         </div>
                     </div>
                     <div class="brief-context-strip">
                         <div>
-                            <div class="context-cell-title">Rest & Environment</div>
+                            <div class="context-cell-title">Environment</div>
                             <div>{rest_cell_html}</div>
                         </div>
                         <div>
-                            <div class="context-cell-title">Top Lineup Absence</div>
+                            <div class="context-cell-title">Key Lineup Status</div>
                             <div>{inj_cell_html}</div>
                         </div>
                     </div>
@@ -4080,171 +3883,102 @@ with subtab_brief:
             )
 
         with col_brief_right:
-            fav_team = home_tm if (pd.notna(spread_v) and spread_v <= 0) else away_tm
-            dog_team = away_tm if fav_team == home_tm else home_tm
-            fav_sr = (
-                h_eff["off_sr"] * 100.0 if fav_team == home_tm else a_eff["off_sr"] * 100.0
-            )
-            dog_p_rk = (
-                int(a_eff["off_pass_epa_rank"]) if dog_team == away_tm else int(h_eff["off_pass_epa_rank"])
-            )
-            fav_pdef_rk = (
-                int(h_eff["def_pass_epa_rank"]) if fav_team == home_tm else int(a_eff["def_pass_epa_rank"])
+            top_3_picks = build_top_player_picks(
+                usage_matchup,
+                prop_logs_matchup,
+                inj_matchup,
+                eff_df,
+                away_tm,
+                home_tm,
             )
 
-            if top_weapon_row is not None:
-                w_tm = top_weapon_row["team"]
-                opp_tm = home_tm if w_tm == away_tm else away_tm
-                opp_p_rk = int(eff_df.loc[opp_tm, "def_pass_epa_rank"])
-                phase2_badge = f'<span class="badge-amber">[{top_weapon_row["calc_target_share"]*100:.1f}% TARGET SHARE]</span>'
-                w_link_html = render_player_link(
-                    top_weapon_row["player_name"],
-                    w_tm,
-                    str(top_weapon_row["position"]),
+            with st.container(border=True):
+                render_html(
+                    """
+                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
+                        <h4 style="margin:0; color:#F1F5F9;">Top 3 Player Picks</h4>
+                        <span class="metric-subtext">WR • RB • QB • TE Model Plays</span>
+                    </div>
+                    """
                 )
-                phase2_body = (
-                    f"{render_inline_logo(w_tm, 16)}{w_link_html} ({top_weapon_row['position']}) "
-                    f"featured vs {render_inline_logo(opp_tm, 16)}{render_rank_badge(opp_p_rk, 'Cov')} "
-                    f"<span class='metric-subtext'>({int(top_weapon_row['targets'])} tgts, {int(top_weapon_row['air_yards'])} air yds)</span>"
-                )
-            else:
-                phase2_badge = '<span class="badge-mid">[BALANCED TARGETS]</span>'
-                phase2_body = "Distributed progression reads across primary WRs and TEs."
-
-            render_html(
-                f"""
-                <div class="terminal-card">
-                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
-                        <h4 style="margin:0; color:#7FD1B9;">Game Script Flow — Tactical Timeline</h4>
-                        <span class="metric-subtext">3-Phase Projection</span>
-                    </div>
-                    <div class="tactical-step">
-                        <div class="tactical-phase-header">
-                            <span class="tactical-phase-tag">PHASE 1 • OPENING SCRIPT & EARLY DOWNS TEMPO</span>
-                            <span class="badge-elite">[{model_lean_team} +{model_edge_mag:.3f} EPA]</span>
-                        </div>
-                        <div class="tactical-body">
-                            {render_inline_logo(fav_team, 16)}<b>{fav_team}</b> dictates early tempo
-                            (<b>{fav_sr:.1f}%</b> Success Rate) • Primary script lever: <b>{best_phase_val[0]}</b>
-                            (<b>{best_phase_val[1]:+.3f}</b> net delta).
-                        </div>
-                    </div>
-                    <div class="tactical-step">
-                        <div class="tactical-phase-header">
-                            <span class="tactical-phase-tag">PHASE 2 • FOCAL MISMATCH & TARGET SHARE FOCUS</span>
-                            {phase2_badge}
-                        </div>
-                        <div class="tactical-body">
-                            {phase2_body}
-                        </div>
-                    </div>
-                    <div class="tactical-step-last">
-                        <div class="tactical-phase-header">
-                            <span class="tactical-phase-tag" style="color:#FFB020;">PHASE 3 • SECOND-HALF PIVOT & SCRIPT CONDITION</span>
-                            <span class="badge-sage">[IF {fav_team} LEADS +7]</span>
-                        </div>
-                        <div class="tactical-body">
-                            {render_inline_logo(dog_team, 16)}<b>{dog_team}</b> forced into high-volume dropback script:
-                            {render_rank_badge(dog_p_rk, "Pass Off")} vs
-                            {render_inline_logo(fav_team, 16)}{render_rank_badge(fav_pdef_rk, "Pass Def")}.
-                        </div>
-                    </div>
-                </div>
-                """
-            )
+                if not top_3_picks:
+                    st.info("Insufficient player usage data to rank top player picks.")
+                else:
+                    for p_idx, pick in enumerate(top_3_picks):
+                        p_pic_html = render_mismatch_headshot_html(
+                            pick["player_name"], pick["team"], headshot_lookup
+                        )
+                        edge_cls = "badge-elite" if pick["edge_score"] >= 70.0 else "badge-sage"
+                        with st.container(border=True):
+                            pk_top_l, pk_top_r = st.columns([1.45, 1.05])
+                            with pk_top_l:
+                                render_inline_player_trigger(
+                                    pick["player_name"],
+                                    pick["team"],
+                                    pick["position"],
+                                    f"top3_pick_{p_idx}",
+                                    f"[PICK #{p_idx + 1} • {pick['team']} {pick['position']}]",
+                                )
+                            with pk_top_r:
+                                render_html(
+                                    f'<div style="text-align:right;">'
+                                    f'<span class="{edge_cls}">[{pick["play_label"]}]</span> '
+                                    f'<span class="badge-mid">[EDGE {pick["edge_score"]:.0f}]</span>'
+                                    f"</div>"
+                                )
+                            render_html(
+                                f"""
+                                <div style="display:flex; align-items:center; gap:10px; margin-top:4px;">
+                                    {p_pic_html}
+                                    <div class="metric-subtext" style="line-height:1.38;">
+                                        {pick["usage_tag"]} {pick["matchup_tag"]} <span class="badge-mid">[HIT: {pick["hit_record"]}]</span><br>
+                                        <span style="color:#CBD5E1;">{pick["rationale"]}</span>
+                                    </div>
+                                </div>
+                                """
+                            )
 
         render_html(
-            f"<h4 style='margin:14px 0 8px 0;'>"
-            f"{render_inline_logo(away_tm, 24)}{away_tm} vs {render_inline_logo(home_tm, 24)}{home_tm} — "
+            f"<h4 style='margin:12px 0 6px 0;'>"
+            f"{render_inline_logo(away_tm, 20)}{away_tm} vs {render_inline_logo(home_tm, 20)}{home_tm} — "
             f"5-Year Matchup History ({selected_season - 5}–{selected_season})</h4>"
         )
         if h2h_5yr.empty:
             st.info(
-                f"No completed head-to-head matchups between {away_tm} and {home_tm} during the {selected_season - 5}–{selected_season} window."
+                f"No completed matchups between {away_tm} and {home_tm} in the {selected_season - 5}–{selected_season} window."
             )
         else:
-            avg_tot = h2h_5yr["Total Pts"].mean()
-            h_su = int((h2h_5yr["SU Winner"] == home_tm).sum())
-            a_su = int((h2h_5yr["SU Winner"] == away_tm).sum())
-
-            render_html(
-                f"""
-                <div class="terminal-card" style="padding:12px; margin-bottom:12px;">
-                    <span class="badge-sage">[5-YR MEETINGS: {len(h2h_5yr)}]</span>
-                    <span class="badge-elite">[{home_tm} SU WINS: {h_su}]</span>
-                    <span class="badge-elite">[{away_tm} SU WINS: {a_su}]</span>
-                    <span class="badge-amber">[AVG COMBINED PTS: {avg_tot:.1f}]</span>
-                </div>
-                """
+            h2h_disp = h2h_5yr[
+                ["season", "week", "gameday", "Matchup & Final", "SU Winner", "ATS Result", "Total Pts"]
+            ].copy()
+            st.dataframe(
+                h2h_disp,
+                width="stretch",
+                hide_index=True,
+                column_config={
+                    "season": st.column_config.NumberColumn("Season", format="%d"),
+                    "week": st.column_config.NumberColumn("Week", format="%d"),
+                    "gameday": "Date",
+                    "Matchup & Final": "Score",
+                    "SU Winner": "Winner",
+                    "ATS Result": "Spread Outcome",
+                    "Total Pts": "Combined Pts",
+                },
             )
 
-            h2h_col_cards, h2h_col_table = st.columns([1, 1.6])
-            with h2h_col_cards:
-                for _, h_row in h2h_5yr.head(3).iterrows():
-                    win_tm = h_row["SU Winner"]
-                    badge_w = (
-                        f'<span class="badge-elite">{render_inline_logo(win_tm, 14)}[{win_tm} WON]</span>'
-                        if win_tm != "TIE"
-                        else '<span class="badge-mid">[TIE]</span>'
-                    )
-                    render_html(
-                        f"""
-                        <div class="terminal-card" style="padding:12px; margin-bottom:8px;">
-                            <div style="display:flex; justify-content:space-between; align-items:center;">
-                                <b>{int(h_row['season'])} Wk {int(h_row['week'])} ({h_row.get('gameday', '')})</b>
-                                {badge_w}
-                            </div>
-                            <div style="margin-top:6px; font-size:0.95rem;">
-                                <b>{h_row['Matchup & Final']}</b>
-                            </div>
-                            <div class="metric-subtext" style="margin-top:4px;">
-                                ATS: <b>{h_row['ATS Result']}</b> | Total Pts: <b>{h_row['Total Pts']}</b>
-                            </div>
-                        </div>
-                        """
-                    )
-
-            with h2h_col_table:
-                h2h_disp = h2h_5yr[
-                    ["season", "week", "gameday", "Matchup & Final", "SU Winner", "ATS Result", "Total Pts"]
-                ].copy()
-                st.dataframe(
-                    h2h_disp,
-                    width="stretch",
-                    hide_index=True,
-                    column_config={
-                        "season": st.column_config.NumberColumn("Season", format="%d"),
-                        "week": st.column_config.NumberColumn("Week", format="%d"),
-                        "gameday": "Date",
-                        "Matchup & Final": "Score",
-                        "SU Winner": "Winner",
-                        "ATS Result": "Spread Outcome",
-                        "Total Pts": "Combined Pts",
-                    },
-                )
-
 # =============================================================================
-# SUB-TAB 2: PLAYER MISMATCHES & INJURIES (WITH PLAYER HEADSHOTS & CONCISE RATIONALE)
+# SUB-TAB 2: MISMATCHES (SHORTENED SUB-TAB NAMES + HEADSHOTS + CONCISE RATIONALE)
 # =============================================================================
 with subtab_players:
     pm_subtab_cbwr, pm_subtab_volume, pm_subtab_injuries = st.tabs(
         [
-            "1-on-1 CB vs. WR Mismatches",
-            "Skill-Player Volume vs. Unit Tiers",
-            "Official Weekly Injury Report & EPA Drag",
+            "CB vs. WR",
+            "Skill Volume",
+            "Injuries",
         ]
     )
 
     with pm_subtab_cbwr:
-        render_html(
-            f"<h4 style='margin:0 0 4px 0;'>"
-            f"{render_inline_logo(away_tm, 24)}1-on-1 Cornerback vs. Wide Receiver Mismatch Analyzer — "
-            f"{away_tm} vs {render_inline_logo(home_tm, 24)}{home_tm}</h4>"
-        )
-        st.caption(
-            "Click any underlined Wide Receiver or Cornerback name directly—or select any row in the summary matrix—to open their Player Pop-Out Dossier & Injury History."
-        )
-
         away_cb_wr_battles = build_cb_wr_matchup_battles(
             usage_matchup, player_df, snaps_df, inj_matchup, eff_df, away_tm, home_tm
         )
@@ -4272,19 +4006,19 @@ with subtab_players:
                 delta=f"Index {top_battle['mismatch_score']:.1f}/100 vs {top_battle['cb_name']}",
             )
             c_k2.metric(
-                "Flagged [ELITE MISMATCH] Spots",
+                "Elite Mismatch Spots",
                 f"{len(elite_battles)} Battles",
-                delta="Score >= 75/100 + Elite Catalyst",
+                delta="Score >= 75/100 + Catalyst",
             )
             c_k3.metric(
-                "Active Secondary Injury / Backup Triggers",
+                "Secondary Injury Triggers",
                 f"{len(backup_triggers)} Matchups",
-                delta="Out / Doubtful / Questionable CBs Only",
+                delta="Out / Doubtful / Questionable CBs",
             )
             c_k4.metric(
-                "Wideouts on Positive L4 Surge",
+                "Wideouts on L4 Uptick",
                 f"{len(hot_wrs)} Receivers",
-                delta="Hot / Uptick L4 YPG vs Season",
+                delta="Positive L4 YPG vs Season",
             )
 
             cb_col1, cb_col2 = st.columns(2)
@@ -4295,7 +4029,7 @@ with subtab_players:
             ]:
                 with col_ui:
                     render_html(
-                        f'<div style="margin-bottom:10px;">'
+                        f'<div style="margin-bottom:8px;">'
                         f'{render_team_pill(off_tm_i)} <b>Wideouts vs</b> '
                         f'{render_team_pill(def_tm_i)} <b>Cornerbacks</b></div>'
                     )
@@ -4388,7 +4122,7 @@ with subtab_players:
                     for b in sorted_battles
                 ]
             )
-            st.markdown("##### 1-on-1 CB vs. WR Mismatch Summary Matrix (Click Any Row to Open WR Dossier)")
+            st.markdown("##### CB vs. WR Summary Matrix (Click Row for Dossier)")
             cbwr_event = st.dataframe(
                 battle_table_df,
                 width="stretch",
@@ -4417,15 +4151,6 @@ with subtab_players:
                         st.rerun()
 
     with pm_subtab_volume:
-        render_html(
-            f"<h4 style='margin:0 0 4px 0;'>"
-            f"{render_inline_logo(away_tm, 22)}{render_inline_logo(home_tm, 22)}"
-            f"Overall Skill-Player Volume vs. Unit Tiers ({away_tm} @ {home_tm})</h4>"
-        )
-        st.caption(
-            "Primary offensive skill weapons (WR, RB, TE) cross-referenced against opposing Pass/Rush EPA defensive ranks. Click any underlined player name to open their Pop-Out Dossier."
-        )
-
         if usage_matchup.empty or a_eff is None or h_eff is None:
             st.info("Player usage or team efficiency splits unavailable for this matchup.")
         else:
@@ -4437,8 +4162,8 @@ with subtab_players:
             ]:
                 with col_ui:
                     render_html(
-                        f'<div style="margin-bottom:10px;">'
-                        f'{render_team_pill(off_tm_i)} <b>Playmakers vs</b> '
+                        f'<div style="margin-bottom:8px;">'
+                        f'{render_team_pill(off_tm_i)} <b>Skill Weapons vs</b> '
                         f'{render_team_pill(def_tm_i)} <b>Defense</b></div>'
                     )
                     tm_weapons = usage_matchup[usage_matchup["team"] == off_tm_i].copy()
@@ -4458,7 +4183,7 @@ with subtab_players:
                         opp_rk = def_pass_rk if is_rec else def_rush_rk
                         phase_str = f"{def_tm_i} Pass Def" if is_rec else f"{def_tm_i} Rush Def"
                         share_lbl = (
-                            f"Target Share: <b>{w_row['calc_target_share']*100:.1f}%</b> ({int(w_row['targets'])} tgts, {int(w_row['air_yards'])} air yds)"
+                            f"Tgt Share: <b>{w_row['calc_target_share']*100:.1f}%</b> ({int(w_row['targets'])} tgts, {int(w_row['air_yards'])} air yds)"
                             if is_rec
                             else f"Rush Share: <b>{w_row['calc_rush_share']*100:.1f}%</b> ({int(w_row['carries'])} att, {int(w_row['touches'])} touches)"
                         )
@@ -4487,7 +4212,7 @@ with subtab_players:
                                 <div style="display:flex; align-items:center; gap:10px; margin-top:4px;">
                                     {w_pic_html}
                                     <div class="metric-subtext">
-                                        {share_lbl} | Total EPA: <b>{w_row['total_epa']:+.1f}</b> |
+                                        {share_lbl} | EPA: <b>{w_row['total_epa']:+.1f}</b> |
                                         Scrimmage: <b>{scrim_yds} yds ({int(w_row['total_tds'])} TD)</b>
                                     </div>
                                 </div>
@@ -4495,17 +4220,7 @@ with subtab_players:
                             )
 
     with pm_subtab_injuries:
-        render_html(
-            f"<h4 style='margin:0 0 8px 0;'>"
-            f"{render_inline_logo(away_tm, 22)}{render_inline_logo(home_tm, 22)}"
-            f"Weekly Injuries, Real-Time Clearances & Missing Starter EPA Drag ({away_tm} @ {home_tm})</h4>"
-        )
-        st.caption(
-            "Players who practiced in full or were cleared off the injury report resolve to [ACTIVE / CLEARED] with 0.000 EPA drag. "
-            "Use the Quick Status Override bar below or click any underlined player name to inspect their full season Injury History."
-        )
-
-        with st.expander("Real-Time Injury Status Override & Clearance Control", expanded=False):
+        with st.expander("Status Override Control", expanded=False):
             ov_candidates = []
             if not inj_matchup.empty:
                 for _, r_c in inj_matchup.iterrows():
@@ -4522,13 +4237,13 @@ with subtab_players:
                 q_c1, q_c2, q_c3 = st.columns([1.8, 1.2, 1.0])
                 with q_c1:
                     chosen_ov_plr = st.selectbox(
-                        "Select Player to Update",
+                        "Player",
                         options=ov_candidates,
                         key="quick_ov_player_select",
                     )
                 with q_c2:
                     chosen_ov_st = st.selectbox(
-                        "New Real-Time Status",
+                        "Status",
                         options=[
                             "ACTIVE / CLEARED",
                             "QUESTIONABLE",
@@ -4552,28 +4267,16 @@ with subtab_players:
                             st.session_state["injury_status_overrides"][k_ov] = chosen_ov_st
                         st.rerun()
 
-        inj_filter_col1, inj_filter_col2 = st.columns([1.6, 1.4])
-        with inj_filter_col1:
-            inj_view_mode = st.radio(
-                "Filter Report View",
-                options=[
-                    "All Report Entries (Flagged + Cleared)",
-                    "Lingering Designations Only (Out / Doubtful / Questionable)",
-                    "Active / Cleared Players Only",
-                ],
-                horizontal=True,
-                key="inj_report_view_filter",
-            )
-        with inj_filter_col2:
-            if not inj_matchup.empty:
-                lingering_n = int((~inj_matchup["is_cleared"]).sum())
-                cleared_n = int(inj_matchup["is_cleared"].sum())
-                render_html(
-                    f'<div style="text-align:right; padding-top:8px;">'
-                    f'<span class="badge-bad">[{lingering_n} LINGERING DESIGNATIONS]</span> '
-                    f'<span class="badge-elite">[{cleared_n} ACTIVE / CLEARED]</span>'
-                    f"</div>"
-                )
+        inj_view_mode = st.radio(
+            "Filter",
+            options=[
+                "All Entries",
+                "Active Designations Only",
+                "Cleared Only",
+            ],
+            horizontal=True,
+            key="inj_report_view_filter",
+        )
 
         if inj_matchup.empty:
             render_html(
@@ -4601,9 +4304,9 @@ with subtab_players:
                     anchor_count = int(tm_inj_all["is_anchor"].sum()) if not tm_inj_all.empty else 0
                     cleared_tm_count = int(tm_inj_all["is_cleared"].sum()) if not tm_inj_all.empty else 0
 
-                    if inj_view_mode == "Lingering Designations Only (Out / Doubtful / Questionable)":
+                    if inj_view_mode == "Active Designations Only":
                         tm_inj = tm_inj_all[~tm_inj_all["is_cleared"]].copy()
-                    elif inj_view_mode == "Active / Cleared Players Only":
+                    elif inj_view_mode == "Cleared Only":
                         tm_inj = tm_inj_all[tm_inj_all["is_cleared"]].copy()
                     else:
                         tm_inj = tm_inj_all.copy()
@@ -4614,32 +4317,31 @@ with subtab_players:
                         f"""
                         <div class="{card_cls}">
                             <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:6px;">
-                                <h4 style="margin:0;">{render_inline_logo(tm, 22)}{tm} Injury Impact</h4>
+                                <h4 style="margin:0;">{render_inline_logo(tm, 20)}{tm} Injuries</h4>
                                 <div>
-                                    <span class="{badge_cls}">[{anchor_count} ANCHORS FLAGGED]</span>
+                                    <span class="{badge_cls}">[{anchor_count} FLAGGED]</span>
                                     <span class="badge-elite">[{cleared_tm_count} CLEARED]</span>
                                 </div>
                             </div>
-                            <p style="margin:8px 0 0 0;" class="metric-subtext">
-                                Offense EPA Penalty: <b>{-total_off_drop:+.3f}/play</b> |
-                                Defense EPA Penalty: <b>+{total_def_drop:.3f}/play allowed</b>
+                            <p style="margin:6px 0 0 0;" class="metric-subtext">
+                                Off EPA Drag: <b>{-total_off_drop:+.3f}/play</b> |
+                                Def EPA Drag: <b>+{total_def_drop:.3f}/play</b>
                             </p>
                         </div>
                         """
                     )
 
                     if tm_inj.empty:
-                        st.caption(f"No {tm} players match the current status filter.")
+                        st.caption(f"No {tm} players match the current filter.")
                     else:
                         for i_idx, (_, r_inj) in enumerate(tm_inj.head(10).iterrows()):
                             badge_html = render_injury_badge(r_inj["report_status"])
                             prac_html = render_practice_badge(r_inj.get("practice_status_clean", ""))
                             snap_pct = r_inj["snap_share"] * 100
-                            tgt_pct = r_inj["calc_target_share"] * 100
                             pos_str = str(r_inj.get("position", "POS"))
                             is_clr = bool(r_inj.get("is_cleared", False))
-                            epa_color = "#00FF87" if is_clr else "#FF4D6D"
-                            epa_str = "0.000/play (Cleared — Baseline Talent Only)" if is_clr else f"-{r_inj['est_epa_penalty']:.3f}/play"
+                            epa_color = "#34D399" if is_clr else "#F87171"
+                            epa_str = "0.000 (Cleared)" if is_clr else f"-{r_inj['est_epa_penalty']:.3f}/play"
 
                             with st.container(border=True):
                                 ic1, ic2 = st.columns([1.4, 1.2])
@@ -4656,62 +4358,20 @@ with subtab_players:
                                 render_html(
                                     f"""
                                     <div class="metric-subtext" style="margin-top:4px;">
-                                        {r_inj['role_tier']} | Ailment: <b>{r_inj['primary_injury']}</b> |
-                                        Snaps: <b>{snap_pct:.0f}%</b> | Tgt Share: <b>{tgt_pct:.1f}%</b> |
-                                        EPA Impact: <span style="color:{epa_color}; font-weight:700;">{epa_str}</span>
+                                        {r_inj['role_tier']} • <b>{r_inj['primary_injury']}</b> •
+                                        Snaps: <b>{snap_pct:.0f}%</b> |
+                                        EPA: <span style="color:{epa_color}; font-weight:700;">{epa_str}</span>
                                     </div>
                                     """
                                 )
 
 # =============================================================================
-# SUB-TAB 3: TRENCH & AIR EFFICIENCY
+# SUB-TAB 3: UNIT EPA (TRENCH & AIR EFFICIENCY)
 # =============================================================================
 with subtab_trench:
     if a_eff is None or h_eff is None:
         st.warning("Efficiency metrics unavailable for one or both teams.")
     else:
-        mismatch_cards = []
-        unit_pairs = [
-            (away_tm, home_tm, "Pass", a_eff["off_pass_epa"], int(a_eff["off_pass_epa_rank"]), h_eff["def_pass_epa"], int(h_eff["def_pass_epa_rank"])),
-            (away_tm, home_tm, "Rush", a_eff["off_rush_epa"], int(a_eff["off_rush_epa_rank"]), h_eff["def_rush_epa"], int(h_eff["def_rush_epa_rank"])),
-            (home_tm, away_tm, "Pass", h_eff["off_pass_epa"], int(h_eff["off_pass_epa_rank"]), a_eff["def_pass_epa"], int(a_eff["def_pass_epa_rank"])),
-            (home_tm, away_tm, "Rush", h_eff["off_rush_epa"], int(h_eff["off_rush_epa_rank"]), a_eff["def_rush_epa"], int(a_eff["def_rush_epa_rank"])),
-        ]
-
-        for o_tm, d_tm, phase, o_val, o_rk, d_val, d_rk in unit_pairs:
-            if o_rk <= 10 and d_rk >= 23:
-                mismatch_cards.append(
-                    {
-                        "style": "terminal-card-elite",
-                        "badges": f"{render_rank_badge(o_rk, f'{o_tm} {phase} Off')} vs {render_rank_badge(d_rk, f'{d_tm} {phase} Def')}",
-                        "title": f"{render_inline_logo(o_tm, 20)}{o_tm} {phase} Offense Smash Spot (+{d_rk - o_rk} Rank Edge)",
-                        "detail": f"{o_tm} generates {o_val:+.3f} EPA/play against a vulnerable {d_tm} defense allowing {d_val:+.3f} EPA/play.",
-                    }
-                )
-            elif d_rk <= 5 and o_rk >= 23:
-                mismatch_cards.append(
-                    {
-                        "style": "terminal-card-vuln",
-                        "badges": f"{render_rank_badge(d_rk, f'{d_tm} {phase} Def')} vs {render_rank_badge(o_rk, f'{o_tm} {phase} Off')}",
-                        "title": f"{render_inline_logo(d_tm, 20)}{d_tm} {phase} Defense Shutdown Spot (+{o_rk - d_rk} Rank Edge)",
-                        "detail": f"Elite {d_tm} unit ({d_val:+.3f} EPA allowed) clamps down on struggling {o_tm} {phase.lower()} attack ({o_val:+.3f} EPA).",
-                    }
-                )
-
-        if mismatch_cards:
-            m_cols = st.columns(len(mismatch_cards))
-            for i, card in enumerate(mismatch_cards):
-                with m_cols[i]:
-                    render_html(
-                        f"""
-                        <div class="{card['style']}">
-                            <div>{card['badges']}</div>
-                            <h4 style="margin:8px 0 4px 0;">{card['title']}</h4>
-                            <span class="metric-subtext">{card['detail']}</span>
-                        </div>
-                        """
-                    )
-
         def render_possession_block(
             off_tm: str,
             def_tm: str,
@@ -4721,16 +4381,15 @@ with subtab_trench:
             def_pen: float,
         ):
             render_html(
-                f"<h4 style='margin:12px 0 8px 0;'>"
-                f"Possession Matchup: {render_team_pill(off_tm)} Offense vs "
-                f"{render_team_pill(def_tm)} Defense</h4>"
+                f"<h4 style='margin:10px 0 6px 0;'>"
+                f"{render_team_pill(off_tm)} Offense vs {render_team_pill(def_tm)} Defense</h4>"
             )
             c1, c2, c3 = st.columns(3)
 
             with c1:
                 with st.container(border=True):
                     render_html(
-                        f"<b>{render_inline_logo(off_tm, 16)}AIR EFFICIENCY ({off_tm} Pass vs {def_tm} Pass Def)</b><br>"
+                        f"<b>{render_inline_logo(off_tm, 16)}AIR ({off_tm} Pass vs {def_tm} Pass Def)</b><br>"
                         f"{render_rank_badge(int(o_row['off_pass_epa_rank']), f'{off_tm} Off')} "
                         f"{render_rank_badge(int(d_row['def_pass_epa_rank']), f'{def_tm} Def')}"
                     )
@@ -4742,20 +4401,20 @@ with subtab_trench:
                         delta_color="normal" if o_row["off_pass_epa_rank"] <= 16 else "inverse",
                     )
                     m_b.metric(
-                        f"{def_tm} Pass EPA Allowed",
+                        f"{def_tm} Pass Def EPA",
                         f"{d_row['def_pass_epa']:+.3f}",
                         delta=f"Rank #{int(d_row['def_pass_epa_rank'])}",
                         delta_color="normal" if d_row["def_pass_epa_rank"] <= 16 else "inverse",
                     )
                     st.caption(
-                        f"Pass Success Rate: **{off_tm}** {o_row['off_pass_sr']*100:.1f}% "
+                        f"Success Rate: **{off_tm}** {o_row['off_pass_sr']*100:.1f}% "
                         f"| **{def_tm} Allowed** {d_row['def_pass_sr']*100:.1f}%"
                     )
 
             with c2:
                 with st.container(border=True):
                     render_html(
-                        f"<b>{render_inline_logo(off_tm, 16)}TRENCH EFFICIENCY ({off_tm} Rush vs {def_tm} Rush Def)</b><br>"
+                        f"<b>{render_inline_logo(off_tm, 16)}GROUND ({off_tm} Rush vs {def_tm} Rush Def)</b><br>"
                         f"{render_rank_badge(int(o_row['off_rush_epa_rank']), f'{off_tm} Off')} "
                         f"{render_rank_badge(int(d_row['def_rush_epa_rank']), f'{def_tm} Def')}"
                     )
@@ -4767,13 +4426,13 @@ with subtab_trench:
                         delta_color="normal" if o_row["off_rush_epa_rank"] <= 16 else "inverse",
                     )
                     m_b.metric(
-                        f"{def_tm} Rush EPA Allowed",
+                        f"{def_tm} Rush Def EPA",
                         f"{d_row['def_rush_epa']:+.3f}",
                         delta=f"Rank #{int(d_row['def_rush_epa_rank'])}",
                         delta_color="normal" if d_row["def_rush_epa_rank"] <= 16 else "inverse",
                     )
                     st.caption(
-                        f"Rush Success Rate: **{off_tm}** {o_row['off_rush_sr']*100:.1f}% "
+                        f"Success Rate: **{off_tm}** {o_row['off_rush_sr']*100:.1f}% "
                         f"| **{def_tm} Allowed** {d_row['def_rush_sr']*100:.1f}%"
                     )
 
@@ -4790,38 +4449,27 @@ with subtab_trench:
                     m_a.metric(
                         f"{off_tm} Adj Off EPA",
                         f"{adj_off_epa:+.3f}",
-                        delta=f"{-off_pen:+.3f} Inj Drag" if off_pen > 0 else "Full Strength (0.000 Drag)",
+                        delta=f"{-off_pen:+.3f} Inj Drag" if off_pen > 0 else "Full Strength",
                         delta_color="normal" if off_pen == 0 else "inverse",
                     )
                     m_b.metric(
                         f"{def_tm} Adj Def EPA",
                         f"{adj_def_epa:+.3f}",
-                        delta=f"+{def_pen:.3f} Inj Drag" if def_pen > 0 else "Full Strength (0.000 Drag)",
+                        delta=f"+{def_pen:.3f} Inj Drag" if def_pen > 0 else "Full Strength",
                         delta_color="normal" if def_pen == 0 else "inverse",
                     )
                     st.caption(
-                        f"Total Success Rate: **{off_tm}** {o_row['off_sr']*100:.1f}% (#{int(o_row['off_sr_rank'])}) "
+                        f"Total SR: **{off_tm}** {o_row['off_sr']*100:.1f}% (#{int(o_row['off_sr_rank'])}) "
                         f"| **{def_tm}** {d_row['def_sr']*100:.1f}% (#{int(d_row['def_sr_rank'])})"
                     )
 
         render_possession_block(away_tm, home_tm, a_eff, h_eff, away_off_pen, home_def_pen)
-        st.write("")
         render_possession_block(home_tm, away_tm, h_eff, a_eff, home_off_pen, away_def_pen)
 
 # =============================================================================
-# SUB-TAB 4: PLAYER PROP TREND EXPLORER
+# SUB-TAB 4: PROPS (PLAYER PROP TREND EXPLORER)
 # =============================================================================
 with subtab_props:
-    render_html(
-        f"<h4 style='margin:0 0 4px 0;'>"
-        f"{render_inline_logo(away_tm, 22)}{render_inline_logo(home_tm, 22)}"
-        f"Player Prop Trend Explorer ({away_tm} @ {home_tm})</h4>"
-    )
-    st.caption(
-        f"Includes Anytime TD, Receiving TDs, Interceptions (INT), and yardage/reception props ({player_season} logs), "
-        "plus automated Last-3-Games (L3) Hot/Cold streak detection. Click the underlined player name to open their Pop-Out Dossier."
-    )
-
     if prop_logs_matchup.empty:
         st.info(f"No weekly player game logs found for {away_tm} or {home_tm}.")
     else:
@@ -4835,7 +4483,7 @@ with subtab_props:
                 allowed_positions = sorted(prop_logs_matchup["pos_clean"].unique().tolist())
 
             selected_pos = st.selectbox(
-                "1. Filter Position",
+                "Position",
                 options=["All Skill Positions"] + allowed_positions,
                 index=0,
             )
@@ -4867,7 +4515,7 @@ with subtab_props:
 
         with ctrl_col2:
             selected_player_disp = st.selectbox(
-                "2. Select Active Matchup Player",
+                "Player",
                 options=roster_summary["display_option"].tolist(),
                 index=0,
             )
@@ -4887,7 +4535,7 @@ with subtab_props:
 
         with ctrl_col3:
             selected_market_label = st.selectbox(
-                "3. Select Prop Market",
+                "Market",
                 options=list(PROP_MARKETS.keys()),
                 index=default_market_idx,
             )
@@ -4917,7 +4565,7 @@ with subtab_props:
         slider_col1, slider_col2 = st.columns(2)
         with slider_col1:
             prop_threshold = st.slider(
-                f"Target Prop Threshold ({selected_market_label})",
+                f"Prop Line ({selected_market_label})",
                 min_value=0.5,
                 max_value=float(round(dynamic_max, 0) + 0.5),
                 value=float(min(max(0.5, smart_default_threshold), dynamic_max)),
@@ -4926,7 +4574,7 @@ with subtab_props:
         with slider_col2:
             if total_avail_games > 1:
                 lookback_n = st.slider(
-                    "Lookback Window (Last N Games)",
+                    "Last N Games",
                     min_value=1,
                     max_value=total_avail_games,
                     value=min(10, total_avail_games),
@@ -4934,7 +4582,6 @@ with subtab_props:
                 )
             else:
                 lookback_n = 1
-                st.caption("Showing single available game log.")
 
         season_baseline_avg = float(p_log[stat_col_name].mean()) if total_avail_games > 0 else 0.0
         l3_avg = float(p_log.tail(3)[stat_col_name].mean()) if total_avail_games > 0 else 0.0
@@ -4944,7 +4591,7 @@ with subtab_props:
 
         window_log = p_log.tail(lookback_n).copy()
         window_log["hit"] = window_log[stat_col_name] >= prop_threshold
-        window_log["bar_color"] = np.where(window_log["hit"], "#00FF87", "#FF4D6D")
+        window_log["bar_color"] = np.where(window_log["hit"], "#34D399", "#F87171")
         window_log["result_label"] = np.where(window_log["hit"], "OVER (HIT)", "UNDER (MISS)")
         window_log["rolling_avg"] = window_log[stat_col_name].expanding().mean()
 
@@ -4965,47 +4612,34 @@ with subtab_props:
 
         pk1, pk2, pk3, pk4 = st.columns(4)
         pk1.metric(
-            f"Hit Rate (Last {sample_n} Games)",
+            f"Hit Rate (Last {sample_n})",
             f"{hit_rate_pct:.1f}% ({hits_count}/{sample_n})",
-            delta="Strong Over Trend"
-            if hit_rate_pct >= 60
-            else ("Under Trend" if hit_rate_pct <= 40 else "Balanced Split"),
-            delta_color="normal" if hit_rate_pct >= 55 else ("inverse" if hit_rate_pct < 45 else "off"),
+            delta="Over Trend" if hit_rate_pct >= 55 else "Under Trend",
+            delta_color="normal" if hit_rate_pct >= 55 else "inverse",
         )
         pk2.metric(
-            f"Window Avg ({selected_market_label})",
+            f"Window Avg",
             f"{avg_val:.2f}" if is_td_or_int else f"{avg_val:.1f}",
-            delta=f"{diff_vs_line:+.2f} vs Target ({prop_threshold})"
-            if is_td_or_int
-            else f"{diff_vs_line:+.1f} vs Target ({prop_threshold})",
+            delta=f"{diff_vs_line:+.1f} vs {prop_threshold}",
             delta_color="normal" if diff_vs_line >= 0 else "inverse",
         )
         pk3.metric(
-            "L3 Output vs Season Baseline",
-            f"{l3_avg:.2f} L3 Avg" if is_td_or_int else f"{l3_avg:.1f} L3 Avg",
+            "L3 Form",
+            f"{l3_avg:.2f}" if is_td_or_int else f"{l3_avg:.1f}",
             delta=streak_delta_str,
-            delta_color="normal"
-            if (l3_avg >= season_baseline_avg and stat_col_name != "interceptions")
-            else "inverse",
         )
         pk4.metric(
-            f"Opposing {opp_def_tm} {def_type_str}",
+            f"vs {opp_def_tm} {def_type_str}",
             f"Rank #{opp_def_rk}",
-            delta="Smash Spot (Bottom-10)"
-            if opp_def_rk >= 23
-            else ("Tough Draw (Top-5)" if opp_def_rk <= 5 else "Neutral Tier"),
+            delta="Favorable" if opp_def_rk >= 23 else ("Tough" if opp_def_rk <= 5 else "Neutral"),
             delta_color="normal" if opp_def_rk >= 23 else ("inverse" if opp_def_rk <= 5 else "off"),
         )
 
         opp_badge_html = render_rank_badge(opp_def_rk, f"{opp_def_tm} {def_type_str}")
         hit_badge_html = (
             f'<span class="badge-elite">[{hits_count}/{sample_n} OVER ({hit_rate_pct:.0f}%)]</span>'
-            if hit_rate_pct >= 60
-            else (
-                f'<span class="badge-bad">[{hits_count}/{sample_n} OVER ({hit_rate_pct:.0f}%)]</span>'
-                if hit_rate_pct <= 40
-                else f'<span class="badge-mid">[{hits_count}/{sample_n} OVER ({hit_rate_pct:.0f}%)]</span>'
-            )
+            if hit_rate_pct >= 55
+            else f'<span class="badge-mid">[{hits_count}/{sample_n} OVER ({hit_rate_pct:.0f}%)]</span>'
         )
 
         with st.container(border=True):
@@ -5022,7 +4656,6 @@ with subtab_props:
                 render_html(f'<div style="text-align:right;">{streak_badge_html} {hit_badge_html} {opp_badge_html}</div>')
 
         fig_prop = go.Figure()
-
         fig_prop.add_trace(
             go.Bar(
                 x=window_log["game_tag"],
@@ -5033,114 +4666,60 @@ with subtab_props:
                     for v in window_log[stat_col_name]
                 ],
                 textposition="outside",
-                customdata=np.stack((window_log["result_label"], window_log["opp_label"]), axis=-1),
-                hovertemplate=(
-                    "<b>%{x}</b><br>"
-                    f"{selected_market_label}: <b>%{{y}}</b><br>"
-                    "Outcome: <b>%{customdata[0]}</b><extra></extra>"
-                ),
                 name=selected_market_label,
             )
         )
-
         fig_prop.add_trace(
             go.Scatter(
                 x=window_log["game_tag"],
                 y=window_log["rolling_avg"],
                 mode="lines+markers",
-                line=dict(color="#4A90E2", width=2, dash="dot"),
-                marker=dict(size=6, color="#4A90E2"),
+                line=dict(color="#60A5FA", width=2, dash="dot"),
+                marker=dict(size=6, color="#60A5FA"),
                 name="Cumulative Avg",
             )
         )
-
         fig_prop.add_hline(
             y=prop_threshold,
-            line_width=2.5,
+            line_width=2,
             line_dash="dash",
-            line_color="#FFB020",
-            annotation_text=f"Target Line: {prop_threshold} ({hit_rate_pct:.0f}% Hit Rate)",
+            line_color="#FBBF24",
+            annotation_text=f"Line: {prop_threshold} ({hit_rate_pct:.0f}% Hit)",
             annotation_position="top left",
-            annotation_font=dict(color="#FFB020", size=12),
+            annotation_font=dict(color="#FBBF24", size=12),
         )
 
         y_upper = max(float(window_log[stat_col_name].max()), prop_threshold) * 1.25 + 1.0
         fig_prop.update_layout(
-            title=(
-                f"{sel_player_name} ({sel_player_team} {sel_player_pos}) — {selected_market_label} "
-                f"(Last {sample_n} Games vs {prop_threshold} Line)"
-            ),
-            paper_bgcolor="#12161F",
-            plot_bgcolor="#12161F",
+            paper_bgcolor="#121722",
+            plot_bgcolor="#121722",
             font=dict(color="#E2E8F0"),
-            xaxis=dict(title="Game Week & Opponent", gridcolor="#262D3D"),
-            yaxis=dict(title=selected_market_label, range=[0, y_upper], gridcolor="#262D3D"),
+            xaxis=dict(title="Game Week & Opponent", gridcolor="#222B3A"),
+            yaxis=dict(title=selected_market_label, range=[0, y_upper], gridcolor="#222B3A"),
             legend=dict(orientation="h", yanchor="bottom", y=1.02, xanchor="right", x=1),
-            height=400,
-            margin=dict(l=20, r=20, t=60, b=30),
+            height=380,
+            margin=dict(l=20, r=20, t=40, b=30),
         )
-
         st.plotly_chart(fig_prop, width="stretch")
 
-        with st.expander(f"View {sel_player_name} Game-by-Game Log Table ({sample_n} Games)"):
-            log_cols = [
-                "week",
-                "opp_label",
-                stat_col_name,
-                "result_label",
-                "anytime_td",
-                "receiving_tds",
-                "interceptions",
-                "targets",
-                "receptions",
-                "receiving_yards",
-                "carries",
-                "rushing_yards",
-                "passing_yards",
-            ]
-            avail_log_cols = list(dict.fromkeys([c for c in log_cols if c in window_log.columns]))
-            st.dataframe(
-                window_log[avail_log_cols].sort_values(by="week", ascending=False),
-                width="stretch",
-                hide_index=True,
-                column_config={
-                    "week": st.column_config.NumberColumn("Week", format="%d"),
-                    "opp_label": "Opponent",
-                    stat_col_name: st.column_config.NumberColumn(selected_market_label, format="%.1f"),
-                    "result_label": f"vs {prop_threshold} Line",
-                    "anytime_td": "Anytime TDs",
-                    "receiving_tds": "Rec TDs",
-                    "interceptions": "INTs",
-                },
-            )
-
 # =============================================================================
-# SUB-TAB 5: TEAM ROSTER & USAGE EXPLORER (HYPERLINKED NAMES & CLICKABLE ROWS)
+# SUB-TAB 5: ROSTERS (TEAM ROSTER & USAGE EXPLORER)
 # =============================================================================
 with subtab_roster:
-    render_html(
-        f"<h4 style='margin:0 0 4px 0;'>"
-        f"{render_inline_logo(away_tm, 22)}{away_tm} & {render_inline_logo(home_tm, 22)}{home_tm} — "
-        f"Team Roster & Usage Explorer</h4>"
-    )
-    st.caption(
-        "Click any underlined leader name or select any player row in the roster table below to open their interactive Player Pop-Out Dossier & Injury History."
-    )
-
     if roster_matchup_table.empty:
         st.info("Active roster and snap usage data unavailable for the selected teams.")
     else:
         r_col1, r_col2, r_col3, r_col4 = st.columns([1.1, 1.3, 1.2, 1.1])
         with r_col1:
             roster_team_filter = st.radio(
-                "1. Team Filter",
+                "Team",
                 options=[f"Both ({away_tm} & {home_tm})", away_tm, home_tm],
                 horizontal=True,
             )
         with r_col2:
             unit_group_filter = st.radio(
-                "2. Unit Group (One-Click Filter)",
-                options=["All Roster", "All Offense", "All Defense", "Special Teams"],
+                "Unit",
+                options=["All", "Offense", "Defense", "Special Teams"],
                 horizontal=True,
             )
 
@@ -5148,24 +4727,20 @@ with subtab_roster:
         if roster_team_filter in [away_tm, home_tm]:
             filtered_roster = filtered_roster[filtered_roster["team"] == roster_team_filter]
 
-        if unit_group_filter == "All Offense":
-            filtered_roster = filtered_roster[filtered_roster["unit_group"] == "Offense"]
-        elif unit_group_filter == "All Defense":
-            filtered_roster = filtered_roster[filtered_roster["unit_group"] == "Defense"]
-        elif unit_group_filter == "Special Teams":
-            filtered_roster = filtered_roster[filtered_roster["unit_group"] == "Special Teams"]
+        if unit_group_filter in ["Offense", "Defense", "Special Teams"]:
+            filtered_roster = filtered_roster[filtered_roster["unit_group"] == unit_group_filter]
 
         with r_col3:
             avail_roster_pos = sorted(filtered_roster["position"].dropna().astype(str).unique().tolist())
             roster_pos_filter = st.multiselect(
-                "3. Specific Positions (Optional)",
+                "Positions",
                 options=avail_roster_pos,
                 default=[],
-                placeholder=f"All {unit_group_filter} Positions",
+                placeholder="All Positions",
             )
         with r_col4:
             min_snap_slider = st.slider(
-                "4. Min Snap Share %",
+                "Min Snap %",
                 min_value=0,
                 max_value=90,
                 value=10,
@@ -5175,66 +4750,6 @@ with subtab_roster:
         if roster_pos_filter:
             filtered_roster = filtered_roster[filtered_roster["position"].isin(roster_pos_filter)]
         filtered_roster = filtered_roster[filtered_roster["primary_snap_pct"] >= min_snap_slider].reset_index(drop=True)
-
-        if not filtered_roster.empty:
-            top_snap_p = filtered_roster.sort_values(by="primary_snap_pct", ascending=False).iloc[0]
-            top_tgt_p = filtered_roster.sort_values(by="targets", ascending=False).iloc[0]
-            top_touch_p = filtered_roster.sort_values(by="touches", ascending=False).iloc[0]
-            top_air_p = filtered_roster.sort_values(by="air_yards", ascending=False).iloc[0]
-
-            rk1, rk2, rk3, rk4 = st.columns(4)
-            with rk1:
-                with st.container(border=True):
-                    render_html(f'<div class="context-cell-title">{unit_group_filter} Snap Leader</div>')
-                    render_inline_player_trigger(
-                        top_snap_p["player_name"],
-                        top_snap_p["team"],
-                        top_snap_p["position"],
-                        "ldr_snap",
-                        f"({top_snap_p['team']})",
-                    )
-                    render_html(
-                        f'<div class="metric-subtext" style="color:#00FF87;">{top_snap_p["primary_snap_pct"]:.1f}% Snaps ({int(top_snap_p["total_snaps"])} total)</div>'
-                    )
-            with rk2:
-                with st.container(border=True):
-                    render_html('<div class="context-cell-title">Target Leader</div>')
-                    render_inline_player_trigger(
-                        top_tgt_p["player_name"],
-                        top_tgt_p["team"],
-                        top_tgt_p["position"],
-                        "ldr_tgt",
-                        f"({top_tgt_p['team']})",
-                    )
-                    render_html(
-                        f'<div class="metric-subtext" style="color:#00FF87;">{int(top_tgt_p["targets"])} Tgts ({top_tgt_p["target_share_pct"]:.1f}% Share)</div>'
-                    )
-            with rk3:
-                with st.container(border=True):
-                    render_html('<div class="context-cell-title">Total Touches Leader</div>')
-                    render_inline_player_trigger(
-                        top_touch_p["player_name"],
-                        top_touch_p["team"],
-                        top_touch_p["position"],
-                        "ldr_tch",
-                        f"({top_touch_p['team']})",
-                    )
-                    render_html(
-                        f'<div class="metric-subtext" style="color:#00FF87;">{int(top_touch_p["touches"])} Touches ({int(top_touch_p["scrimmage_yards"])} Yds)</div>'
-                    )
-            with rk4:
-                with st.container(border=True):
-                    render_html('<div class="context-cell-title">Air Yards Leader</div>')
-                    render_inline_player_trigger(
-                        top_air_p["player_name"],
-                        top_air_p["team"],
-                        top_air_p["position"],
-                        "ldr_air",
-                        f"({top_air_p['team']})",
-                    )
-                    render_html(
-                        f'<div class="metric-subtext" style="color:#00FF87;">{int(top_air_p["air_yards"])} Air Yards</div>'
-                    )
 
         roster_disp_cols = [
             "team_logo",
@@ -5269,25 +4784,25 @@ with subtab_roster:
                 "team_logo": st.column_config.ImageColumn("", width="small"),
                 "team": "Team",
                 "unit_group": "Unit",
-                "player_name": "Player (Click Row to Open Dossier)",
+                "player_name": "Player (Click Row for Dossier)",
                 "position": "Pos",
-                "health_status": "Status Indicator",
-                "games_played": st.column_config.NumberColumn("Games", format="%d"),
+                "health_status": "Status",
+                "games_played": st.column_config.NumberColumn("GP", format="%d"),
                 "primary_snap_pct": st.column_config.ProgressColumn(
-                    "Snap Share %", format="%.1f%%", min_value=0, max_value=100
+                    "Snap %", format="%.1f%%", min_value=0, max_value=100
                 ),
-                "total_snaps": st.column_config.NumberColumn("Total Snaps", format="%d"),
-                "targets": st.column_config.NumberColumn("Targets", format="%d"),
+                "total_snaps": st.column_config.NumberColumn("Snaps", format="%d"),
+                "targets": st.column_config.NumberColumn("Tgts", format="%d"),
                 "receptions": st.column_config.NumberColumn("Rec", format="%d"),
                 "target_share_pct": st.column_config.ProgressColumn(
-                    "Target Share %", format="%.1f%%", min_value=0, max_value=50
+                    "Tgt %", format="%.1f%%", min_value=0, max_value=50
                 ),
-                "air_yards": st.column_config.NumberColumn("Air Yards", format="%d"),
+                "air_yards": st.column_config.NumberColumn("Air Yds", format="%d"),
                 "carries": st.column_config.NumberColumn("Carries", format="%d"),
                 "touches": st.column_config.NumberColumn("Touches", format="%d"),
-                "scrimmage_yards": st.column_config.NumberColumn("Scrimmage Yds", format="%d"),
-                "total_tds": st.column_config.NumberColumn("Total TDs", format="%d"),
-                "total_epa": st.column_config.NumberColumn("Total EPA", format="%+.2f"),
+                "scrimmage_yards": st.column_config.NumberColumn("Scrim Yds", format="%d"),
+                "total_tds": st.column_config.NumberColumn("TDs", format="%d"),
+                "total_epa": st.column_config.NumberColumn("EPA", format="%+.2f"),
             },
         )
         if roster_event and roster_event.selection and roster_event.selection.rows:
@@ -5305,23 +4820,14 @@ with subtab_roster:
                     st.rerun()
 
 # =============================================================================
-# SUB-TAB 6: BACKTEST PERFORMANCE
+# SUB-TAB 6: BACKTEST (HISTORICAL BACKTEST PERFORMANCE)
 # =============================================================================
 with subtab_backtest:
-    st.markdown(f"#### {selected_season} Season Historical Backtest & Edge Grading")
-    st.caption(
-        "Grades all completed games in the selected season where extreme unit mismatches (`ELITE [#1-#5]` vs `BAD [#23-#32]`), "
-        "situational rest edges (`3+ days`), or high-conviction Net EPA edges occurred."
-    )
-
     bt_summary, bt_log = run_season_backtest(schedule_df, eff_df)
 
     bt_season_shown = selected_season
     if bt_summary.empty and selected_season == 2026:
-        st.info(
-            "No completed games with final scores found yet for the selected 2026 slate. "
-            "Displaying graded **2025 Full-Season Backtest Benchmark** below (toggle Historical Backtest Mode in the sidebar to inspect 2024 or 2025 schedules directly)."
-        )
+        st.info("No completed games yet for 2026. Showing 2025 Full-Season Backtest Benchmark.")
         sched_2025 = load_season_schedule(2025)
         eff_2025, _ = load_team_efficiency_csv(2025)
         bt_summary, bt_log = run_season_backtest(sched_2025, eff_2025)
@@ -5339,24 +4845,16 @@ with subtab_backtest:
         best_cat_row = bt_summary.sort_values(by="ATS Cover %", ascending=False).iloc[0]
 
         b1, b2, b3, b4 = st.columns(4)
-        b1.metric(
-            f"{bt_season_shown} Graded Edge Spots",
-            f"{total_graded} Games",
-            delta="Verified nflverse Lines",
-        )
+        b1.metric(f"{bt_season_shown} Graded Spots", f"{total_graded} Games")
         b2.metric(
-            "Aggregate ATS Cover Rate",
+            "ATS Cover Rate",
             f"{overall_ats_pct:.1f}%",
-            delta=f"{overall_ats_pct - 52.38:+.1f}% vs Breakeven (52.4%)",
+            delta=f"{overall_ats_pct - 52.38:+.1f}% vs 52.4%",
             delta_color="normal" if overall_ats_pct >= 52.4 else "inverse",
         )
-        b3.metric(
-            "Aggregate Straight-Up Win %",
-            f"{overall_su_pct:.1f}%",
-            delta="Outright Winner Rate",
-        )
+        b3.metric("SU Win Rate", f"{overall_su_pct:.1f}%")
         b4.metric(
-            "Top Performing Signal",
+            "Top Signal",
             f"{best_cat_row['ATS Cover %']:.1f}% ATS",
             delta=best_cat_row["Edge Category"],
         )
@@ -5368,7 +4866,7 @@ with subtab_backtest:
                 x=bt_summary["ATS Cover %"],
                 name="ATS Cover %",
                 orientation="h",
-                marker_color="#00FF87",
+                marker_color="#34D399",
                 text=[f"{v:.1f}%" for v in bt_summary["ATS Cover %"]],
                 textposition="auto",
             )
@@ -5377,9 +4875,9 @@ with subtab_backtest:
             go.Bar(
                 y=bt_summary["Edge Category"],
                 x=bt_summary["SU Win %"],
-                name="Straight-Up Win %",
+                name="SU Win %",
                 orientation="h",
-                marker_color="#4A90E2",
+                marker_color="#60A5FA",
                 text=[f"{v:.1f}%" for v in bt_summary["SU Win %"]],
                 textposition="auto",
             )
@@ -5388,62 +4886,40 @@ with subtab_backtest:
             x=52.38,
             line_width=2,
             line_dash="dash",
-            line_color="#FF4D6D",
-            annotation_text="52.4% ATS Breakeven (-110)",
+            line_color="#F87171",
+            annotation_text="52.4% Breakeven",
             annotation_position="top right",
         )
         fig.update_layout(
-            title=f"{bt_season_shown} Historical Cover & Win Rates by Mismatch Signal",
             barmode="group",
-            paper_bgcolor="#12161F",
-            plot_bgcolor="#12161F",
+            paper_bgcolor="#121722",
+            plot_bgcolor="#121722",
             font=dict(color="#E2E8F0"),
-            xaxis=dict(title="Win / Cover Percentage (%)", range=[0, 100], gridcolor="#262D3D"),
+            xaxis=dict(title="Win / Cover %", range=[0, 100], gridcolor="#222B3A"),
             yaxis=dict(autorange="reversed"),
             legend=dict(orientation="h", yanchor="bottom", y=1.02, xanchor="right", x=1),
-            height=380,
-            margin=dict(l=20, r=20, t=60, b=30),
+            height=340,
+            margin=dict(l=20, r=20, t=36, b=24),
         )
         st.plotly_chart(fig, width="stretch")
 
-        st.markdown("##### Signal Performance Breakdown")
         st.dataframe(
             bt_summary,
             width="stretch",
             hide_index=True,
             column_config={
-                "Edge Category": "Mismatch / Edge Signal",
-                "Sample Size": st.column_config.NumberColumn("Games Flagged", format="%d"),
-                "ATS Record": "ATS Record (W-L-P)",
+                "Edge Category": "Signal",
+                "Sample Size": st.column_config.NumberColumn("Games", format="%d"),
+                "ATS Record": "ATS (W-L-P)",
                 "ATS Cover %": st.column_config.ProgressColumn(
                     "ATS Cover %", format="%.1f%%", min_value=0, max_value=100
                 ),
                 "SU Win %": st.column_config.ProgressColumn(
                     "SU Win %", format="%.1f%%", min_value=0, max_value=100
                 ),
-                "Est. Units (-110)": st.column_config.NumberColumn("Net Units (-110)", format="%+.2f u"),
+                "Est. Units (-110)": st.column_config.NumberColumn("Units (-110)", format="%+.2f u"),
             },
         )
-
-        with st.expander(f"Inspect Graded Game-by-Game Backtest Log ({len(bt_log)} Flagged Spots)"):
-            cat_filter = st.selectbox(
-                "Filter Log by Signal Type",
-                ["All Signals"] + list(bt_summary["Edge Category"].unique()),
-            )
-            filtered_log = (
-                bt_log if cat_filter == "All Signals" else bt_log[bt_log["Category"] == cat_filter]
-            )
-            st.dataframe(
-                filtered_log,
-                width="stretch",
-                hide_index=True,
-                column_config={
-                    "Week": st.column_config.NumberColumn("Week", format="%d"),
-                    "SU Win": st.column_config.CheckboxColumn("SU Win"),
-                    "ATS Cover": st.column_config.CheckboxColumn("ATS Cover"),
-                    "Push": st.column_config.CheckboxColumn("Push"),
-                },
-            )
 
 # -----------------------------------------------------------------------------
 # 8. LAUNCH PLAYER POP-OUT MODAL WHEN ACTIVE_PLAYER IS TRIGGERED
@@ -5454,7 +4930,7 @@ if st.session_state.get("open_player_modal") and st.session_state.get("active_pl
 
     if hasattr(st, "dialog"):
 
-        @st.dialog("Player Dossier & Prop Inspector", width="large")
+        @st.dialog("Player Dossier", width="large")
         def _show_player_modal() -> None:
             render_player_popup_contents(
                 active_p,
@@ -5475,7 +4951,7 @@ if st.session_state.get("open_player_modal") and st.session_state.get("active_pl
         _show_player_modal()
     else:
         with st.container(border=True):
-            st.subheader("Player Dossier & Prop Inspector")
+            st.subheader("Player Dossier")
             render_player_popup_contents(
                 active_p,
                 roster_matchup_table,
