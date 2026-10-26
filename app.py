@@ -18,6 +18,11 @@ st.set_page_config(
 st.markdown(
     """
 <style>
+/* Global Overflow & Box-Sizing Guardrails */
+*, *::before, *::after {
+    box-sizing: border-box;
+}
+
 /* Clean, Toned-Down Sports Analytics Terminal Cards */
 .terminal-card {
     background-color: #121722;
@@ -27,6 +32,9 @@ st.markdown(
     padding: 14px 16px;
     margin-bottom: 10px;
     color: #E2E8F0;
+    max-width: 100%;
+    overflow-wrap: break-word;
+    word-wrap: break-word;
 }
 .terminal-card-elite {
     background-color: #111A1E;
@@ -36,6 +44,9 @@ st.markdown(
     padding: 14px 16px;
     margin-bottom: 10px;
     color: #E2E8F0;
+    max-width: 100%;
+    overflow-wrap: break-word;
+    word-wrap: break-word;
 }
 .terminal-card-vuln {
     background-color: #1B1519;
@@ -45,6 +56,9 @@ st.markdown(
     padding: 14px 16px;
     margin-bottom: 10px;
     color: #E2E8F0;
+    max-width: 100%;
+    overflow-wrap: break-word;
+    word-wrap: break-word;
 }
 
 /* Inline Hyperlinked Player Names (HTML <a> and Streamlit Tertiary Buttons) */
@@ -56,6 +70,8 @@ a.player-name-link {
     text-underline-offset: 3px;
     cursor: pointer;
     transition: color 0.14s ease, text-decoration-color 0.14s ease;
+    overflow-wrap: anywhere;
+    word-break: break-word;
 }
 a.player-name-link:hover {
     color: #34D399 !important;
@@ -71,6 +87,7 @@ button[kind="tertiary"] {
     margin: 0px !important;
     min-height: unset !important;
     height: auto !important;
+    max-width: 100% !important;
     color: #F1F5F9 !important;
     font-family: monospace !important;
     font-weight: 700 !important;
@@ -78,9 +95,11 @@ button[kind="tertiary"] {
     text-decoration: underline !important;
     text-decoration-color: rgba(148, 163, 184, 0.55) !important;
     text-underline-offset: 3px !important;
-    line-height: 1.3 !important;
+    line-height: 1.35 !important;
     display: inline-flex !important;
     align-items: center !important;
+    white-space: normal !important;
+    text-align: left !important;
 }
 button[kind="tertiary"]:hover {
     color: #34D399 !important;
@@ -97,6 +116,10 @@ button[kind="tertiary"] p {
     text-decoration: underline !important;
     text-decoration-color: rgba(148, 163, 184, 0.55) !important;
     text-underline-offset: 3px !important;
+    white-space: normal !important;
+    overflow-wrap: anywhere !important;
+    word-break: break-word !important;
+    text-align: left !important;
 }
 
 /* ============================================================================
@@ -114,6 +137,7 @@ div[data-testid="stHorizontalBlock"]:has(.nfl-ticker-marker) {
     gap: 8px !important;
     padding: 8px 8px 12px 8px !important;
     margin-bottom: 8px !important;
+    max-width: 100% !important;
     background: #0D1118 !important;
     border: 1px solid #1E2736 !important;
     border-radius: 8px !important;
@@ -259,6 +283,8 @@ div[data-testid="stHorizontalBlock"]:has(.nfl-ticker-marker) div[data-testid="st
     padding: 14px 18px;
     margin: 4px 0 12px 0;
     color: #F8FAFC;
+    max-width: 100%;
+    overflow-wrap: break-word;
 }
 .active-lock-pill {
     background-color: rgba(52, 211, 153, 0.12);
@@ -313,6 +339,13 @@ div[data-testid="stHorizontalBlock"]:has(.nfl-ticker-marker) div[data-testid="st
     color: #94A3B8;
     background: #141B26;
 }
+.cb-wr-vs-divider {
+    text-align: center;
+    padding-top: 24px;
+    font-family: monospace;
+    font-weight: 800;
+    color: #64748B;
+}
 
 /* ============================================================================
    PLAYER POP-OUT DOSSIER HEADER & BORDERLESS FLUSH HEADSHOT
@@ -330,11 +363,14 @@ div[data-testid="stHorizontalBlock"]:has(.nfl-ticker-marker) div[data-testid="st
     gap: 18px;
     flex-wrap: wrap;
     overflow: hidden;
+    max-width: 100%;
 }
 .player-modal-left {
     display: flex;
     align-items: flex-end;
     gap: 18px;
+    flex-wrap: wrap;
+    max-width: 100%;
 }
 .player-headshot-wrap {
     width: 156px;
@@ -375,6 +411,8 @@ div[data-testid="stHorizontalBlock"]:has(.nfl-ticker-marker) div[data-testid="st
 }
 .player-modal-meta {
     padding-bottom: 14px;
+    max-width: 100%;
+    overflow-wrap: break-word;
 }
 
 /* Toned-Down, Cohesive Unit Ranking & Status Badges (No Leading Dots) */
@@ -389,6 +427,8 @@ div[data-testid="stHorizontalBlock"]:has(.nfl-ticker-marker) div[data-testid="st
     font-family: monospace;
     display: inline-block;
     margin: 1px 2px;
+    max-width: 100%;
+    overflow-wrap: anywhere;
 }
 .badge-cleared {
     background-color: rgba(52, 211, 153, 0.10);
@@ -401,6 +441,8 @@ div[data-testid="stHorizontalBlock"]:has(.nfl-ticker-marker) div[data-testid="st
     font-family: monospace;
     display: inline-block;
     margin: 1px 2px;
+    max-width: 100%;
+    overflow-wrap: anywhere;
 }
 .badge-mid {
     background-color: rgba(148, 163, 184, 0.08);
@@ -413,6 +455,8 @@ div[data-testid="stHorizontalBlock"]:has(.nfl-ticker-marker) div[data-testid="st
     font-family: monospace;
     display: inline-block;
     margin: 1px 2px;
+    max-width: 100%;
+    overflow-wrap: anywhere;
 }
 .badge-bad {
     background-color: rgba(248, 113, 113, 0.10);
@@ -425,6 +469,8 @@ div[data-testid="stHorizontalBlock"]:has(.nfl-ticker-marker) div[data-testid="st
     font-family: monospace;
     display: inline-block;
     margin: 1px 2px;
+    max-width: 100%;
+    overflow-wrap: anywhere;
 }
 .badge-amber {
     background-color: rgba(251, 191, 36, 0.10);
@@ -437,6 +483,8 @@ div[data-testid="stHorizontalBlock"]:has(.nfl-ticker-marker) div[data-testid="st
     font-family: monospace;
     display: inline-block;
     margin: 1px 2px;
+    max-width: 100%;
+    overflow-wrap: anywhere;
 }
 .badge-sage {
     background-color: rgba(96, 165, 250, 0.10);
@@ -449,6 +497,8 @@ div[data-testid="stHorizontalBlock"]:has(.nfl-ticker-marker) div[data-testid="st
     font-family: monospace;
     display: inline-block;
     margin: 1px 2px;
+    max-width: 100%;
+    overflow-wrap: anywhere;
 }
 .badge-hot {
     background-color: rgba(52, 211, 153, 0.12);
@@ -461,6 +511,8 @@ div[data-testid="stHorizontalBlock"]:has(.nfl-ticker-marker) div[data-testid="st
     font-family: monospace;
     display: inline-block;
     margin: 1px 2px;
+    max-width: 100%;
+    overflow-wrap: anywhere;
 }
 .badge-cold {
     background-color: rgba(148, 163, 184, 0.10);
@@ -473,6 +525,8 @@ div[data-testid="stHorizontalBlock"]:has(.nfl-ticker-marker) div[data-testid="st
     font-family: monospace;
     display: inline-block;
     margin: 1px 2px;
+    max-width: 100%;
+    overflow-wrap: anywhere;
 }
 .team-pill {
     background-color: #18202F;
@@ -506,6 +560,8 @@ div[data-testid="stHorizontalBlock"]:has(.nfl-ticker-marker) div[data-testid="st
     font-size: 0.79rem;
     color: #94A3B8;
     font-family: monospace;
+    overflow-wrap: break-word;
+    word-break: break-word;
 }
 
 /* Comparative Brief Pillars */
@@ -520,11 +576,14 @@ div[data-testid="stHorizontalBlock"]:has(.nfl-ticker-marker) div[data-testid="st
     border: 1px solid #232C3D;
     border-radius: 7px;
     padding: 10px 12px;
+    min-width: 0;
 }
 .unit-pillar-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
+    flex-wrap: wrap;
+    gap: 4px;
     border-bottom: 1px solid #232C3D;
     padding-bottom: 6px;
     margin-bottom: 8px;
@@ -536,6 +595,8 @@ div[data-testid="stHorizontalBlock"]:has(.nfl-ticker-marker) div[data-testid="st
     display: flex;
     justify-content: space-between;
     align-items: center;
+    flex-wrap: wrap;
+    gap: 4px;
     padding: 4px 0;
     font-size: 0.82rem;
     border-bottom: 1px dashed rgba(71, 85, 105, 0.30);
@@ -554,6 +615,8 @@ div[data-testid="stHorizontalBlock"]:has(.nfl-ticker-marker) div[data-testid="st
     display: flex;
     justify-content: space-between;
     align-items: center;
+    flex-wrap: wrap;
+    gap: 4px;
 }
 .brief-context-strip {
     display: grid;
@@ -586,6 +649,182 @@ div[data-testid="stHorizontalBlock"]:has(.nfl-ticker-marker) div[data-testid="st
     align-items: center;
     flex-wrap: wrap;
     gap: 8px;
+}
+
+/* DataFrames, Tables & Tabs Horizontal Scroll Protection */
+div[data-testid="stDataFrame"],
+div[data-testid="stTable"],
+.stPlotlyChart {
+    max-width: 100% !important;
+    overflow-x: auto !important;
+    -webkit-overflow-scrolling: touch !important;
+}
+div[data-baseweb="tab-list"] {
+    overflow-x: auto !important;
+    overflow-y: hidden !important;
+    flex-wrap: nowrap !important;
+    white-space: nowrap !important;
+    scrollbar-width: thin;
+    -webkit-overflow-scrolling: touch;
+}
+button[data-baseweb="tab"] {
+    flex-shrink: 0 !important;
+    white-space: nowrap !important;
+}
+
+/* ============================================================================
+   MOBILE & TABLET RESPONSIVE MEDIA QUERIES (MAX-WIDTH: 768PX & 480PX)
+   Automatically stacks multi-column layouts vertically, wraps flex containers,
+   prevents text clipping/overlapping, and keeps ticker/tables scrollable.
+   ============================================================================ */
+@media (max-width: 768px) {
+    /* Prevent page-level horizontal overflow and tighten container padding */
+    .stApp, .main {
+        max-width: 100vw !important;
+        overflow-x: hidden !important;
+    }
+    .block-container {
+        padding-left: 0.75rem !important;
+        padding-right: 0.75rem !important;
+        padding-top: 1.25rem !important;
+        max-width: 100% !important;
+    }
+
+    /* Stack all standard Streamlit multi-column blocks vertically on mobile
+       EXCEPT the horizontal game ticker strip (.nfl-ticker-marker) */
+    div[data-testid="stHorizontalBlock"]:not(:has(.nfl-ticker-marker)) {
+        flex-direction: column !important;
+        flex-wrap: wrap !important;
+        gap: 0.55rem !important;
+    }
+    div[data-testid="stHorizontalBlock"]:not(:has(.nfl-ticker-marker)) > div[data-testid="stColumn"],
+    div[data-testid="stHorizontalBlock"]:not(:has(.nfl-ticker-marker)) > div[data-testid="column"] {
+        width: 100% !important;
+        min-width: 100% !important;
+        max-width: 100% !important;
+        flex: 1 1 100% !important;
+    }
+
+    /* Keep the weekly game ticker horizontally scrollable with compact mobile cards */
+    div[data-testid="stHorizontalBlock"]:has(.nfl-ticker-marker) {
+        flex-direction: row !important;
+        flex-wrap: nowrap !important;
+        overflow-x: auto !important;
+        gap: 6px !important;
+        padding: 6px 6px 10px 6px !important;
+    }
+    div[data-testid="stHorizontalBlock"]:has(.nfl-ticker-marker) > div[data-testid="stColumn"],
+    div[data-testid="stHorizontalBlock"]:has(.nfl-ticker-marker) > div[data-testid="column"] {
+        flex: 0 0 166px !important;
+        min-width: 166px !important;
+        max-width: 166px !important;
+        width: 166px !important;
+    }
+
+    /* Stack CSS Grid pillars (Unit Tier Matrix & Context Strip) into 1 column */
+    .brief-grid,
+    .brief-context-strip {
+        grid-template-columns: 1fr !important;
+        gap: 8px !important;
+    }
+
+    /* Adjust active matchup spotlight banner & team pills for mobile widths */
+    .active-game-spotlight {
+        padding: 12px 12px !important;
+    }
+    .team-pill-lg {
+        font-size: 0.98rem !important;
+        padding: 4px 9px !important;
+        margin: 2px 2px !important;
+    }
+    .team-pill {
+        font-size: 0.78rem !important;
+        padding: 2px 7px !important;
+    }
+
+    /* Convert the 1-on-1 CB vs WR 'VS' column into a clean mobile divider */
+    .cb-wr-vs-divider {
+        padding: 4px 0 !important;
+        margin: 2px 0 !important;
+        text-align: left !important;
+        font-size: 0.76rem !important;
+        border-top: 1px dashed #232C3D;
+        border-bottom: 1px dashed #232C3D;
+    }
+
+    /* Left-align right-aligned badge groups when columns stack vertically */
+    div[data-testid="stColumn"] div[style*="text-align:right"],
+    div[data-testid="column"] div[style*="text-align:right"] {
+        text-align: left !important;
+        padding-top: 2px !important;
+    }
+
+    /* Responsive Player Pop-Out Dossier Header */
+    .player-modal-banner {
+        padding: 12px 14px 4px 14px !important;
+        gap: 10px !important;
+    }
+    .player-modal-left {
+        flex-direction: column !important;
+        align-items: flex-start !important;
+        gap: 8px !important;
+    }
+    .player-headshot-wrap {
+        width: 116px !important;
+        height: 94px !important;
+    }
+    .player-headshot-img {
+        height: 94px !important;
+        max-width: 116px !important;
+    }
+
+    /* Slightly more compact badges & metric subtext so nothing clips */
+    .badge-elite,
+    .badge-cleared,
+    .badge-mid,
+    .badge-bad,
+    .badge-amber,
+    .badge-sage,
+    .badge-hot,
+    .badge-cold {
+        font-size: 0.68rem !important;
+        padding: 2px 6px !important;
+        white-space: normal !important;
+    }
+    .metric-subtext {
+        font-size: 0.76rem !important;
+        line-height: 1.38 !important;
+    }
+    div[data-testid="stMetricValue"] {
+        font-size: 1.25rem !important;
+    }
+}
+
+@media (max-width: 480px) {
+    .block-container {
+        padding-left: 0.5rem !important;
+        padding-right: 0.5rem !important;
+    }
+    .terminal-card,
+    .terminal-card-elite,
+    .terminal-card-vuln {
+        padding: 10px 12px !important;
+    }
+    .mismatch-headshot-wrap,
+    .mismatch-headshot-img,
+    .mismatch-headshot-fallback {
+        width: 42px !important;
+        height: 42px !important;
+    }
+    button[kind="tertiary"],
+    button[kind="tertiary"] p {
+        font-size: 0.84rem !important;
+    }
+    button[data-baseweb="tab"] {
+        padding-left: 10px !important;
+        padding-right: 10px !important;
+        font-size: 0.82rem !important;
+    }
 }
 </style>
 """,
@@ -1102,11 +1341,6 @@ def get_default_next_game_index(week_games: pd.DataFrame) -> int:
     """
     Within the selected week's games, automatically defaults to the next upcoming
     or active game rather than lingering on already-completed games (like finished TNF).
-    Priority:
-      1. First unplayed game (`home_score` or `away_score` is NaN) with kickoff >= now - 4h.
-      2. First unplayed game in the week.
-      3. First game with kickoff >= today.
-      4. Fallback to the last game in the week (or 0).
     """
     if week_games.empty:
         return 0
@@ -1845,7 +2079,6 @@ def build_top_player_picks(
         total_epa = float(row.get("total_epa", 0.0))
         epa_pg = total_epa / games
 
-        # Filter out low-usage depth players
         if p_pos in ["WR", "TE"] and tgt_sh < 10.0 and rec_ypg < 25.0:
             continue
         if p_pos == "RB" and rush_sh < 20.0 and touches_pg < 7.0:
@@ -1858,7 +2091,6 @@ def build_top_player_picks(
         opp_pass_epa = float(eff_df.loc[opp_tm, "def_pass_epa"]) if opp_tm in eff_df.index else 0.0
         opp_rush_epa = float(eff_df.loc[opp_tm, "def_rush_epa"]) if opp_tm in eff_df.index else 0.0
 
-        # Compute L3 form and prop hit rate from weekly game logs
         p_logs = pd.DataFrame()
         if not prop_logs.empty and "player_label" in prop_logs.columns:
             p_logs = prop_logs[
@@ -3818,7 +4050,7 @@ with subtab_brief:
             render_html(
                 f"""
                 <div class="terminal-card">
-                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
+                    <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:6px; margin-bottom:10px;">
                         <h4 style="margin:0; color:#F1F5F9;">Unit Tier Matrix</h4>
                         <span class="metric-subtext">Offense Tier vs Defense Tier</span>
                     </div>
@@ -3895,7 +4127,7 @@ with subtab_brief:
             with st.container(border=True):
                 render_html(
                     """
-                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
+                    <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:6px; margin-bottom:6px;">
                         <h4 style="margin:0; color:#F1F5F9;">Top 3 Player Picks</h4>
                         <span class="metric-subtext">WR • RB • QB • TE Model Plays</span>
                     </div>
@@ -4070,9 +4302,7 @@ with subtab_players:
                                     """
                                 )
                             with vs_mid:
-                                render_html(
-                                    '<div style="text-align:center; padding-top:24px; font-family:monospace; font-weight:800; color:#64748B;">VS</div>'
-                                )
+                                render_html('<div class="cb-wr-vs-divider">VS</div>')
                             with vs_c2:
                                 render_inline_player_trigger(
                                     b["cb_name"],
