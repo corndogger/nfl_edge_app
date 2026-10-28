@@ -720,6 +720,113 @@ div[data-testid="stHorizontalBlock"]:has(.nfl-ticker-marker) div[data-testid="st
     white-space: nowrap;
 }
 
+/* ============================================================================
+   NFL.COM-STYLE DIVISIONAL STANDINGS TABLE & CARDS
+   ============================================================================ */
+.nfl-div-card {
+    background-color: #121722;
+    border: 1px solid #222B3A;
+    border-top: 3px solid #4B83BD;
+    border-radius: 8px;
+    padding: 12px 14px;
+    margin-bottom: 12px;
+    color: #E2E8F0;
+    max-width: 100%;
+    overflow-x: auto;
+}
+.nfl-div-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 8px;
+    padding-bottom: 8px;
+    margin-bottom: 8px;
+    border-bottom: 1px solid #232D3F;
+}
+.nfl-div-title {
+    font-family: monospace;
+    font-size: 0.95rem;
+    font-weight: 800;
+    letter-spacing: 0.04em;
+    color: #F8FAFC;
+    text-transform: uppercase;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+.nfl-standings-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-family: monospace;
+    font-size: 0.78rem;
+    min-width: 580px;
+}
+.nfl-standings-table th {
+    text-align: right;
+    padding: 6px 7px;
+    color: #94A3B8;
+    font-size: 0.69rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    border-bottom: 1px solid #263246;
+    background-color: #151C28;
+    white-space: nowrap;
+}
+.nfl-standings-table th.col-left,
+.nfl-standings-table td.col-left {
+    text-align: left;
+}
+.nfl-standings-table th.col-center,
+.nfl-standings-table td.col-center {
+    text-align: center;
+}
+.nfl-standings-table td {
+    text-align: right;
+    padding: 7px 7px;
+    border-bottom: 1px solid rgba(38, 50, 70, 0.55);
+    color: #CBD5E1;
+    white-space: nowrap;
+}
+.nfl-standings-row-active {
+    background-color: rgba(52, 211, 153, 0.09) !important;
+    border-left: 3px solid #34D399;
+}
+.nfl-standings-row-active td {
+    color: #F8FAFC !important;
+    font-weight: 700;
+}
+.nfl-rank-pill {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 22px;
+    height: 20px;
+    border-radius: 4px;
+    font-size: 0.72rem;
+    font-weight: 800;
+    background-color: #1A2333;
+    color: #94A3B8;
+    border: 1px solid #2B384E;
+}
+.nfl-rank-pill-1 {
+    background-color: rgba(52, 211, 153, 0.14);
+    color: #34D399;
+    border: 1px solid rgba(52, 211, 153, 0.40);
+}
+.nfl-team-cell {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    white-space: nowrap;
+}
+.nfl-team-fullname {
+    color: #94A3B8;
+    font-size: 0.72rem;
+    font-weight: 500;
+}
+
 /* Historical Injury Timeline Row Cards */
 .injury-history-row {
     background-color: #141A24;
@@ -974,6 +1081,14 @@ DEFENSE_POSITIONS = {"DL", "DE", "DT", "NT", "EDGE", "LB", "ILB", "OLB", "MLB", 
 SPECIAL_TEAMS_POSITIONS = {"K", "P", "LS"}
 
 UNAVAILABLE_DESIGNATIONS = {"OUT", "DOUBTFUL", "IR", "PUP", "SUSPENDED", "NFI"}
+UNCONFIRMED_NON_FULL_PRACTICE_DESIGNATIONS = {
+    "UNSPECIFIED (DNP)",
+    "UNSPECIFIED (LP)",
+    "UNCONFIRMED (DNP)",
+    "UNCONFIRMED (LP)",
+}
+CB_WR_REMOVED_DESIGNATIONS = UNAVAILABLE_DESIGNATIONS | UNCONFIRMED_NON_FULL_PRACTICE_DESIGNATIONS
+
 ACTIVE_INJURY_DESIGNATIONS = {
     "OUT",
     "DOUBTFUL",
@@ -996,6 +1111,67 @@ CLEARED_DESIGNATIONS = {
     "AVAILABLE",
     "UNSPECIFIED (FP)",
 }
+
+# Official NFL 8-Division Structure & Full Team Names (NFL.com Standard)
+NFL_DIVISIONS: dict[str, list[str]] = {
+    "AFC East": ["BUF", "MIA", "NE", "NYJ"],
+    "AFC North": ["BAL", "CIN", "CLE", "PIT"],
+    "AFC South": ["HOU", "IND", "JAX", "TEN"],
+    "AFC West": ["DEN", "KC", "LAC", "LV"],
+    "NFC East": ["DAL", "NYG", "PHI", "WAS"],
+    "NFC North": ["CHI", "DET", "GB", "MIN"],
+    "NFC South": ["ATL", "CAR", "NO", "TB"],
+    "NFC West": ["ARI", "LAR", "SEA", "SF"],
+}
+
+NFL_TEAM_NAMES: dict[str, str] = {
+    "ARI": "Cardinals",
+    "ATL": "Falcons",
+    "BAL": "Ravens",
+    "BUF": "Bills",
+    "CAR": "Panthers",
+    "CHI": "Bears",
+    "CIN": "Bengals",
+    "CLE": "Browns",
+    "DAL": "Cowboys",
+    "DEN": "Broncos",
+    "DET": "Lions",
+    "GB": "Packers",
+    "HOU": "Texans",
+    "IND": "Colts",
+    "JAX": "Jaguars",
+    "KC": "Chiefs",
+    "LA": "Rams",
+    "LAR": "Rams",
+    "LAC": "Chargers",
+    "LV": "Raiders",
+    "MIA": "Dolphins",
+    "MIN": "Vikings",
+    "NE": "Patriots",
+    "NO": "Saints",
+    "NYG": "Giants",
+    "NYJ": "Jets",
+    "PHI": "Eagles",
+    "PIT": "Steelers",
+    "SEA": "Seahawks",
+    "SF": "49ers",
+    "TB": "Buccaneers",
+    "TEN": "Titans",
+    "WAS": "Commanders",
+    "WSH": "Commanders",
+}
+
+TEAM_TO_DIVISION: dict[str, str] = {}
+TEAM_TO_CONFERENCE: dict[str, str] = {}
+for _div_name, _div_teams in NFL_DIVISIONS.items():
+    _conf = _div_name.split()[0]
+    for _tm in _div_teams:
+        TEAM_TO_DIVISION[_tm] = _div_name
+        TEAM_TO_CONFERENCE[_tm] = _conf
+TEAM_TO_DIVISION["LA"] = "NFC West"
+TEAM_TO_CONFERENCE["LA"] = "NFC"
+TEAM_TO_DIVISION["WSH"] = "NFC East"
+TEAM_TO_CONFERENCE["WSH"] = "NFC"
 
 if "injury_status_overrides" not in st.session_state:
     st.session_state["injury_status_overrides"] = {}
@@ -1164,6 +1340,40 @@ def is_unavailable_injury(status_str: str) -> bool:
     return s_clean in UNAVAILABLE_DESIGNATIONS
 
 
+def is_excluded_from_cb_wr_matchup(status_str: str, practice_status: str = "") -> bool:
+    """
+    Determines whether a player should be removed from the 1-on-1 CB vs. WR matchups:
+    - Players ruled Out, Doubtful, IR, PUP, Suspended, or NFI are removed (True).
+    - Players who are unconfirmed ('UNSPECIFIED' / blank game status) and did NOT
+      practice ('DNP' / no practice) or logged only Limited Practice ('LP')
+      — i.e. 'UNSPECIFIED (DNP)' and 'UNSPECIFIED (LP)' — are removed (True).
+    - Players who are unconfirmed ('UNSPECIFIED (FP)') but logged Full Practice ('FP')
+      are expected to play and remain in the CB vs. WR matchups (False).
+    """
+    s_clean = "" if pd.isna(status_str) else str(status_str).strip().upper()
+    p_clean = "" if pd.isna(practice_status) else str(practice_status).strip().upper()
+
+    if not s_clean:
+        if "FULL" in p_clean or p_clean == "FP":
+            return False
+        if "DID NOT" in p_clean or "DNP" in p_clean or "LIMITED" in p_clean or p_clean == "LP":
+            return True
+        return False
+
+    if s_clean in CLEARED_DESIGNATIONS or "CLEARED" in s_clean or "PLAYED" in s_clean or "FP" in s_clean:
+        return False
+
+    if s_clean in CB_WR_REMOVED_DESIGNATIONS:
+        return True
+
+    if s_clean in {"UNSPECIFIED", "UNCONFIRMED"}:
+        if "FULL" in p_clean or p_clean == "FP":
+            return False
+        return True
+
+    return False
+
+
 def extract_combined_injury_name(row: pd.Series) -> str:
     """
     Combines report_primary_injury / practice_primary_injury and secondary injury columns
@@ -1202,15 +1412,15 @@ def normalize_injury_designation(
     Normalizes raw nflverse injury designations and practice participation:
     - Official game designations ('OUT', 'DOUBTFUL', 'QUESTIONABLE', 'IR', 'PUP') take priority.
     - When game status is blank / 'Unspecified' mid-week:
-        * DNP ('Did Not Participate') -> 'UNSPECIFIED (DNP)' (Active unresolved injury; NOT cleared)
-        * LP ('Limited Participation') -> 'UNSPECIFIED (LP)' (Active unresolved injury; NOT cleared)
-        * FP ('Full Participation') -> 'UNSPECIFIED (FP)' (Full practice participant; 0 EPA drag)
+        * DNP ('Did Not Participate' or no practice logged) -> 'UNSPECIFIED (DNP)' (Removed from CB vs WR)
+        * LP ('Limited Participation') -> 'UNSPECIFIED (LP)' (Removed from CB vs WR)
+        * FP ('Full Participation') -> 'UNSPECIFIED (FP)' (Expected to play; stays in CB vs WR; 0 EPA drag)
     """
     if pd.isna(raw_status):
         s_clean = ""
     else:
         s_clean = str(raw_status).strip().upper()
-        if s_clean in ["NAN", "NONE", "NULL", "--", "-", "UNSPECIFIED"]:
+        if s_clean in ["NAN", "NONE", "NULL", "--", "-", "UNSPECIFIED", "UNCONFIRMED"]:
             s_clean = ""
 
     p_clean = "" if pd.isna(practice_status) else str(practice_status).strip().upper()
@@ -1226,14 +1436,14 @@ def normalize_injury_designation(
     if "QUEST" in s_clean:
         return "QUESTIONABLE"
 
-    # When official game status is Unspecified (mid-week Mon/Tue/Wed/Thu injury reports):
+    # When official game status is Unspecified / Unconfirmed (mid-week injury reports):
     if not s_clean:
-        if "DID NOT" in p_clean or "DNP" in p_clean:
-            return "UNSPECIFIED (DNP)"
-        if "LIMITED" in p_clean or p_clean == "LP":
-            return "UNSPECIFIED (LP)"
         if "FULL" in p_clean or p_clean == "FP":
             return "UNSPECIFIED (FP)"
+        if "LIMITED" in p_clean or p_clean == "LP":
+            return "UNSPECIFIED (LP)"
+        if "DID NOT" in p_clean or "DNP" in p_clean or not p_clean:
+            return "UNSPECIFIED (DNP)"
         return "UNSPECIFIED (LP)"
 
     return s_clean
@@ -1247,7 +1457,7 @@ def render_injury_badge(status: str) -> str:
     if status_clean == "UNSPECIFIED (LP)":
         return '<span class="badge-amber">[UNSPECIFIED • LP]</span>'
     if status_clean == "UNSPECIFIED (FP)":
-        return '<span class="badge-sage">[UNSPECIFIED • FP]</span>'
+        return '<span class="badge-sage">[UNSPECIFIED • FP (EXPECTED TO PLAY)]</span>'
     if status_clean in CLEARED_DESIGNATIONS or "CLEARED" in status_clean or "PLAYED" in status_clean:
         return '<span class="badge-elite">[ACTIVE / CLEARED]</span>'
     if status_clean in ["OUT", "IR", "PUP", "SUSPENDED", "NFI"]:
@@ -1312,6 +1522,22 @@ def render_slot_badge_html(slot_code: str) -> str:
     return '<span class="ticker-score-muted">[SUN]</span>'
 
 
+def normalize_team_code(team_abbr: str) -> str:
+    """Normalizes team abbreviations to standard nflverse / NFL.com keys."""
+    clean = str(team_abbr).strip().upper()
+    if clean == "LA":
+        return "LAR"
+    if clean == "WSH":
+        return "WAS"
+    return clean
+
+
+def get_team_division(team_abbr: str) -> str:
+    """Returns the NFL division name for a given team abbreviation."""
+    clean = normalize_team_code(team_abbr)
+    return TEAM_TO_DIVISION.get(clean, "NFL Division")
+
+
 def compute_team_records(
     schedule_df: pd.DataFrame, through_week: int | None = None
 ) -> dict[str, str]:
@@ -1359,6 +1585,344 @@ def compute_team_records(
         formatted[tm] = f"{w}-{l}-{t}" if t > 0 else f"{w}-{l}"
 
     return formatted
+
+
+def compute_nfl_division_standings(
+    schedule_df: pd.DataFrame, through_week: int | None = None
+) -> dict[str, pd.DataFrame]:
+    """
+    Computes full NFL.com-style Divisional Standings across all 8 NFL divisions
+    up through `through_week`:
+    - Rank (1 to 4 within division)
+    - W, L, T, PCT
+    - GB (Games Behind division leader)
+    -PF, PA, Net Pts (Diff)
+    - Home Record, Road Record, Division Record, Conference Record
+    - Current Streak (STRK) & Last 5 (L5)
+    Sorted by NFL division tiebreaker hierarchy (Win PCT -> Div Win PCT -> Conf Win PCT -> Net Pts -> PF).
+    """
+    stats: dict[str, dict] = {}
+    for div_name, div_teams in NFL_DIVISIONS.items():
+        conf = div_name.split()[0]
+        for tm in div_teams:
+            stats[tm] = {
+                "team": tm,
+                "team_name": NFL_TEAM_NAMES.get(tm, tm),
+                "division": div_name,
+                "conference": conf,
+                "w": 0,
+                "l": 0,
+                "t": 0,
+                "pf": 0,
+                "pa": 0,
+                "home_w": 0,
+                "home_l": 0,
+                "home_t": 0,
+                "road_w": 0,
+                "road_l": 0,
+                "road_t": 0,
+                "div_w": 0,
+                "div_l": 0,
+                "div_t": 0,
+                "conf_w": 0,
+                "conf_l": 0,
+                "conf_t": 0,
+                "results_seq": [],  # list of 'W', 'L', 'T' in chronological order
+            }
+
+    if not schedule_df.empty and {"home_team", "away_team", "home_score", "away_score"}.issubset(schedule_df.columns):
+        sub = schedule_df.copy()
+        if "game_type" in sub.columns:
+            reg_sub = sub[sub["game_type"].astype(str).str.upper() == "REG"]
+            if not reg_sub.empty:
+                sub = reg_sub
+        if through_week is not None and "week" in sub.columns:
+            sub = sub[pd.to_numeric(sub["week"], errors="coerce").fillna(999) <= through_week]
+
+        completed = sub[sub["home_score"].notna() & sub["away_score"].notna()].copy()
+        if "week" in completed.columns:
+            completed["week_num"] = pd.to_numeric(completed["week"], errors="coerce").fillna(1)
+            completed = completed.sort_values(by=["week_num"])
+
+        for _, r in completed.iterrows():
+            ht = normalize_team_code(r["home_team"])
+            at = normalize_team_code(r["away_team"])
+            if ht not in stats or at not in stats:
+                continue
+
+            hs = int(round(float(r["home_score"])))
+            as_ = int(round(float(r["away_score"])))
+
+            stats[ht]["pf"] += hs
+            stats[ht]["pa"] += as_
+            stats[at]["pf"] += as_
+            stats[at]["pa"] += hs
+
+            same_div = stats[ht]["division"] == stats[at]["division"]
+            same_conf = stats[ht]["conference"] == stats[at]["conference"]
+
+            if hs > as_:
+                stats[ht]["w"] += 1
+                stats[ht]["home_w"] += 1
+                stats[ht]["results_seq"].append("W")
+
+                stats[at]["l"] += 1
+                stats[at]["road_l"] += 1
+                stats[at]["results_seq"].append("L")
+
+                if same_div:
+                    stats[ht]["div_w"] += 1
+                    stats[at]["div_l"] += 1
+                if same_conf:
+                    stats[ht]["conf_w"] += 1
+                    stats[at]["conf_l"] += 1
+            elif as_ > hs:
+                stats[at]["w"] += 1
+                stats[at]["road_w"] += 1
+                stats[at]["results_seq"].append("W")
+
+                stats[ht]["l"] += 1
+                stats[ht]["home_l"] += 1
+                stats[ht]["results_seq"].append("L")
+
+                if same_div:
+                    stats[at]["div_w"] += 1
+                    stats[ht]["div_l"] += 1
+                if same_conf:
+                    stats[at]["conf_w"] += 1
+                    stats[ht]["conf_l"] += 1
+            else:
+                stats[ht]["t"] += 1
+                stats[ht]["home_t"] += 1
+                stats[ht]["results_seq"].append("T")
+
+                stats[at]["t"] += 1
+                stats[at]["road_t"] += 1
+                stats[at]["results_seq"].append("T")
+
+                if same_div:
+                    stats[ht]["div_t"] += 1
+                    stats[at]["div_t"] += 1
+                if same_conf:
+                    stats[ht]["conf_t"] += 1
+                    stats[at]["conf_t"] += 1
+
+    def _fmt_rec(w: int, l: int, t: int) -> str:
+        return f"{w}-{l}-{t}" if t > 0 else f"{w}-{l}"
+
+    def _fmt_pct(pct_val: float) -> str:
+        if pct_val >= 0.9995:
+            return "1.000"
+        return f"{pct_val:.3f}"[1:]  # NFL.com style e.g. .750, .500, .000
+
+    def _calc_streak(seq: list[str]) -> str:
+        if not seq:
+            return "-"
+        last_res = seq[-1]
+        cnt = 0
+        for item in reversed(seq):
+            if item == last_res:
+                cnt += 1
+            else:
+                break
+        return f"{last_res}{cnt}"
+
+    def _calc_l5(seq: list[str]) -> str:
+        last5 = seq[-5:]
+        w5 = sum(1 for x in last5 if x == "W")
+        l5 = sum(1 for x in last5 if x == "L")
+        t5 = sum(1 for x in last5 if x == "T")
+        return _fmt_rec(w5, l5, t5)
+
+    div_tables: dict[str, pd.DataFrame] = {}
+    for div_name, div_teams in NFL_DIVISIONS.items():
+        rows = []
+        for tm in div_teams:
+            s = stats[tm]
+            gp = s["w"] + s["l"] + s["t"]
+            win_pct = ((s["w"] + 0.5 * s["t"]) / gp) if gp > 0 else 0.0
+
+            div_gp = s["div_w"] + s["div_l"] + s["div_t"]
+            div_pct = ((s["div_w"] + 0.5 * s["div_t"]) / div_gp) if div_gp > 0 else 0.0
+
+            conf_gp = s["conf_w"] + s["conf_l"] + s["conf_t"]
+            conf_pct = ((s["conf_w"] + 0.5 * s["conf_t"]) / conf_gp) if conf_gp > 0 else 0.0
+
+            net_pts = s["pf"] - s["pa"]
+
+            rows.append(
+                {
+                    "team": tm,
+                    "team_name": s["team_name"],
+                    "division": div_name,
+                    "conference": s["conference"],
+                    "W": s["w"],
+                    "L": s["l"],
+                    "T": s["t"],
+                    "Record": _fmt_rec(s["w"], s["l"], s["t"]),
+                    "PCT_num": win_pct,
+                    "PCT": _fmt_pct(win_pct),
+                    "PF": s["pf"],
+                    "PA": s["pa"],
+                    "Net Pts": net_pts,
+                    "Home": _fmt_rec(s["home_w"], s["home_l"], s["home_t"]),
+                    "Road": _fmt_rec(s["road_w"], s["road_l"], s["road_t"]),
+                    "Div": _fmt_rec(s["div_w"], s["div_l"], s["div_t"]),
+                    "Div_PCT_num": div_pct,
+                    "Conf": _fmt_rec(s["conf_w"], s["conf_l"], s["conf_t"]),
+                    "Conf_PCT_num": conf_pct,
+                    "STRK": _calc_streak(s["results_seq"]),
+                    "L5": _calc_l5(s["results_seq"]),
+                }
+            )
+
+        df_div = pd.DataFrame(rows)
+        df_div = df_div.sort_values(
+            by=["PCT_num", "W", "Div_PCT_num", "Conf_PCT_num", "Net Pts", "PF"],
+            ascending=[False, False, False, False, False, False],
+        ).reset_index(drop=True)
+        df_div["Rank"] = df_div.index + 1
+
+        # Games Behind (GB) relative to #1 team in division
+        lead_w = float(df_div.iloc[0]["W"]) + 0.5 * float(df_div.iloc[0]["T"])
+        lead_l = float(df_div.iloc[0]["L"]) + 0.5 * float(df_div.iloc[0]["T"])
+        gb_list = []
+        for idx_r, r_d in df_div.iterrows():
+            if idx_r == 0:
+                gb_list.append("--")
+            else:
+                tm_w = float(r_d["W"]) + 0.5 * float(r_d["T"])
+                tm_l = float(r_d["L"]) + 0.5 * float(r_d["T"])
+                gb_val = ((lead_w - tm_w) + (tm_l - lead_l)) / 2.0
+                gb_list.append("--" if gb_val <= 0 else f"{gb_val:.1f}".rstrip("0").rstrip("."))
+        df_div["GB"] = gb_list
+
+        div_tables[div_name] = df_div
+
+    return div_tables
+
+
+def render_nfl_division_standings_card(
+    div_name: str,
+    div_df: pd.DataFrame,
+    highlight_teams: set[str],
+    season_label: int,
+    week_label: int,
+) -> None:
+    """
+    Renders an NFL.com-style divisional standings card with rank, W-L-T, PCT, GB,
+    Home, Road, Div, Conf, PF, PA, Net Pts, Streak, and Last 5, highlighting the
+    teams playing in the active matchup.
+    """
+    if div_df.empty:
+        return
+
+    conf_str = div_name.split()[0]
+    conf_badge_cls = "badge-bad" if conf_str == "AFC" else "badge-sage"
+
+    # Build summary tag for any active matchup team(s) in this division
+    matchup_tags = []
+    for _, r in div_df.iterrows():
+        tm_code = str(r["team"]).strip().upper()
+        if tm_code in highlight_teams:
+            rk = int(r["Rank"])
+            ord_sfx = {1: "1st", 2: "2nd", 3: "3rd", 4: "4th"}.get(rk, f"#{rk}")
+            tag_cls = "badge-elite" if rk == 1 else ("badge-sage" if rk == 2 else "badge-mid")
+            matchup_tags.append(
+                f'<span class="{tag_cls}">[{tm_code}: {ord_sfx} in {div_name} ({r["Record"]} • {r["PCT"]})]</span>'
+            )
+
+    header_right_html = " ".join(matchup_tags) if matchup_tags else f'<span class="metric-subtext">{season_label} Through Wk {week_label}</span>'
+
+    rows_html = []
+    for _, r in div_df.iterrows():
+        tm_code = str(r["team"]).strip().upper()
+        is_playing = tm_code in highlight_teams
+        row_cls = 'class="nfl-standings-row-active"' if is_playing else ""
+        rk = int(r["Rank"])
+        rk_cls = "nfl-rank-pill nfl-rank-pill-1" if rk == 1 else "nfl-rank-pill"
+        logo_url = get_team_logo_url(tm_code)
+        net_v = int(r["Net Pts"])
+        net_color = "#34D399" if net_v > 0 else ("#F87171" if net_v < 0 else "#94A3B8")
+        net_str = f"{net_v:+d}" if net_v != 0 else "0"
+
+        strk_str = str(r["STRK"])
+        if strk_str.startswith("W"):
+            strk_html = f'<span style="color:#34D399; font-weight:700;">{strk_str}</span>'
+        elif strk_str.startswith("L"):
+            strk_html = f'<span style="color:#F87171; font-weight:700;">{strk_str}</span>'
+        else:
+            strk_html = f'<span>{strk_str}</span>'
+
+        playing_pill = '<span class="badge-elite" style="font-size:0.62rem; padding:1px 5px; margin-left:4px;">[MATCHUP]</span>' if is_playing else ""
+
+        rows_html.append(
+            f"""
+            <tr {row_cls}>
+                <td class="col-center"><span class="{rk_cls}">{rk}</span></td>
+                <td class="col-left">
+                    <div class="nfl-team-cell">
+                        <img src="{logo_url}" width="20" height="20" onerror="this.style.display='none'">
+                        <span><b>{tm_code}</b> <span class="nfl-team-fullname">{r['team_name']}</span>{playing_pill}</span>
+                    </div>
+                </td>
+                <td>{int(r['W'])}</td>
+                <td>{int(r['L'])}</td>
+                <td>{int(r['T'])}</td>
+                <td><b>{r['PCT']}</b></td>
+                <td>{r['GB']}</td>
+                <td>{r['Div']}</td>
+                <td>{r['Conf']}</td>
+                <td>{int(r['PF'])}</td>
+                <td>{int(r['PA'])}</td>
+                <td style="color:{net_color}; font-weight:700;">{net_str}</td>
+                <td>{r['Home']}</td>
+                <td>{r['Road']}</td>
+                <td>{strk_html}</td>
+                <td>{r['L5']}</td>
+            </tr>
+            """
+        )
+
+    table_html = "\n".join(rows_html)
+    render_html(
+        f"""
+        <div class="nfl-div-card">
+            <div class="nfl-div-header">
+                <div class="nfl-div-title">
+                    <span class="{conf_badge_cls}">[{conf_str}]</span>
+                    <span>{div_name} Standings</span>
+                </div>
+                <div>{header_right_html}</div>
+            </div>
+            <table class="nfl-standings-table">
+                <thead>
+                    <tr>
+                        <th class="col-center">RK</th>
+                        <th class="col-left">NFL Team</th>
+                        <th>W</th>
+                        <th>L</th>
+                        <th>T</th>
+                        <th>PCT</th>
+                        <th>GB</th>
+                        <th>DIV</th>
+                        <th>CONF</th>
+                        <th>PF</th>
+                        <th>PA</th>
+                        <th>NET</th>
+                        <th>HOME</th>
+                        <th>ROAD</th>
+                        <th>STRK</th>
+                        <th>L5</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {table_html}
+                </tbody>
+            </table>
+        </div>
+        """
+    )
 
 
 def render_nfl_horizontal_ticker(
@@ -2219,7 +2783,8 @@ def build_top_player_picks(
             tm_i = str(r_i.get("team", "")).strip().upper()
             nm_i = str(r_i.get("player_display", "")).strip().lower()
             st_i = str(r_i.get("report_status", "")).strip().upper()
-            if is_unavailable_injury(st_i):
+            prac_i = str(r_i.get("practice_status_clean", "")).strip().upper()
+            if is_excluded_from_cb_wr_matchup(st_i, prac_i):
                 unavailable_players.add((tm_i, nm_i))
             elif is_active_unresolved_injury(st_i):
                 questionable_players.add((tm_i, nm_i))
@@ -2386,17 +2951,26 @@ def build_cb_wr_matchup_battles(
 ) -> list[dict]:
     """
     Calibrated 1-on-1 Wide Receiver vs. Cornerback Mismatch Engine (0-100 scale).
+    - Removes players who are Out, Doubtful, IR, PUP, Suspended, NFI, OR unconfirmed
+      with DNP / Limited Practice ('UNSPECIFIED (DNP)' and 'UNSPECIFIED (LP)').
+    - Retains players who are unconfirmed but logged Full Practice ('UNSPECIFIED (FP)')
+      since they are expected to play.
     """
     if usage_df.empty:
         return []
 
     unavailable_off_players: set[str] = set()
+    off_fp_expected_players: set[str] = set()
     if not inj_df.empty and "team" in inj_df.columns:
         o_inj = inj_df[inj_df["team"] == off_tm]
         for _, r_o in o_inj.iterrows():
+            nm_o = str(r_o.get("player_display", "")).strip().lower()
             st_o = str(r_o.get("report_status", "")).strip().upper()
-            if is_unavailable_injury(st_o):
-                unavailable_off_players.add(str(r_o.get("player_display", "")).strip().lower())
+            prac_o = str(r_o.get("practice_status_clean", "")).strip().upper()
+            if is_excluded_from_cb_wr_matchup(st_o, prac_o):
+                unavailable_off_players.add(nm_o)
+            elif st_o == "UNSPECIFIED (FP)" or "FULL" in prac_o or prac_o == "FP":
+                off_fp_expected_players.add(nm_o)
 
     tm_wrs_all = usage_df[
         (usage_df["team"] == off_tm)
@@ -2459,14 +3033,15 @@ def build_cb_wr_matchup_battles(
         )
         cb_roster["clean_name"] = cb_roster["player"].astype(str).str.strip().str.lower()
 
-    sec_inj_map: dict[str, tuple[str, str]] = {}
+    sec_inj_map: dict[str, tuple[str, str, str]] = {}
     if not inj_df.empty and "team" in inj_df.columns:
         d_inj = inj_df[inj_df["team"] == def_tm].copy()
         for _, r_i in d_inj.iterrows():
             c_nm = str(r_i.get("player_display", "")).strip().lower()
             st_str = str(r_i.get("report_status", "")).strip().upper()
+            prac_str = str(r_i.get("practice_status_clean", "")).strip().upper()
             inj_type = str(r_i.get("primary_injury", "")).strip()
-            sec_inj_map[c_nm] = (st_str, inj_type)
+            sec_inj_map[c_nm] = (st_str, prac_str, inj_type)
 
     active_cbs = []
     missing_starting_cbs = []
@@ -2477,20 +3052,25 @@ def build_cb_wr_matchup_battles(
             snap_sh = float(cb_row["def_snap_share"])
             p_disp = cb_row["player"]
             pos_u = cb_row["pos_upper"]
-            raw_inj_status, inj_desc = sec_inj_map.get(c_nm, ("ACTIVE", ""))
+            raw_inj_status, raw_prac_status, inj_desc = sec_inj_map.get(c_nm, ("ACTIVE", "", ""))
 
-            if is_unavailable_injury(raw_inj_status) and snap_sh >= 0.50:
-                missing_starting_cbs.append(
-                    {
-                        "name": p_disp,
-                        "status": raw_inj_status,
-                        "snap_pct": snap_sh * 100.0,
-                        "injury": inj_desc,
-                    }
-                )
-            elif not is_unavailable_injury(raw_inj_status):
+            if is_excluded_from_cb_wr_matchup(raw_inj_status, raw_prac_status):
+                if snap_sh >= 0.50:
+                    missing_starting_cbs.append(
+                        {
+                            "name": p_disp,
+                            "status": raw_inj_status,
+                            "snap_pct": snap_sh * 100.0,
+                            "injury": inj_desc,
+                        }
+                    )
+            else:
                 if is_active_unresolved_injury(raw_inj_status):
                     resolved_status = raw_inj_status
+                elif raw_inj_status == "UNSPECIFIED (FP)" or (
+                    c_nm in sec_inj_map and ("FULL" in raw_prac_status or raw_prac_status == "FP")
+                ):
+                    resolved_status = "UNSPECIFIED (FP)"
                 elif raw_inj_status in CLEARED_DESIGNATIONS and c_nm in sec_inj_map:
                     resolved_status = "ACTIVE / CLEARED"
                 else:
@@ -2534,6 +3114,7 @@ def build_cb_wr_matchup_battles(
         wr_epa = float(wr_row["rec_epa"])
         wr_games = max(1, int(wr_row["games"]))
         wr_ypg = float(wr_row["rec_yards"]) / wr_games
+        wr_is_fp_expected = wr_clean in off_fp_expected_players
 
         streak_type, l4_val, s_val, rel_pct, diff_yds = wr_streaks.get(
             wr_clean, ("STEADY", wr_ypg, wr_ypg, 0.0, 0.0)
@@ -2628,19 +3209,28 @@ def build_cb_wr_matchup_battles(
         else:
             wr_streak_badge = f'<span class="badge-mid">[WR L4: {l4_val:.1f} YPG]</span>'
 
+        if wr_is_fp_expected:
+            wr_streak_badge += ' <span class="badge-elite">[FP • EXPECTED TO PLAY]</span>'
+
         if missing_starting_cbs and idx < len(missing_starting_cbs):
             cb_status_badge = '<span class="badge-bad">[BACKUP CB ELEVATED]</span>'
         elif cb_has_active_inj:
             cb_status_badge = f'<span class="badge-amber">[CB {cb_assigned["status"]}]</span>'
         elif def_pass_rk <= 5:
             cb_status_badge = f'<span class="badge-bad">[SHUTDOWN CB • {cb_assigned["snap_pct"]:.0f}% SNAPS]</span>'
+        elif cb_assigned["status"] == "UNSPECIFIED (FP)":
+            cb_status_badge = f'<span class="badge-elite">[CB FP / EXPECTED TO PLAY • {cb_assigned["snap_pct"]:.0f}% SNAPS]</span>'
         elif cb_assigned["status"] == "ACTIVE / CLEARED":
             cb_status_badge = f'<span class="badge-elite">[CB CLEARED / ACTIVE • {cb_assigned["snap_pct"]:.0f}% SNAPS]</span>'
         else:
             cb_status_badge = f'<span class="badge-mid">[ACTIVE • {cb_assigned["snap_pct"]:.0f}% DEF SNAPS]</span>'
 
         if not rationale_clauses:
-            clr_prefix = "CB full practice (0 inj drag) • " if cb_assigned["status"] == "ACTIVE / CLEARED" else ""
+            clr_prefix = (
+                "Full practice (expected to play) • "
+                if (cb_assigned["status"] in ["ACTIVE / CLEARED", "UNSPECIFIED (FP)"] or wr_is_fp_expected)
+                else ""
+            )
             if score >= 75.0:
                 rationale_clauses.append(
                     f"{clr_prefix}Alpha volume ({wr_tgt_sh:.1f}% tgt, {wr_ypg:.1f} YPG) vs #{def_pass_rk} {def_tm} pass def ({def_pass_epa:+.3f} EPA)."
@@ -2830,10 +3420,7 @@ def build_roster_usage_table(
             st_v = str(r_inj.get("report_status", "ACTIVE / CLEARED")).strip().upper()
             inj_v = str(r_inj.get("primary_injury", "")).strip()
             suffix = f" ({inj_v})" if inj_v and inj_v not in ["Undisclosed", "Unspecified Injury"] else ""
-            if not is_active_unresolved_injury(st_v):
-                status_map[(tm_k, nm_k)] = f"[{st_v}]{suffix}"
-            else:
-                status_map[(tm_k, nm_k)] = f"[{st_v}]{suffix}"
+            status_map[(tm_k, nm_k)] = f"[{st_v}]{suffix}"
 
     merged["health_status"] = [
         status_map.get((str(r["team"]).strip().upper(), str(r["clean_name"]).strip().lower()), "[ACTIVE]")
@@ -2947,7 +3534,7 @@ def build_injury_impact_report(
             else:
                 updated_statuses.append(cur_st)
                 status_notes.append(
-                    "Full Practice Participant"
+                    "Full Practice Participant (Expected to Play)"
                     if not is_active_unresolved_injury(cur_st)
                     else "Official NFL Injury / Practice Report"
                 )
@@ -3085,7 +3672,7 @@ def build_injury_impact_report(
         is_anchor_flags.append(is_anchor)
 
         if is_cleared:
-            roles.append("[FULL PRACTICE / 0 EPA DRAG]")
+            roles.append("[FULL PRACTICE / EXPECTED TO PLAY]")
             penalty = 0.0
         else:
             if is_key_player:
@@ -3212,7 +3799,7 @@ def get_player_season_injury_history(
             elif norm_st in ["OUT", "IR", "PUP", "SUSPENDED", "NFI"]:
                 gameday_outcome = "DID NOT PLAY (INACTIVE)"
             elif not is_active_unresolved_injury(norm_st):
-                gameday_outcome = "FULL PRACTICE / AVAILABLE"
+                gameday_outcome = "FULL PRACTICE / EXPECTED TO PLAY"
             else:
                 gameday_outcome = "ON INJURY REPORT"
 
@@ -3791,6 +4378,7 @@ def render_player_popup_contents(
         ov_options = [
             "Auto (Official Feed)",
             "ACTIVE / CLEARED",
+            "UNSPECIFIED (FP)",
             "UNSPECIFIED (DNP)",
             "UNSPECIFIED (LP)",
             "QUESTIONABLE",
@@ -3938,6 +4526,7 @@ else:
 
 active_game = week_games.iloc[st.session_state["selected_game_idx"]]
 team_records_map = compute_team_records(schedule_df, through_week=selected_week)
+division_standings_map = compute_nfl_division_standings(schedule_df, through_week=selected_week)
 
 # -----------------------------------------------------------------------------
 # 6. PINNED TOP VIEW: STREAMLINED HEADER & HORIZONTAL GAME TICKER
@@ -3963,6 +4552,11 @@ if eff_df.empty:
 
 away_tm = active_game["away_team"]
 home_tm = active_game["home_team"]
+away_norm = normalize_team_code(away_tm)
+home_norm = normalize_team_code(home_tm)
+away_div_name = get_team_division(away_norm)
+home_div_name = get_team_division(home_norm)
+
 spread_v = active_game.get("home_spread", np.nan)
 total_v = active_game.get("total_line", np.nan)
 rest_v = active_game.get("rest_edge_home", 0)
@@ -4037,6 +4631,12 @@ h_def_badge = render_rank_badge(int(h_eff["def_epa_rank"]), f"{home_tm} Def") if
 away_rec_str = team_records_map.get(str(away_tm).strip().upper(), "0-0")
 home_rec_str = team_records_map.get(str(home_tm).strip().upper(), "0-0")
 
+div_matchup_badge = (
+    f'<span class="badge-amber">[DIVISION RIVALRY: {away_div_name.upper()}]</span>'
+    if away_div_name == home_div_name
+    else f'<span class="badge-mid">[{away_div_name} vs {home_div_name}]</span>'
+)
+
 render_html(
     f"""
     <div class="active-game-spotlight">
@@ -4052,6 +4652,8 @@ render_html(
                     {a_ovr_badge} {a_def_badge}
                     <span style="color:#334155; margin:0 5px;">|</span>
                     {h_ovr_badge} {h_def_badge}
+                    <span style="color:#334155; margin:0 5px;">|</span>
+                    {div_matchup_badge}
                 </div>
             </div>
             <div style="display:flex; flex-direction:column; align-items:flex-end; gap:6px;">
@@ -4067,10 +4669,11 @@ render_html(
     """
 )
 
-# Shortened, Concise Main Sub-Tab Names
-subtab_brief, subtab_players, subtab_trench, subtab_props, subtab_roster, subtab_backtest = st.tabs(
+# Shortened, Concise Main Sub-Tab Names (Added 'Divisions' tab alongside inline Overview section)
+subtab_brief, subtab_divisions, subtab_players, subtab_trench, subtab_props, subtab_roster, subtab_backtest = st.tabs(
     [
         "Overview",
+        "Divisions",
         "Mismatches",
         "Unit EPA",
         "Props",
@@ -4080,7 +4683,7 @@ subtab_brief, subtab_players, subtab_trench, subtab_props, subtab_roster, subtab
 )
 
 # =============================================================================
-# SUB-TAB 1: OVERVIEW (TEAM-OWNED UNIT TIER MATRIX + TOP 3 PICKS + 5-YR H2H)
+# SUB-TAB 1: OVERVIEW (UNIT TIER MATRIX + TOP 3 PICKS + DIVISIONAL AREA + 5-YR H2H)
 # =============================================================================
 with subtab_brief:
     if a_eff is None or h_eff is None:
@@ -4383,6 +4986,45 @@ with subtab_brief:
                                 """
                             )
 
+        # ---------------------------------------------------------------------
+        # NFL.COM-STYLE DIVISIONAL STANDINGS SPOTLIGHT (ACTIVE MATCHUP DIVISIONS)
+        # ---------------------------------------------------------------------
+        render_html(
+            f"<h4 style='margin:14px 0 6px 0;'>"
+            f"Divisional Standings Spotlight — {render_inline_logo(away_tm, 18)}{away_tm} ({away_div_name}) "
+            f"& {render_inline_logo(home_tm, 18)}{home_tm} ({home_div_name})</h4>"
+        )
+        active_highlight_set = {away_norm, home_norm}
+        if away_div_name == home_div_name:
+            if away_div_name in division_standings_map:
+                render_nfl_division_standings_card(
+                    away_div_name,
+                    division_standings_map[away_div_name],
+                    active_highlight_set,
+                    selected_season,
+                    selected_week,
+                )
+        else:
+            div_col_away, div_col_home = st.columns(2)
+            with div_col_away:
+                if away_div_name in division_standings_map:
+                    render_nfl_division_standings_card(
+                        away_div_name,
+                        division_standings_map[away_div_name],
+                        active_highlight_set,
+                        selected_season,
+                        selected_week,
+                    )
+            with div_col_home:
+                if home_div_name in division_standings_map:
+                    render_nfl_division_standings_card(
+                        home_div_name,
+                        division_standings_map[home_div_name],
+                        active_highlight_set,
+                        selected_season,
+                        selected_week,
+                    )
+
         render_html(
             f"<h4 style='margin:12px 0 6px 0;'>"
             f"{render_inline_logo(away_tm, 20)}{away_tm} vs {render_inline_logo(home_tm, 20)}{home_tm} — "
@@ -4412,7 +5054,113 @@ with subtab_brief:
             )
 
 # =============================================================================
-# SUB-TAB 2: MISMATCHES (SHORTENED SUB-TAB NAMES + HEADSHOTS + CONCISE RATIONALE)
+# SUB-TAB 2: DIVISIONS (NFL.COM-STYLE DIVISIONAL STANDINGS & LEAGUE VIEW)
+# =============================================================================
+with subtab_divisions:
+    active_highlight_set = {away_norm, home_norm}
+
+    away_div_df = division_standings_map.get(away_div_name, pd.DataFrame())
+    home_div_df = division_standings_map.get(home_div_name, pd.DataFrame())
+
+    away_rk_row = away_div_df[away_div_df["team"] == away_norm].iloc[0] if not away_div_df.empty and (away_div_df["team"] == away_norm).any() else None
+    home_rk_row = home_div_df[home_div_df["team"] == home_norm].iloc[0] if not home_div_df.empty and (home_div_df["team"] == home_norm).any() else None
+
+    dk1, dk2, dk3, dk4 = st.columns(4)
+    if away_rk_row is not None:
+        a_rk_num = int(away_rk_row["Rank"])
+        a_ord = {1: "1st", 2: "2nd", 3: "3rd", 4: "4th"}.get(a_rk_num, f"#{a_rk_num}")
+        dk1.metric(
+            f"{away_tm} Division Standing",
+            f"{a_ord} in {away_div_name}",
+            delta=f"{away_rk_row['Record']} ({away_rk_row['PCT']}) • Div {away_rk_row['Div']}",
+            delta_color="normal" if a_rk_num == 1 else "off",
+        )
+        dk2.metric(
+            f"{away_tm} Diff & Streak",
+            f"{int(away_rk_row['Net Pts']):+d} Net Pts",
+            delta=f"PF {int(away_rk_row['PF'])} / PA {int(away_rk_row['PA'])} • Strk {away_rk_row['STRK']}",
+            delta_color="normal" if int(away_rk_row["Net Pts"]) >= 0 else "inverse",
+        )
+    if home_rk_row is not None:
+        h_rk_num = int(home_rk_row["Rank"])
+        h_ord = {1: "1st", 2: "2nd", 3: "3rd", 4: "4th"}.get(h_rk_num, f"#{h_rk_num}")
+        dk3.metric(
+            f"{home_tm} Division Standing",
+            f"{h_ord} in {home_div_name}",
+            delta=f"{home_rk_row['Record']} ({home_rk_row['PCT']}) • Div {home_rk_row['Div']}",
+            delta_color="normal" if h_rk_num == 1 else "off",
+        )
+        dk4.metric(
+            f"{home_tm} Diff & Streak",
+            f"{int(home_rk_row['Net Pts']):+d} Net Pts",
+            delta=f"PF {int(home_rk_row['PF'])} / PA {int(home_rk_row['PA'])} • Strk {home_rk_row['STRK']}",
+            delta_color="normal" if int(home_rk_row["Net Pts"]) >= 0 else "inverse",
+        )
+
+    div_scope = st.radio(
+        "Standings View",
+        options=[
+            f"Active Matchup Divisions ({away_div_name} & {home_div_name})"
+            if away_div_name != home_div_name
+            else f"Active Matchup Division ({away_div_name})",
+            "All NFL Divisions (AFC & NFC)",
+        ],
+        horizontal=True,
+        key="nfl_div_standings_scope",
+    )
+
+    if div_scope.startswith("Active Matchup"):
+        if away_div_name == home_div_name:
+            render_nfl_division_standings_card(
+                away_div_name,
+                away_div_df,
+                active_highlight_set,
+                selected_season,
+                selected_week,
+            )
+        else:
+            d_c1, d_c2 = st.columns(2)
+            with d_c1:
+                render_nfl_division_standings_card(
+                    away_div_name,
+                    away_div_df,
+                    active_highlight_set,
+                    selected_season,
+                    selected_week,
+                )
+            with d_c2:
+                render_nfl_division_standings_card(
+                    home_div_name,
+                    home_div_df,
+                    active_highlight_set,
+                    selected_season,
+                    selected_week,
+                )
+    else:
+        afc_col, nfc_col = st.columns(2)
+        with afc_col:
+            render_html("<h4 style='margin:4px 0 8px 0; color:#F87171;'>AFC Divisions</h4>")
+            for d_nm in ["AFC East", "AFC North", "AFC South", "AFC West"]:
+                render_nfl_division_standings_card(
+                    d_nm,
+                    division_standings_map[d_nm],
+                    active_highlight_set,
+                    selected_season,
+                    selected_week,
+                )
+        with nfc_col:
+            render_html("<h4 style='margin:4px 0 8px 0; color:#93C5FD;'>NFC Divisions</h4>")
+            for d_nm in ["NFC East", "NFC North", "NFC South", "NFC West"]:
+                render_nfl_division_standings_card(
+                    d_nm,
+                    division_standings_map[d_nm],
+                    active_highlight_set,
+                    selected_season,
+                    selected_week,
+                )
+
+# =============================================================================
+# SUB-TAB 3: MISMATCHES (SHORTENED SUB-TAB NAMES + HEADSHOTS + CONCISE RATIONALE)
 # =============================================================================
 with subtab_players:
     pm_subtab_cbwr, pm_subtab_volume, pm_subtab_injuries = st.tabs(
@@ -4431,6 +5179,39 @@ with subtab_players:
             usage_matchup, player_df, snaps_df, inj_matchup, eff_df, home_tm, away_tm
         )
         all_battles = away_cb_wr_battles + home_cb_wr_battles
+
+        # Surface any WRs/CBs filtered out due to Out/Doubtful/IR or Unconfirmed (DNP/LP)
+        removed_cb_wr_list = []
+        fp_retained_cb_wr_list = []
+        if not inj_matchup.empty:
+            cb_wr_inj = inj_matchup[
+                inj_matchup["position"].astype(str).str.upper().isin(["WR", "TE", "CB", "DB", "S", "FS", "SS"])
+            ]
+            for _, r_m in cb_wr_inj.iterrows():
+                st_m = str(r_m.get("report_status", "")).strip().upper()
+                prac_m = str(r_m.get("practice_status_clean", "")).strip().upper()
+                p_lbl = f"{r_m['player_display']} ({r_m['team']} {r_m.get('position', '')} • {st_m})"
+                if is_excluded_from_cb_wr_matchup(st_m, prac_m):
+                    removed_cb_wr_list.append(p_lbl)
+                elif st_m == "UNSPECIFIED (FP)" or "FULL" in prac_m or prac_m == "FP":
+                    fp_retained_cb_wr_list.append(f"{r_m['player_display']} ({r_m['team']} {r_m.get('position', '')} • FP)")
+
+        if removed_cb_wr_list or fp_retained_cb_wr_list:
+            removed_str = ", ".join(removed_cb_wr_list) if removed_cb_wr_list else "None"
+            retained_str = ", ".join(fp_retained_cb_wr_list) if fp_retained_cb_wr_list else "None"
+            render_html(
+                f"""
+                <div class="terminal-card" style="padding:9px 14px; margin-bottom:10px;">
+                    <div class="metric-subtext">
+                        <span class="badge-bad">[REMOVED FROM CB vs WR (OUT / DOUBTFUL / UNCONFIRMED DNP-LP)]</span>
+                        <span style="color:#E2E8F0;">{removed_str}</span>
+                        <span style="color:#475569; margin:0 6px;">|</span>
+                        <span class="badge-elite">[RETAINED (UNCONFIRMED • FULL PRACTICE)]</span>
+                        <span style="color:#E2E8F0;">{retained_str}</span>
+                    </div>
+                </div>
+                """
+            )
 
         if not all_battles:
             st.info("Insufficient wide receiver or cornerback snap data to project 1-on-1 battles.")
@@ -4458,7 +5239,7 @@ with subtab_players:
             c_k3.metric(
                 "Secondary Injury Triggers",
                 f"{len(backup_triggers)} Matchups",
-                delta="Out / Doubtful / Questionable / DNP CBs",
+                delta="Out / Doubtful / Questionable / DNP-LP CBs",
             )
             c_k4.metric(
                 "Wideouts on L4 Uptick",
@@ -4689,6 +5470,7 @@ with subtab_players:
                         "Status",
                         options=[
                             "ACTIVE / CLEARED",
+                            "UNSPECIFIED (FP)",
                             "UNSPECIFIED (DNP)",
                             "UNSPECIFIED (LP)",
                             "QUESTIONABLE",
@@ -4786,7 +5568,7 @@ with subtab_players:
                             pos_str = str(r_inj.get("position", "POS"))
                             is_clr = bool(r_inj.get("is_cleared", False))
                             epa_color = "#34D399" if is_clr else "#F87171"
-                            epa_str = "0.000 (Full Practice)" if is_clr else f"-{r_inj['est_epa_penalty']:.3f}/play"
+                            epa_str = "0.000 (Full Practice / Expected to Play)" if is_clr else f"-{r_inj['est_epa_penalty']:.3f}/play"
 
                             with st.container(border=True):
                                 ic1, ic2 = st.columns([1.4, 1.2])
@@ -4811,7 +5593,7 @@ with subtab_players:
                                 )
 
 # =============================================================================
-# SUB-TAB 3: UNIT EPA (COMPACT NON-CLIPPING EPA STAT BLOCKS)
+# SUB-TAB 4: UNIT EPA (COMPACT NON-CLIPPING EPA STAT BLOCKS)
 # =============================================================================
 with subtab_trench:
     if a_eff is None or h_eff is None:
@@ -4931,7 +5713,7 @@ with subtab_trench:
         render_possession_block(home_tm, away_tm, h_eff, a_eff, home_off_pen, away_def_pen)
 
 # =============================================================================
-# SUB-TAB 4: PROPS (PLAYER PROP TREND EXPLORER)
+# SUB-TAB 5: PROPS (PLAYER PROP TREND EXPLORER)
 # =============================================================================
 with subtab_props:
     if prop_logs_matchup.empty:
@@ -5167,7 +5949,7 @@ with subtab_props:
         st.plotly_chart(fig_prop, width="stretch")
 
 # =============================================================================
-# SUB-TAB 5: ROSTERS (TEAM ROSTER & USAGE EXPLORER)
+# SUB-TAB 6: ROSTERS (TEAM ROSTER & USAGE EXPLORER)
 # =============================================================================
 with subtab_roster:
     if roster_matchup_table.empty:
@@ -5284,7 +6066,7 @@ with subtab_roster:
                     st.rerun()
 
 # =============================================================================
-# SUB-TAB 6: BACKTEST (HISTORICAL BACKTEST PERFORMANCE)
+# SUB-TAB 7: BACKTEST (HISTORICAL BACKTEST PERFORMANCE)
 # =============================================================================
 with subtab_backtest:
     bt_summary, bt_log = run_season_backtest(schedule_df, eff_df)
