@@ -23,6 +23,38 @@ st.markdown(
     box-sizing: border-box;
 }
 
+/* Global st.metric Anti-Truncation Override (Prevents '...' Ellipsis Clipping) */
+div[data-testid="stMetric"] {
+    max-width: 100% !important;
+    min-width: 0 !important;
+}
+div[data-testid="stMetricValue"],
+div[data-testid="stMetricValue"] > div {
+    font-size: 1.50rem !important;
+    line-height: 1.25 !important;
+    white-space: normal !important;
+    overflow: visible !important;
+    text-overflow: clip !important;
+    overflow-wrap: break-word !important;
+    word-break: break-word !important;
+}
+div[data-testid="stMetricLabel"],
+div[data-testid="stMetricLabel"] > div,
+div[data-testid="stMetricLabel"] p {
+    white-space: normal !important;
+    overflow: visible !important;
+    text-overflow: clip !important;
+    overflow-wrap: break-word !important;
+}
+div[data-testid="stMetricDelta"],
+div[data-testid="stMetricDelta"] > div {
+    white-space: normal !important;
+    overflow: visible !important;
+    text-overflow: clip !important;
+    overflow-wrap: break-word !important;
+    line-height: 1.3 !important;
+}
+
 /* Clean, Toned-Down Sports Analytics Terminal Cards */
 .terminal-card {
     background-color: #121722;
@@ -564,7 +596,7 @@ div[data-testid="stHorizontalBlock"]:has(.nfl-ticker-marker) div[data-testid="st
     word-break: break-word;
 }
 
-/* Comparative Brief Pillars */
+/* Team-Owned Unit Tier Matrix Pillars */
 .brief-grid {
     display: grid;
     grid-template-columns: 1fr 1fr;
@@ -586,10 +618,19 @@ div[data-testid="stHorizontalBlock"]:has(.nfl-ticker-marker) div[data-testid="st
     gap: 4px;
     border-bottom: 1px solid #232C3D;
     padding-bottom: 6px;
-    margin-bottom: 8px;
+    margin-bottom: 6px;
     font-weight: 700;
     font-size: 0.88rem;
     color: #F1F5F9;
+}
+.unit-section-tag {
+    font-size: 0.66rem;
+    font-family: monospace;
+    font-weight: 700;
+    color: #64748B;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin: 6px 0 2px 0;
 }
 .unit-tier-row {
     display: flex;
@@ -598,19 +639,30 @@ div[data-testid="stHorizontalBlock"]:has(.nfl-ticker-marker) div[data-testid="st
     flex-wrap: wrap;
     gap: 4px;
     padding: 4px 0;
-    font-size: 0.82rem;
-    border-bottom: 1px dashed rgba(71, 85, 105, 0.30);
+    font-size: 0.80rem;
+    border-bottom: 1px dashed rgba(71, 85, 105, 0.28);
 }
 .unit-tier-label {
-    color: #94A3B8;
+    color: #CBD5E1;
     font-family: monospace;
     font-weight: 600;
-    min-width: 54px;
+    font-size: 0.76rem;
+}
+.unit-tier-right {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    flex-wrap: wrap;
+}
+.unit-epa-mini {
+    font-family: monospace;
+    font-size: 0.74rem;
+    color: #94A3B8;
 }
 .unit-lever-footer {
     margin-top: 8px;
     padding-top: 4px;
-    font-size: 0.80rem;
+    font-size: 0.78rem;
     color: #E2E8F0;
     display: flex;
     justify-content: space-between;
@@ -634,6 +686,38 @@ div[data-testid="stHorizontalBlock"]:has(.nfl-ticker-marker) div[data-testid="st
     text-transform: uppercase;
     letter-spacing: 0.04em;
     margin-bottom: 3px;
+}
+
+/* Compact Non-Clipping EPA Comparison Stat Grid (Unit EPA Tab) */
+.epa-stat-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+    margin: 8px 0 6px 0;
+}
+.epa-stat-box {
+    background-color: #151C28;
+    border: 1px solid #232D3F;
+    border-radius: 6px;
+    padding: 8px 10px;
+    min-width: 0;
+}
+.epa-stat-label {
+    font-size: 0.73rem;
+    font-family: monospace;
+    color: #94A3B8;
+    margin-bottom: 3px;
+    white-space: normal;
+    line-height: 1.25;
+}
+.epa-stat-num {
+    font-size: 1.32rem;
+    font-weight: 800;
+    font-family: monospace;
+    color: #F8FAFC;
+    line-height: 1.2;
+    margin-bottom: 5px;
+    white-space: nowrap;
 }
 
 /* Historical Injury Timeline Row Cards */
@@ -675,7 +759,7 @@ button[data-baseweb="tab"] {
 /* ============================================================================
    MOBILE & TABLET RESPONSIVE MEDIA QUERIES (MAX-WIDTH: 768PX & 480PX)
    Automatically stacks multi-column layouts vertically, wraps flex containers,
-   prevents text clipping/overlapping, and keeps ticker/tables scrollable.
+   prevents text/number clipping ('...'), and keeps ticker/tables scrollable.
    ============================================================================ */
 @media (max-width: 768px) {
     /* Prevent page-level horizontal overflow and tighten container padding */
@@ -728,6 +812,14 @@ button[data-baseweb="tab"] {
         gap: 8px !important;
     }
 
+    /* Compact EPA stat boxes on mobile so numbers never clip */
+    .epa-stat-num {
+        font-size: 1.12rem !important;
+    }
+    .epa-stat-box {
+        padding: 7px 8px !important;
+    }
+
     /* Adjust active matchup spotlight banner & team pills for mobile widths */
     .active-game-spotlight {
         padding: 12px 12px !important;
@@ -778,7 +870,7 @@ button[data-baseweb="tab"] {
         max-width: 116px !important;
     }
 
-    /* Slightly more compact badges & metric subtext so nothing clips */
+    /* Compact badges, metric subtext & st.metric values so nothing clips with '...' */
     .badge-elite,
     .badge-cleared,
     .badge-mid,
@@ -792,11 +884,23 @@ button[data-baseweb="tab"] {
         white-space: normal !important;
     }
     .metric-subtext {
-        font-size: 0.76rem !important;
-        line-height: 1.38 !important;
+        font-size: 0.75rem !important;
+        line-height: 1.36 !important;
     }
-    div[data-testid="stMetricValue"] {
-        font-size: 1.25rem !important;
+    div[data-testid="stMetricValue"],
+    div[data-testid="stMetricValue"] > div {
+        font-size: 1.15rem !important;
+        line-height: 1.22 !important;
+        white-space: normal !important;
+        overflow: visible !important;
+        text-overflow: clip !important;
+    }
+    div[data-testid="stMetricDelta"],
+    div[data-testid="stMetricDelta"] > div {
+        font-size: 0.74rem !important;
+        white-space: normal !important;
+        overflow: visible !important;
+        text-overflow: clip !important;
     }
 }
 
@@ -815,6 +919,13 @@ button[data-baseweb="tab"] {
     .mismatch-headshot-fallback {
         width: 42px !important;
         height: 42px !important;
+    }
+    div[data-testid="stMetricValue"],
+    div[data-testid="stMetricValue"] > div {
+        font-size: 1.06rem !important;
+    }
+    .epa-stat-num {
+        font-size: 1.02rem !important;
     }
     button[kind="tertiary"],
     button[kind="tertiary"] p {
@@ -3906,7 +4017,7 @@ subtab_brief, subtab_players, subtab_trench, subtab_props, subtab_roster, subtab
 )
 
 # =============================================================================
-# SUB-TAB 1: OVERVIEW (UNIT TIER MATRIX + TOP 3 PLAYER PICKS + 5-YR H2H)
+# SUB-TAB 1: OVERVIEW (TEAM-OWNED UNIT TIER MATRIX + TOP 3 PICKS + 5-YR H2H)
 # =============================================================================
 with subtab_brief:
     if a_eff is None or h_eff is None:
@@ -3951,8 +4062,8 @@ with subtab_brief:
             cleared_count = int(inj_matchup["is_cleared"].sum()) if not inj_matchup.empty and "is_cleared" in inj_matchup.columns else 0
             st.metric(
                 "Injury Report Anchors",
-                f"{total_anchors_out} Flagged ({cleared_count} Cleared)",
-                delta=f"Away -{away_off_pen + away_def_pen:.2f} | Home -{home_off_pen + home_def_pen:.2f} EPA",
+                f"{total_anchors_out} Flagged",
+                delta=f"{cleared_count} Clr | {away_tm} -{away_off_pen + away_def_pen:.2f} / {home_tm} -{home_off_pen + home_def_pen:.2f} EPA",
                 delta_color="inverse" if total_anchors_out > 0 else "normal",
             )
         with k4:
@@ -3985,40 +4096,44 @@ with subtab_brief:
                 top_inj_row = active_anchor_rows.iloc[0]
 
         with col_brief_left:
+            # Away Team's own Offense & Defense ranks
             a_pass_rk, a_rush_rk = int(a_eff["off_pass_epa_rank"]), int(a_eff["off_rush_epa_rank"])
-            h_pdef_rk, h_rdef_rk = int(h_eff["def_pass_epa_rank"]), int(h_eff["def_rush_epa_rank"])
-
-            h_pass_rk, h_rush_rk = int(h_eff["off_pass_epa_rank"]), int(h_eff["off_rush_epa_rank"])
             a_pdef_rk, a_rdef_rk = int(a_eff["def_pass_epa_rank"]), int(a_eff["def_rush_epa_rank"])
+            a_ovr_off_rk, a_ovr_def_rk = int(a_eff["off_epa_rank"]), int(a_eff["def_epa_rank"])
+
+            # Home Team's own Offense & Defense ranks
+            h_pass_rk, h_rush_rk = int(h_eff["off_pass_epa_rank"]), int(h_eff["off_rush_epa_rank"])
+            h_pdef_rk, h_rdef_rk = int(h_eff["def_pass_epa_rank"]), int(h_eff["def_rush_epa_rank"])
+            h_ovr_off_rk, h_ovr_def_rk = int(h_eff["off_epa_rank"]), int(h_eff["def_epa_rank"])
 
             away_air_gap = h_pdef_rk - a_pass_rk
             away_grd_gap = h_rdef_rk - a_rush_rk
             if away_air_gap >= away_grd_gap:
                 away_lever_tag = (
-                    f'<span class="badge-elite">[AIR EDGE: {away_air_gap:+d} RK]</span>'
+                    f'<span class="badge-elite">[PASS EDGE: {away_air_gap:+d} RK]</span>'
                     if away_air_gap >= 6
-                    else f'<span class="badge-sage">[PASS: {a_eff["off_pass_epa"]:+.2f} EPA]</span>'
+                    else f'<span class="badge-sage">[PASS OFF: {a_eff["off_pass_epa"]:+.2f} EPA]</span>'
                 )
             else:
                 away_lever_tag = (
-                    f'<span class="badge-elite">[GROUND EDGE: {away_grd_gap:+d} RK]</span>'
+                    f'<span class="badge-elite">[RUSH EDGE: {away_grd_gap:+d} RK]</span>'
                     if away_grd_gap >= 6
-                    else f'<span class="badge-sage">[RUSH: {a_eff["off_rush_epa"]:+.2f} EPA]</span>'
+                    else f'<span class="badge-sage">[RUSH OFF: {a_eff["off_rush_epa"]:+.2f} EPA]</span>'
                 )
 
             home_air_gap = a_pdef_rk - h_pass_rk
             home_grd_gap = a_rdef_rk - h_rush_rk
             if home_air_gap >= home_grd_gap:
                 home_lever_tag = (
-                    f'<span class="badge-elite">[AIR EDGE: {home_air_gap:+d} RK]</span>'
+                    f'<span class="badge-elite">[PASS EDGE: {home_air_gap:+d} RK]</span>'
                     if home_air_gap >= 6
-                    else f'<span class="badge-sage">[PASS: {h_eff["off_pass_epa"]:+.2f} EPA]</span>'
+                    else f'<span class="badge-sage">[PASS OFF: {h_eff["off_pass_epa"]:+.2f} EPA]</span>'
                 )
             else:
                 home_lever_tag = (
-                    f'<span class="badge-elite">[GROUND EDGE: {home_grd_gap:+d} RK]</span>'
+                    f'<span class="badge-elite">[RUSH EDGE: {home_grd_gap:+d} RK]</span>'
                     if home_grd_gap >= 6
-                    else f'<span class="badge-sage">[RUSH: {h_eff["off_rush_epa"]:+.2f} EPA]</span>'
+                    else f'<span class="badge-sage">[RUSH OFF: {h_eff["off_rush_epa"]:+.2f} EPA]</span>'
                 )
 
             if pd.notna(rest_v) and abs(rest_v) >= 1:
@@ -4052,50 +4167,86 @@ with subtab_brief:
                 <div class="terminal-card">
                     <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:6px; margin-bottom:10px;">
                         <h4 style="margin:0; color:#F1F5F9;">Unit Tier Matrix</h4>
-                        <span class="metric-subtext">Offense Tier vs Defense Tier</span>
+                        <span class="metric-subtext">Each Team's Own Offense & Defense Tiers</span>
                     </div>
                     <div class="brief-grid">
                         <div class="unit-pillar">
                             <div class="unit-pillar-header">
                                 <span>{render_inline_logo(away_tm, 18)}{away_tm} ({away_rec_str})</span>
-                                <span class="metric-subtext">vs {home_tm} Def</span>
+                                <span class="metric-subtext">Off #{a_ovr_off_rk} • Def #{a_ovr_def_rk}</span>
+                            </div>
+                            <div class="unit-section-tag">{away_tm} Offense</div>
+                            <div class="unit-tier-row">
+                                <span class="unit-tier-label">AIR OFF</span>
+                                <span class="unit-tier-right">
+                                    <span class="unit-epa-mini">{a_eff["off_pass_epa"]:+.2f} EPA</span>
+                                    {render_rank_badge(a_pass_rk, f"{away_tm} Off")}
+                                </span>
                             </div>
                             <div class="unit-tier-row">
-                                <span class="unit-tier-label">AIR</span>
-                                <span>{render_rank_badge(a_pass_rk, "Off")}</span>
-                                <span class="metric-subtext">vs</span>
-                                <span>{render_rank_badge(h_pdef_rk, "Def")}</span>
+                                <span class="unit-tier-label">GROUND OFF</span>
+                                <span class="unit-tier-right">
+                                    <span class="unit-epa-mini">{a_eff["off_rush_epa"]:+.2f} EPA</span>
+                                    {render_rank_badge(a_rush_rk, f"{away_tm} Off")}
+                                </span>
+                            </div>
+                            <div class="unit-section-tag" style="margin-top:8px;">{away_tm} Defense</div>
+                            <div class="unit-tier-row">
+                                <span class="unit-tier-label">AIR DEF</span>
+                                <span class="unit-tier-right">
+                                    <span class="unit-epa-mini">{a_eff["def_pass_epa"]:+.2f} EPA</span>
+                                    {render_rank_badge(a_pdef_rk, f"{away_tm} Def")}
+                                </span>
                             </div>
                             <div class="unit-tier-row">
-                                <span class="unit-tier-label">GROUND</span>
-                                <span>{render_rank_badge(a_rush_rk, "Off")}</span>
-                                <span class="metric-subtext">vs</span>
-                                <span>{render_rank_badge(h_rdef_rk, "Def")}</span>
+                                <span class="unit-tier-label">GROUND DEF</span>
+                                <span class="unit-tier-right">
+                                    <span class="unit-epa-mini">{a_eff["def_rush_epa"]:+.2f} EPA</span>
+                                    {render_rank_badge(a_rdef_rk, f"{away_tm} Def")}
+                                </span>
                             </div>
                             <div class="unit-lever-footer">
-                                <span class="metric-subtext">Lever</span>
+                                <span class="metric-subtext">{away_tm} Lever</span>
                                 {away_lever_tag}
                             </div>
                         </div>
                         <div class="unit-pillar">
                             <div class="unit-pillar-header">
                                 <span>{render_inline_logo(home_tm, 18)}{home_tm} ({home_rec_str})</span>
-                                <span class="metric-subtext">vs {away_tm} Def</span>
+                                <span class="metric-subtext">Off #{h_ovr_off_rk} • Def #{h_ovr_def_rk}</span>
+                            </div>
+                            <div class="unit-section-tag">{home_tm} Offense</div>
+                            <div class="unit-tier-row">
+                                <span class="unit-tier-label">AIR OFF</span>
+                                <span class="unit-tier-right">
+                                    <span class="unit-epa-mini">{h_eff["off_pass_epa"]:+.2f} EPA</span>
+                                    {render_rank_badge(h_pass_rk, f"{home_tm} Off")}
+                                </span>
                             </div>
                             <div class="unit-tier-row">
-                                <span class="unit-tier-label">AIR</span>
-                                <span>{render_rank_badge(h_pass_rk, "Off")}</span>
-                                <span class="metric-subtext">vs</span>
-                                <span>{render_rank_badge(a_pdef_rk, "Def")}</span>
+                                <span class="unit-tier-label">GROUND OFF</span>
+                                <span class="unit-tier-right">
+                                    <span class="unit-epa-mini">{h_eff["off_rush_epa"]:+.2f} EPA</span>
+                                    {render_rank_badge(h_rush_rk, f"{home_tm} Off")}
+                                </span>
+                            </div>
+                            <div class="unit-section-tag" style="margin-top:8px;">{home_tm} Defense</div>
+                            <div class="unit-tier-row">
+                                <span class="unit-tier-label">AIR DEF</span>
+                                <span class="unit-tier-right">
+                                    <span class="unit-epa-mini">{h_eff["def_pass_epa"]:+.2f} EPA</span>
+                                    {render_rank_badge(h_pdef_rk, f"{home_tm} Def")}
+                                </span>
                             </div>
                             <div class="unit-tier-row">
-                                <span class="unit-tier-label">GROUND</span>
-                                <span>{render_rank_badge(h_rush_rk, "Off")}</span>
-                                <span class="metric-subtext">vs</span>
-                                <span>{render_rank_badge(a_rdef_rk, "Def")}</span>
+                                <span class="unit-tier-label">GROUND DEF</span>
+                                <span class="unit-tier-right">
+                                    <span class="unit-epa-mini">{h_eff["def_rush_epa"]:+.2f} EPA</span>
+                                    {render_rank_badge(h_rdef_rk, f"{home_tm} Def")}
+                                </span>
                             </div>
                             <div class="unit-lever-footer">
-                                <span class="metric-subtext">Lever</span>
+                                <span class="metric-subtext">{home_tm} Lever</span>
                                 {home_lever_tag}
                             </div>
                         </div>
@@ -4596,7 +4747,7 @@ with subtab_players:
                                 )
 
 # =============================================================================
-# SUB-TAB 3: UNIT EPA (TRENCH & AIR EFFICIENCY)
+# SUB-TAB 3: UNIT EPA (COMPACT NON-CLIPPING EPA STAT BLOCKS)
 # =============================================================================
 with subtab_trench:
     if a_eff is None or h_eff is None:
@@ -4618,79 +4769,98 @@ with subtab_trench:
 
             with c1:
                 with st.container(border=True):
+                    o_p_rk = int(o_row["off_pass_epa_rank"])
+                    d_p_rk = int(d_row["def_pass_epa_rank"])
                     render_html(
-                        f"<b>{render_inline_logo(off_tm, 16)}AIR ({off_tm} Pass vs {def_tm} Pass Def)</b><br>"
-                        f"{render_rank_badge(int(o_row['off_pass_epa_rank']), f'{off_tm} Off')} "
-                        f"{render_rank_badge(int(d_row['def_pass_epa_rank']), f'{def_tm} Def')}"
-                    )
-                    m_a, m_b = st.columns(2)
-                    m_a.metric(
-                        f"{off_tm} Pass EPA",
-                        f"{o_row['off_pass_epa']:+.3f}",
-                        delta=f"Rank #{int(o_row['off_pass_epa_rank'])}",
-                        delta_color="normal" if o_row["off_pass_epa_rank"] <= 16 else "inverse",
-                    )
-                    m_b.metric(
-                        f"{def_tm} Pass Def EPA",
-                        f"{d_row['def_pass_epa']:+.3f}",
-                        delta=f"Rank #{int(d_row['def_pass_epa_rank'])}",
-                        delta_color="normal" if d_row["def_pass_epa_rank"] <= 16 else "inverse",
-                    )
-                    st.caption(
-                        f"Success Rate: **{off_tm}** {o_row['off_pass_sr']*100:.1f}% "
-                        f"| **{def_tm} Allowed** {d_row['def_pass_sr']*100:.1f}%"
+                        f"""
+                        <div>
+                            <b>{render_inline_logo(off_tm, 16)}AIR ({off_tm} Pass vs {def_tm} Pass Def)</b>
+                            <div class="epa-stat-grid">
+                                <div class="epa-stat-box">
+                                    <div class="epa-stat-label">{off_tm} Pass EPA</div>
+                                    <div class="epa-stat-num">{o_row['off_pass_epa']:+.3f}</div>
+                                    {render_rank_badge(o_p_rk, f"{off_tm} Off")}
+                                </div>
+                                <div class="epa-stat-box">
+                                    <div class="epa-stat-label">{def_tm} Pass Def EPA</div>
+                                    <div class="epa-stat-num">{d_row['def_pass_epa']:+.3f}</div>
+                                    {render_rank_badge(d_p_rk, f"{def_tm} Def")}
+                                </div>
+                            </div>
+                            <div class="metric-subtext">
+                                Success Rate: <b>{off_tm}</b> {o_row['off_pass_sr']*100:.1f}% | <b>{def_tm} Allowed</b> {d_row['def_pass_sr']*100:.1f}%
+                            </div>
+                        </div>
+                        """
                     )
 
             with c2:
                 with st.container(border=True):
+                    o_r_rk = int(o_row["off_rush_epa_rank"])
+                    d_r_rk = int(d_row["def_rush_epa_rank"])
                     render_html(
-                        f"<b>{render_inline_logo(off_tm, 16)}GROUND ({off_tm} Rush vs {def_tm} Rush Def)</b><br>"
-                        f"{render_rank_badge(int(o_row['off_rush_epa_rank']), f'{off_tm} Off')} "
-                        f"{render_rank_badge(int(d_row['def_rush_epa_rank']), f'{def_tm} Def')}"
-                    )
-                    m_a, m_b = st.columns(2)
-                    m_a.metric(
-                        f"{off_tm} Rush EPA",
-                        f"{o_row['off_rush_epa']:+.3f}",
-                        delta=f"Rank #{int(o_row['off_rush_epa_rank'])}",
-                        delta_color="normal" if o_row["off_rush_epa_rank"] <= 16 else "inverse",
-                    )
-                    m_b.metric(
-                        f"{def_tm} Rush Def EPA",
-                        f"{d_row['def_rush_epa']:+.3f}",
-                        delta=f"Rank #{int(d_row['def_rush_epa_rank'])}",
-                        delta_color="normal" if d_row["def_rush_epa_rank"] <= 16 else "inverse",
-                    )
-                    st.caption(
-                        f"Success Rate: **{off_tm}** {o_row['off_rush_sr']*100:.1f}% "
-                        f"| **{def_tm} Allowed** {d_row['def_rush_sr']*100:.1f}%"
+                        f"""
+                        <div>
+                            <b>{render_inline_logo(off_tm, 16)}GROUND ({off_tm} Rush vs {def_tm} Rush Def)</b>
+                            <div class="epa-stat-grid">
+                                <div class="epa-stat-box">
+                                    <div class="epa-stat-label">{off_tm} Rush EPA</div>
+                                    <div class="epa-stat-num">{o_row['off_rush_epa']:+.3f}</div>
+                                    {render_rank_badge(o_r_rk, f"{off_tm} Off")}
+                                </div>
+                                <div class="epa-stat-box">
+                                    <div class="epa-stat-label">{def_tm} Rush Def EPA</div>
+                                    <div class="epa-stat-num">{d_row['def_rush_epa']:+.3f}</div>
+                                    {render_rank_badge(d_r_rk, f"{def_tm} Def")}
+                                </div>
+                            </div>
+                            <div class="metric-subtext">
+                                Success Rate: <b>{off_tm}</b> {o_row['off_rush_sr']*100:.1f}% | <b>{def_tm} Allowed</b> {d_row['def_rush_sr']*100:.1f}%
+                            </div>
+                        </div>
+                        """
                     )
 
             with c3:
                 with st.container(border=True):
                     adj_off_epa = o_row["off_epa"] - off_pen
                     adj_def_epa = d_row["def_epa"] + def_pen
+                    o_ovr_rk = int(o_row["off_epa_rank"])
+                    d_ovr_rk = int(d_row["def_epa_rank"])
+                    off_drag_badge = (
+                        f'<span class="badge-bad">[-{off_pen:.3f} INJ DRAG]</span>'
+                        if off_pen > 0
+                        else '<span class="badge-elite">[FULL STRENGTH]</span>'
+                    )
+                    def_drag_badge = (
+                        f'<span class="badge-bad">[+{def_pen:.3f} INJ DRAG]</span>'
+                        if def_pen > 0
+                        else '<span class="badge-elite">[FULL STRENGTH]</span>'
+                    )
                     render_html(
-                        f"<b>{render_inline_logo(off_tm, 16)}OVERALL & INJURY-ADJUSTED EPA</b><br>"
-                        f"{render_rank_badge(int(o_row['off_epa_rank']), f'{off_tm} Ovr')} "
-                        f"{render_rank_badge(int(d_row['def_epa_rank']), f'{def_tm} Ovr')}"
-                    )
-                    m_a, m_b = st.columns(2)
-                    m_a.metric(
-                        f"{off_tm} Adj Off EPA",
-                        f"{adj_off_epa:+.3f}",
-                        delta=f"{-off_pen:+.3f} Inj Drag" if off_pen > 0 else "Full Strength",
-                        delta_color="normal" if off_pen == 0 else "inverse",
-                    )
-                    m_b.metric(
-                        f"{def_tm} Adj Def EPA",
-                        f"{adj_def_epa:+.3f}",
-                        delta=f"+{def_pen:.3f} Inj Drag" if def_pen > 0 else "Full Strength",
-                        delta_color="normal" if def_pen == 0 else "inverse",
-                    )
-                    st.caption(
-                        f"Total SR: **{off_tm}** {o_row['off_sr']*100:.1f}% (#{int(o_row['off_sr_rank'])}) "
-                        f"| **{def_tm}** {d_row['def_sr']*100:.1f}% (#{int(d_row['def_sr_rank'])})"
+                        f"""
+                        <div>
+                            <b>{render_inline_logo(off_tm, 16)}OVERALL & INJURY-ADJUSTED EPA</b>
+                            <div style="margin-top:4px;">
+                                {render_rank_badge(o_ovr_rk, f"{off_tm} Ovr")} {render_rank_badge(d_ovr_rk, f"{def_tm} Ovr")}
+                            </div>
+                            <div class="epa-stat-grid">
+                                <div class="epa-stat-box">
+                                    <div class="epa-stat-label">{off_tm} Adj Off EPA</div>
+                                    <div class="epa-stat-num">{adj_off_epa:+.3f}</div>
+                                    {off_drag_badge}
+                                </div>
+                                <div class="epa-stat-box">
+                                    <div class="epa-stat-label">{def_tm} Adj Def EPA</div>
+                                    <div class="epa-stat-num">{adj_def_epa:+.3f}</div>
+                                    {def_drag_badge}
+                                </div>
+                            </div>
+                            <div class="metric-subtext">
+                                Total SR: <b>{off_tm}</b> {o_row['off_sr']*100:.1f}% (#{int(o_row['off_sr_rank'])}) | <b>{def_tm}</b> {d_row['def_sr']*100:.1f}% (#{int(d_row['def_sr_rank'])})
+                            </div>
+                        </div>
+                        """
                     )
 
         render_possession_block(away_tm, home_tm, a_eff, h_eff, away_off_pen, home_def_pen)
