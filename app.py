@@ -21,39 +21,39 @@ st.set_page_config(
 # orange for CIN/DEN/CLE, etc.) tuned for legibility on dark terminal cards (#121722).
 NFL_TEAM_COLORS: dict[str, dict[str, str]] = {
     "ARI": {"primary": "#E31837", "secondary": "#FFB612", "name": "Cardinals Red"},
-    "ATL": {"primary": "#A71930", "secondary": "#A5ACAF", "name": "Falcons Red"},
-    "BAL": {"primary": "#753BBD", "secondary": "#9E7C0C", "name": "Ravens Purple"},
-    "BUF": {"primary": "#00539B", "secondary": "#C60C30", "name": "Bills Royal"},
+    "ATL": {"primary": "#CE1141", "secondary": "#A5ACAF", "name": "Falcons Red"},
+    "BAL": {"primary": "#8B5CF6", "secondary": "#D4AF37", "name": "Ravens Purple"},
+    "BUF": {"primary": "#0066CC", "secondary": "#C60C30", "name": "Bills Royal"},
     "CAR": {"primary": "#0085CA", "secondary": "#BFC0BF", "name": "Panthers Blue"},
-    "CHI": {"primary": "#C83803", "secondary": "#1B365D", "name": "Bears Orange"},
-    "CIN": {"primary": "#FB4F14", "secondary": "#E2E8F0", "name": "Bengals Orange"},
-    "CLE": {"primary": "#FF3C00", "secondary": "#8B5A2B", "name": "Browns Orange"},
-    "DAL": {"primary": "#0072CE", "secondary": "#869397", "name": "Cowboys Blue"},
-    "DEN": {"primary": "#FB4F14", "secondary": "#00539B", "name": "Broncos Orange"},
+    "CHI": {"primary": "#E64100", "secondary": "#3B82F6", "name": "Bears Orange"},
+    "CIN": {"primary": "#FB4F14", "secondary": "#F8FAFC", "name": "Bengals Orange"},
+    "CLE": {"primary": "#FF3C00", "secondary": "#A0522D", "name": "Browns Orange"},
+    "DAL": {"primary": "#0072CE", "secondary": "#94A3B8", "name": "Cowboys Blue"},
+    "DEN": {"primary": "#FB4F14", "secondary": "#0066CC", "name": "Broncos Orange"},
     "DET": {"primary": "#0076B6", "secondary": "#B0B7BC", "name": "Lions Honolulu Blue"},
-    "GB": {"primary": "#2E7D32", "secondary": "#FFB612", "name": "Packers Green"},
-    "HOU": {"primary": "#005A9C", "secondary": "#A71930", "name": "Texans Deep Steel Blue"},
-    "IND": {"primary": "#00539B", "secondary": "#CBD5E1", "name": "Colts Blue"},
-    "JAX": {"primary": "#00839B", "secondary": "#D7A22A", "name": "Jaguars Teal"},
+    "GB": {"primary": "#388E3C", "secondary": "#FFB612", "name": "Packers Green"},
+    "HOU": {"primary": "#0066B2", "secondary": "#CE1141", "name": "Texans Deep Steel Blue"},
+    "IND": {"primary": "#0066CC", "secondary": "#CBD5E1", "name": "Colts Blue"},
+    "JAX": {"primary": "#008E97", "secondary": "#D7A22A", "name": "Jaguars Teal"},
     "KC": {"primary": "#E31837", "secondary": "#FFB81C", "name": "Chiefs Red"},
     "LA": {"primary": "#0066CC", "secondary": "#FFA300", "name": "Rams Royal"},
     "LAR": {"primary": "#0066CC", "secondary": "#FFA300", "name": "Rams Royal"},
-    "LAC": {"primary": "#0080C6", "secondary": "#FFC20E", "name": "Chargers Powder Blue"},
+    "LAC": {"primary": "#0092DF", "secondary": "#FFC20E", "name": "Chargers Powder Blue"},
     "LV": {"primary": "#A5ACAF", "secondary": "#64748B", "name": "Raiders Silver"},
-    "MIA": {"primary": "#008E97", "secondary": "#FC4C02", "name": "Dolphins Aqua"},
-    "MIN": {"primary": "#7F3F98", "secondary": "#FFC62F", "name": "Vikings Purple"},
-    "NE": {"primary": "#1E50A2", "secondary": "#C60C30", "name": "Patriots Nautical Blue"},
+    "MIA": {"primary": "#009CA6", "secondary": "#FC4C02", "name": "Dolphins Aqua"},
+    "MIN": {"primary": "#8A42A8", "secondary": "#FFC62F", "name": "Vikings Purple"},
+    "NE": {"primary": "#2563EB", "secondary": "#C60C30", "name": "Patriots Nautical Blue"},
     "NO": {"primary": "#D3BC8D", "secondary": "#94A3B8", "name": "Saints Old Gold"},
-    "NYG": {"primary": "#0B55A5", "secondary": "#A71930", "name": "Giants Blue"},
-    "NYJ": {"primary": "#188058", "secondary": "#CBD5E1", "name": "Jets Gotham Green"},
-    "PHI": {"primary": "#00808A", "secondary": "#A5ACAF", "name": "Eagles Midnight Green"},
+    "NYG": {"primary": "#1967D2", "secondary": "#CE1141", "name": "Giants Blue"},
+    "NYJ": {"primary": "#1E9E6A", "secondary": "#CBD5E1", "name": "Jets Gotham Green"},
+    "PHI": {"primary": "#0097A7", "secondary": "#A5ACAF", "name": "Eagles Midnight Green"},
     "PIT": {"primary": "#FFB612", "secondary": "#CBD5E1", "name": "Steelers Gold"},
-    "SEA": {"primary": "#69BE28", "secondary": "#005A9C", "name": "Seahawks Action Green"},
-    "SF": {"primary": "#AA0000", "secondary": "#B3995D", "name": "49ers Scarlet"},
+    "SEA": {"primary": "#69BE28", "secondary": "#0066B2", "name": "Seahawks Action Green"},
+    "SF": {"primary": "#C8102E", "secondary": "#B3995D", "name": "49ers Scarlet"},
     "TB": {"primary": "#D50A0A", "secondary": "#FF7900", "name": "Buccaneers Pewter Red"},
     "TEN": {"primary": "#4B92DB", "secondary": "#C8102E", "name": "Titans Columbia Blue"},
-    "WAS": {"primary": "#862633", "secondary": "#FFB612", "name": "Commanders Burgundy"},
-    "WSH": {"primary": "#862633", "secondary": "#FFB612", "name": "Commanders Burgundy"},
+    "WAS": {"primary": "#A62639", "secondary": "#FFB612", "name": "Commanders Burgundy"},
+    "WSH": {"primary": "#A62639", "secondary": "#FFB612", "name": "Commanders Burgundy"},
 }
 
 
@@ -101,6 +101,19 @@ def get_matchup_team_colors(away_tm: str, home_tm: str) -> tuple[str, str]:
     if dist < 95.0 and a_sec != h_pri:
         return a_sec, h_pri
     return a_pri, h_pri
+
+
+def resolve_team_display_color(team_abbr: str) -> str:
+    """
+    Returns the active matchup-resolved color for `team_abbr` if it is one of the two teams
+    in the currently selected game (respecting secondary color collision fallback),
+    or the team's official primary color otherwise.
+    """
+    clean = str(team_abbr).strip().upper()
+    active_map = st.session_state.get("active_matchup_colors", {})
+    if clean in active_map:
+        return active_map[clean]
+    return get_team_primary_color(clean)
 
 
 st.markdown(
@@ -613,24 +626,9 @@ div[data-testid="stHorizontalBlock"]:has(.nfl-ticker-marker) div[data-testid="st
     border-radius: 6px;
     padding: 5px 10px;
     font-family: monospace;
-    font-size: 0.76rem;
+    font-size: 0.75rem;
     color: #F1F5F9;
-    min-height: 34px;
-}
-div[data-testid="stHorizontalBlock"]:has(.compact-bet-pill) {
-    align-items: center !important;
-    gap: 6px !important;
-}
-div[data-testid="stHorizontalBlock"]:has(.compact-bet-pill) div[data-testid="stButton"] > button {
-    height: 34px !important;
-    min-height: 34px !important;
-    width: 100% !important;
-    padding: 0 6px !important;
-    font-family: monospace !important;
-    font-size: 1.05rem !important;
-    font-weight: 900 !important;
-    border-radius: 6px !important;
-    line-height: 1 !important;
+    min-height: 36px;
 }
 
 /* ============================================================================
@@ -1619,29 +1617,46 @@ def render_compact_bet_action_row(
         )
 
     safe_cls = "bet-row-" + "".join(ch if ch.isalnum() else "-" for ch in f"{key_prefix}_{pick_id}").lower()
-    btn_bg = hex_to_rgba(border_hex, 0.22 if not already_tracked else 0.32)
-    c_pill, c_btn = st.columns([5.4, 0.85])
+    plus_marker_cls = f"plus-marker-{safe_cls}"
+    btn_bg = hex_to_rgba(border_hex, 0.25 if not already_tracked else 0.35)
+    c_pill, c_btn = st.columns([5.3, 0.90])
     with c_pill:
         render_html(
             f"""
-            <style>
-            div[data-testid="stHorizontalBlock"]:has(.{safe_cls}) div[data-testid="stButton"] > button {{
-                background-color: {btn_bg} !important;
-                border: 1.5px solid {border_hex} !important;
-                color: #F8FAFC !important;
-                box-shadow: 0 2px 6px rgba(0, 0, 0, 0.35) !important;
-            }}
-            div[data-testid="stHorizontalBlock"]:has(.{safe_cls}) div[data-testid="stButton"] > button:hover {{
-                background-color: {border_hex} !important;
-                color: #0B0F17 !important;
-            }}
-            </style>
-            <div class="compact-bet-pill {safe_cls}" style="background:{bg_tint}; border:1px solid {hex_to_rgba(border_hex, 0.55)}; border-left:4px solid {border_hex};">
+            <div class="compact-bet-pill {safe_cls}" style="background:{bg_tint}; border:1px solid {hex_to_rgba(border_hex, 0.65)}; border-left:4px solid {border_hex};">
                 {pill_label_html}
             </div>
             """
         )
     with c_btn:
+        render_html(
+            f"""
+            <style>
+            div[data-testid="stElementContainer"]:has(.{plus_marker_cls}) + div[data-testid="stElementContainer"] div[data-testid="stButton"] button,
+            div.element-container:has(.{plus_marker_cls}) + div.element-container div[data-testid="stButton"] button {{
+                background-color: {btn_bg} !important;
+                border: 1.5px solid {border_hex} !important;
+                color: #F8FAFC !important;
+                height: 36px !important;
+                min-height: 36px !important;
+                width: 100% !important;
+                padding: 0 6px !important;
+                font-family: monospace !important;
+                font-size: 1.08rem !important;
+                font-weight: 900 !important;
+                border-radius: 6px !important;
+                line-height: 1 !important;
+                box-shadow: 0 2px 6px rgba(0, 0, 0, 0.35) !important;
+            }}
+            div[data-testid="stElementContainer"]:has(.{plus_marker_cls}) + div[data-testid="stElementContainer"] div[data-testid="stButton"] button:hover,
+            div.element-container:has(.{plus_marker_cls}) + div.element-container div[data-testid="stButton"] button:hover {{
+                background-color: {border_hex} !important;
+                color: #0B0F17 !important;
+            }}
+            </style>
+            <span class="{plus_marker_cls}" style="display:none;"></span>
+            """
+        )
         btn_symbol = "✓" if already_tracked else "+"
         tooltip_txt = (
             f"Remove {selection} ({matchup}) from Bet Slip"
@@ -1916,22 +1931,66 @@ def render_inline_player_trigger(
     pos: str,
     key_suffix: str,
     extra_label: str = "",
+    color_override: str = "",
 ) -> None:
     """
-    Renders a native Streamlit tertiary button styled as an underlined inline text link.
-    Clicking the player's name directly opens the pop-out dossier in-place.
+    Renders a team-colored interactive player pill button that opens the Player Dossier modal.
+    Uses a leaf-scoped sibling CSS selector so each player is strictly highlighted in their own team's color.
     """
     clean_p = str(player_name).strip()
+    tm_clean = str(team_abbr).strip().upper()
+    tm_hex = color_override if color_override else resolve_team_display_color(tm_clean)
     if not clean_p or "Rotation" in clean_p:
-        st.markdown(f"**{clean_p}** {extra_label}")
+        render_html(
+            f'<span style="display:inline-block; background:{hex_to_rgba(tm_hex, 0.16)}; border:1px solid {hex_to_rgba(tm_hex, 0.55)}; border-left:3px solid {tm_hex}; border-radius:6px; padding:3px 9px; font-family:monospace; font-size:0.84rem; font-weight:700; color:#F8FAFC;">'
+            f"{clean_p} {extra_label}</span>"
+        )
         return
     disp_text = f"{clean_p} {extra_label}".strip()
+    safe_plr_cls = "plr-trig-" + "".join(ch if ch.isalnum() else "-" for ch in f"{key_suffix}_{clean_p}_{tm_clean}").lower()
+    bg_rgba = hex_to_rgba(tm_hex, 0.18)
+    hover_rgba = hex_to_rgba(tm_hex, 0.34)
+    border_rgba = hex_to_rgba(tm_hex, 0.70)
+    render_html(
+        f"""
+        <style>
+        div[data-testid="stElementContainer"]:has(.{safe_plr_cls}) + div[data-testid="stElementContainer"] div[data-testid="stButton"] button,
+        div.element-container:has(.{safe_plr_cls}) + div.element-container div[data-testid="stButton"] button {{
+            background-color: {bg_rgba} !important;
+            border: 1.5px solid {border_rgba} !important;
+            border-left: 4px solid {tm_hex} !important;
+            border-radius: 6px !important;
+            padding: 4px 10px !important;
+            min-height: 32px !important;
+            height: auto !important;
+            color: #F8FAFC !important;
+            text-decoration: none !important;
+            box-shadow: 0 1px 4px rgba(0, 0, 0, 0.25) !important;
+        }}
+        div[data-testid="stElementContainer"]:has(.{safe_plr_cls}) + div[data-testid="stElementContainer"] div[data-testid="stButton"] button p,
+        div.element-container:has(.{safe_plr_cls}) + div.element-container div[data-testid="stButton"] button p {{
+            text-decoration: none !important;
+            color: #F8FAFC !important;
+            font-family: monospace !important;
+            font-weight: 700 !important;
+            font-size: 0.85rem !important;
+        }}
+        div[data-testid="stElementContainer"]:has(.{safe_plr_cls}) + div[data-testid="stElementContainer"] div[data-testid="stButton"] button:hover,
+        div.element-container:has(.{safe_plr_cls}) + div.element-container div[data-testid="stButton"] button:hover {{
+            background-color: {hover_rgba} !important;
+            border-color: {tm_hex} !important;
+            color: #FFFFFF !important;
+        }}
+        </style>
+        <span class="{safe_plr_cls}" style="display:none;"></span>
+        """
+    )
     if st.button(
         disp_text,
-        key=f"inline_plr_{key_suffix}_{clean_p}_{team_abbr}",
+        key=f"inline_plr_{key_suffix}_{clean_p}_{tm_clean}",
         type="tertiary",
     ):
-        trigger_player_popup(clean_p, team_abbr, pos)
+        trigger_player_popup(clean_p, tm_clean, pos)
         st.rerun()
 
 
@@ -1967,7 +2026,7 @@ def render_team_pill(
     logo = get_team_logo_url(team_abbr)
     cls = "team-pill-lg" if large else "team-pill"
     img_sz = 28 if large else 17
-    tm_hex = color_override if color_override else get_team_primary_color(team_abbr)
+    tm_hex = color_override if color_override else resolve_team_display_color(team_abbr)
     bg_rgba = hex_to_rgba(tm_hex, 0.16)
     border_rgba = hex_to_rgba(tm_hex, 0.55)
     role_html = (
@@ -3204,7 +3263,7 @@ def render_mismatch_headshot_html(
     """Renders a clean 48x48px player headshot box accented by team color."""
     clean_p = str(player_name).strip()
     initials = "".join([part[0].upper() for part in clean_p.split()[:2] if part]) or "NFL"
-    tm_hex = get_team_primary_color(team_abbr) if team_abbr else "#263144"
+    tm_hex = resolve_team_display_color(team_abbr) if team_abbr else "#263144"
     h_url, _ = get_player_headshot_and_meta(clean_p, team_abbr, headshot_lookup)
     if h_url and "Rotation" not in clean_p:
         return (
@@ -4883,7 +4942,7 @@ def render_player_popup_contents(
     if (not p_pos or p_pos == "UNK") and meta_info.get("position"):
         p_pos = meta_info["position"]
 
-    p_tm_color = get_team_primary_color(p_team) if p_team else "#475569"
+    p_tm_color = resolve_team_display_color(p_team) if p_team else "#475569"
     initials = "".join([part[0].upper() for part in p_name.split()[:2] if part]) or "NFL"
     jersey_num = meta_info.get("jersey", "")
     college_str = meta_info.get("college", "")
@@ -5383,6 +5442,12 @@ active_game = week_games.iloc[st.session_state["selected_game_idx"]]
 away_tm = str(active_game["away_team"]).strip().upper()
 home_tm = str(active_game["home_team"]).strip().upper()
 away_color, home_color = get_matchup_team_colors(away_tm, home_tm)
+st.session_state["active_matchup_colors"] = {
+    away_tm: away_color,
+    home_tm: home_color,
+    normalize_team_code(away_tm): away_color,
+    normalize_team_code(home_tm): home_color,
+}
 
 team_records_map = compute_team_records(schedule_df, through_week=selected_week)
 division_standings_map = compute_nfl_division_standings(schedule_df, through_week=selected_week)
@@ -6174,7 +6239,7 @@ if not is_league_hub:
                         st.info("Insufficient player usage data to rank top player picks.")
                     else:
                         for p_idx, pick in enumerate(top_3_picks):
-                            p_tm_c = home_color if pick["team"] == home_tm else away_color
+                            p_tm_c = resolve_team_display_color(pick["team"])
                             p_pic_html = render_mismatch_headshot_html(
                                 pick["player_name"], pick["team"], headshot_lookup
                             )
@@ -6929,7 +6994,7 @@ if not is_league_hub:
                 sel_player_name = selected_player_row["player_label"]
                 sel_player_team = selected_player_row["team"]
                 sel_player_pos = selected_player_row["pos_clean"]
-                sel_plr_color = home_color if sel_player_team == home_tm else away_color
+                sel_plr_color = resolve_team_display_color(sel_player_team)
 
                 default_market_idx = 0
                 if sel_player_pos == "QB":
