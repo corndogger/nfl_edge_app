@@ -720,33 +720,40 @@ div.element-container:has(.floating-plus-fab-marker) + div.element-container div
 }
 
 /* ============================================================================
-   CENTERED PLAYER HEADSHOT AVATARS WITH BOTTOM TEAM-COLORED GRADIENT
+   CENTERED PLAYER HEADSHOT AVATARS WITH SUBTLE BOTTOM TEAM GRADIENT
    ============================================================================ */
 .mismatch-headshot-wrap {
-    width: 52px;
-    height: 52px;
+    width: 52px !important;
+    height: 52px !important;
+    min-width: 52px !important;
+    max-width: 52px !important;
     border-radius: 8px;
     background-color: #141B26;
     border: 1px solid #263144;
-    display: flex;
-    align-items: flex-end;
-    justify-content: center;
-    overflow: hidden;
-    flex-shrink: 0;
-    margin: 0;
-    padding: 0;
-    position: relative;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    overflow: hidden !important;
+    flex-shrink: 0 !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    position: relative !important;
+    text-align: center !important;
 }
 .mismatch-headshot-img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    object-position: center bottom;
-    display: block;
-    margin: 0 auto;
-    padding: 0;
-    position: relative;
-    z-index: 1;
+    width: 52px !important;
+    height: 52px !important;
+    max-width: none !important;
+    object-fit: cover !important;
+    object-position: 50% 50% !important;
+    display: block !important;
+    margin: 0 auto !important;
+    padding: 0 !important;
+    position: absolute !important;
+    top: 50% !important;
+    left: 50% !important;
+    transform: translate(-50%, -50%) !important;
+    z-index: 1 !important;
 }
 .headshot-bottom-grad {
     position: absolute;
@@ -780,7 +787,7 @@ div.element-container:has(.floating-plus-fab-marker) + div.element-container div
 }
 
 /* ============================================================================
-   PLAYER POP-OUT DOSSIER HEADER & CENTERED GRADIENT HEADSHOT
+   PLAYER POP-OUT DOSSIER HEADER & CLEAN BORDERLESS HEADSHOT (NO GRADIENT)
    ============================================================================ */
 .player-modal-banner {
     background-color: #121824;
@@ -812,21 +819,21 @@ div.element-container:has(.floating-plus-fab-marker) + div.element-container div
     flex-shrink: 0;
     margin: 0;
     padding: 0;
-    border-radius: 8px 8px 0 0;
+    background: transparent;
+    border: none;
     overflow: hidden;
     position: relative;
 }
 .player-headshot-img {
-    height: 120px;
-    width: 100%;
+    height: 124px;
+    width: auto;
+    max-width: 148px;
     object-fit: contain;
     object-position: center bottom;
     display: block;
     margin: 0 auto;
     padding: 0;
     border: none;
-    position: relative;
-    z-index: 1;
 }
 .player-headshot-fallback {
     width: 108px;
@@ -1637,13 +1644,12 @@ def render_compact_bet_action_row(
     pill_label_html: str = "",
     open_matchup_modal_on_click: bool = False,
     focus_player: str = "",
+    button_text_override: str = "",
 ) -> None:
     """
-    Renders a single hyperlinked, team-colored pick box button (without a separate side '+' button),
-    matching the clickable player name box pattern.
-    - When `open_matchup_modal_on_click=True` (used on the Matchup Overview screen), clicking the
-      pick box opens the dedicated Underdog-style Matchup Picks & Bet Slip pop-out modal.
-    - Otherwise, clicking the pick box directly toggles the pick in the Bet Slip.
+    Renders a clean, single-line hyperlinked pick button displaying ONLY the line
+    (e.g., 'OVER 94.5 Rec Yds' or 'UNDER 94.5 Rec Yds' or 'GB -3.5') without word-salad
+    player names, projections, EV%, or Kelly text cluttering the button.
     """
     pick_id = make_pick_id(season, week, matchup, category, selection)
     already_tracked = is_pick_in_bet_slip(pick_id)
@@ -1654,14 +1660,12 @@ def render_compact_bet_action_row(
         else (resolve_team_display_color(team_abbr) if team_abbr else "#38BDF8")
     )
     border_hex = "#34D399" if already_tracked else accent_hex
-    bg_rgba = hex_to_rgba(border_hex, 0.20 if not already_tracked else 0.30)
-    hover_rgba = hex_to_rgba(border_hex, 0.36)
-    border_rgba = hex_to_rgba(border_hex, 0.78)
+    bg_rgba = hex_to_rgba(border_hex, 0.20 if not already_tracked else 0.32)
+    hover_rgba = hex_to_rgba(border_hex, 0.38)
+    border_rgba = hex_to_rgba(border_hex, 0.80)
 
-    status_tag = "[✓ IN SLIP]" if already_tracked else ("[PICKS HUB ↗]" if open_matchup_modal_on_click else "[+ SLIP]")
-    btn_label = (
-        f"{selection} ({model_proj}) • CONF {edge_score:.0f} • {ev_pct:+.1f}% EV • {kelly_units:.2f}u {status_tag}"
-    )
+    clean_line_text = button_text_override.strip() if button_text_override else selection.strip()
+    btn_label = f"✓ {clean_line_text}" if already_tracked else clean_line_text
 
     safe_cls = "pick-link-" + "".join(
         ch if ch.isalnum() else "-" for ch in f"{key_prefix}_{pick_id}"
@@ -1676,28 +1680,25 @@ def render_compact_bet_action_row(
             border: 1.5px solid {border_rgba} !important;
             border-left: 4px solid {border_hex} !important;
             border-radius: 6px !important;
-            padding: 6px 11px !important;
+            padding: 6px 12px !important;
             min-height: 36px !important;
             height: auto !important;
             width: 100% !important;
             color: #F8FAFC !important;
-            text-decoration: underline !important;
-            text-decoration-color: {hex_to_rgba(border_hex, 0.65)} !important;
-            text-underline-offset: 3px !important;
+            text-decoration: none !important;
             box-shadow: 0 2px 6px rgba(0, 0, 0, 0.28) !important;
-            justify-content: flex-start !important;
-            text-align: left !important;
+            justify-content: center !important;
+            text-align: center !important;
         }}
         div[data-testid="stElementContainer"]:has(.{safe_cls}) + div[data-testid="stElementContainer"] div[data-testid="stButton"] button p,
         div.element-container:has(.{safe_cls}) + div.element-container div[data-testid="stButton"] button p {{
             color: #F8FAFC !important;
             font-family: monospace !important;
-            font-weight: 700 !important;
-            font-size: 0.80rem !important;
-            text-decoration: underline !important;
-            text-decoration-color: {hex_to_rgba(border_hex, 0.65)} !important;
-            text-underline-offset: 3px !important;
-            line-height: 1.35 !important;
+            font-weight: 800 !important;
+            font-size: 0.85rem !important;
+            text-decoration: none !important;
+            line-height: 1.25 !important;
+            text-align: center !important;
         }}
         div[data-testid="stElementContainer"]:has(.{safe_cls}) + div[data-testid="stElementContainer"] div[data-testid="stButton"] button:hover,
         div.element-container:has(.{safe_cls}) + div.element-container div[data-testid="stButton"] button:hover {{
@@ -1716,7 +1717,7 @@ def render_compact_bet_action_row(
         else (
             f"Remove {selection} ({matchup}) from Bet Slip"
             if already_tracked
-            else f"Add {selection} ({matchup} • {model_proj} • {kelly_units:.2f}u) to Bet Slip"
+            else f"Add {selection} ({matchup} • {model_proj} • {ev_pct:+.1f}% EV • {kelly_units:.2f}u) to Bet Slip"
         )
     )
 
@@ -3482,8 +3483,8 @@ def render_mismatch_headshot_html(
     player_name: str, team_abbr: str, headshot_lookup: dict[str, dict]
 ) -> str:
     """
-    Renders a centered 52x52px player headshot box with a bottom team-colored gradient overlay
-    so floating player cutouts blend seamlessly into the bottom of the frame.
+    Renders a dead-center 52x52px player headshot box with a subtle, low-opacity bottom
+    team-colored gradient fade so the cutout blends naturally without tinting the face.
     """
     clean_p = str(player_name).strip()
     initials = "".join([part[0].upper() for part in clean_p.split()[:2] if part]) or "NFL"
@@ -3491,19 +3492,18 @@ def render_mismatch_headshot_html(
     h_url, _ = get_player_headshot_and_meta(clean_p, team_abbr, headshot_lookup)
     grad_overlay = (
         f'<div class="headshot-bottom-grad" '
-        f'style="background: linear-gradient(180deg, rgba(20, 27, 38, 0.0) 40%, {hex_to_rgba(tm_hex, 0.48)} 76%, {hex_to_rgba(tm_hex, 0.90)} 100%);"></div>'
+        f'style="background: linear-gradient(180deg, rgba(20, 27, 38, 0.0) 58%, {hex_to_rgba(tm_hex, 0.18)} 82%, {hex_to_rgba(tm_hex, 0.42)} 100%);"></div>'
     )
-    box_bg = f"radial-gradient(circle at 50% 32%, {hex_to_rgba(tm_hex, 0.24)} 0%, #141B26 74%)"
     if h_url and "Rotation" not in clean_p:
         return (
-            f'<div class="mismatch-headshot-wrap" style="background:{box_bg}; border-color:{hex_to_rgba(tm_hex, 0.72)}; border-bottom:2px solid {tm_hex};">'
+            f'<div class="mismatch-headshot-wrap" style="border-color:{hex_to_rgba(tm_hex, 0.68)}; border-bottom:2px solid {tm_hex};">'
             f'<img src="{h_url}" class="mismatch-headshot-img" alt="{clean_p}" '
             f'onerror="this.style.display=\'none\';">'
             f"{grad_overlay}"
             f"</div>"
         )
     return (
-        f'<div class="mismatch-headshot-wrap" style="background:{box_bg}; border-color:{hex_to_rgba(tm_hex, 0.72)}; border-bottom:2px solid {tm_hex};">'
+        f'<div class="mismatch-headshot-wrap" style="border-color:{hex_to_rgba(tm_hex, 0.68)}; border-bottom:2px solid {tm_hex};">'
         f'<div class="mismatch-headshot-fallback">{initials}</div>'
         f"{grad_overlay}"
         f"</div>"
@@ -5152,8 +5152,8 @@ def render_player_popup_contents(
     selected_week: int,
 ) -> None:
     """
-    Renders the player pop-out dossier with centered gradient headshot, season stats summary,
-    interactive Props explorer, weekly game logs, and current + past season injuries.
+    Renders the player pop-out dossier with a clean borderless headshot (no gradient overlay),
+    season stats summary, interactive Props explorer, weekly game logs, and current + past season injuries.
     """
     p_name = str(active_info.get("name", "")).strip()
     p_team = str(active_info.get("team", "")).strip().upper()
@@ -5192,26 +5192,18 @@ def render_player_popup_contents(
     jersey_tag = f"#{jersey_num} • " if jersey_num else ""
     college_tag = f" • {college_str}" if college_str else ""
 
-    modal_grad_overlay = (
-        f'<div class="headshot-bottom-grad" '
-        f'style="background: linear-gradient(180deg, rgba(18, 24, 36, 0.0) 44%, {hex_to_rgba(p_tm_color, 0.45)} 78%, {hex_to_rgba(p_tm_color, 0.88)} 100%);"></div>'
-    )
-    modal_box_bg = f"radial-gradient(circle at 50% 35%, {hex_to_rgba(p_tm_color, 0.25)} 0%, transparent 75%)"
-
     if headshot_url:
         headshot_html = (
-            f'<div class="player-headshot-wrap" style="background:{modal_box_bg}; border-bottom:3px solid {p_tm_color};">'
+            f'<div class="player-headshot-wrap">'
             f'<img src="{headshot_url}" class="player-headshot-img" '
             f'alt="{p_name}" '
             f'onerror="this.style.display=\'none\';">'
-            f"{modal_grad_overlay}"
             f"</div>"
         )
     else:
         headshot_html = (
-            f'<div class="player-headshot-wrap" style="background:{modal_box_bg}; border-bottom:3px solid {p_tm_color};">'
+            f'<div class="player-headshot-wrap">'
             f'<div class="player-headshot-fallback">{initials}</div>'
-            f"{modal_grad_overlay}"
             f"</div>"
         )
 
@@ -5257,7 +5249,7 @@ def render_player_popup_contents(
     opp_tm = home_tm if p_team == away_tm else away_tm
     render_html(
         f"""
-        <div class="player-modal-banner" style="border-left: 5px solid {p_tm_color}; background: linear-gradient(90deg, {hex_to_rgba(p_tm_color, 0.16)} 0%, #121824 55%);">
+        <div class="player-modal-banner" style="border-left: 5px solid {p_tm_color}; background: #121824;">
             <div class="player-modal-left">
                 {headshot_html}
                 <div class="player-modal-meta">
@@ -5449,6 +5441,7 @@ def render_player_popup_contents(
                 kelly_units=modal_kelly,
                 team_abbr=p_team,
                 team_color_override=p_tm_color,
+                button_text_override=f"{modal_dir} {modal_line} {sel_mkt}",
             )
 
             render_html(f'<div style="margin:4px 0 8px 0;">{streak_badge}</div>')
@@ -5623,8 +5616,8 @@ def render_underdog_props_and_betslip_modal(
 ) -> None:
     """
     Renders the dedicated Underdog-style Matchup Picks & Bet Slip pop-out modal.
-    Decorated with @st.fragment so toggling picks, switching tabs, or sliding custom prop lines
-    inside the modal executes instantaneously without refreshing the screen behind it.
+    - Clean, high-contrast line callouts with concise buttons ('OVER 94.5 Rec Yds', 'UNDER 94.5 Rec Yds').
+    - Selectable player name pills inside every prop card so clicking a player opens their Player Dossier directly.
     """
     slip_items = st.session_state.get("bet_slip", [])
     slip_count = len(slip_items)
@@ -5672,7 +5665,7 @@ def render_underdog_props_and_betslip_modal(
             f"""
             <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:6px; margin-bottom:6px;">
                 <h4 style="margin:0; color:#F8FAFC;">Current Matchup Team Picks ({away_tm} @ {home_tm})</h4>
-                <span class="metric-subtext">Click any Spread, Moneyline, or Total card to toggle in your Bet Slip</span>
+                <span class="metric-subtext">Tap any Spread, Moneyline, or Total line to toggle in your Bet Slip</span>
             </div>
             """
         )
@@ -5709,7 +5702,7 @@ def render_underdog_props_and_betslip_modal(
         with tm_c1:
             with st.container(border=True):
                 render_html(
-                    f'<div class="context-cell-title" style="margin-bottom:6px;">Point Spread (Fair: {fair_sp_str})</div>'
+                    f'<div class="context-cell-title" style="margin-bottom:6px;">Point Spread (Fair: <b style="color:#F8FAFC;">{fair_sp_str}</b>)</div>'
                 )
                 render_compact_bet_action_row(
                     key_prefix="ud_sp_away",
@@ -5726,6 +5719,7 @@ def render_underdog_props_and_betslip_modal(
                     kelly_units=away_sp_k,
                     team_abbr=away_tm,
                     team_color_override=away_color,
+                    button_text_override=away_sp_line,
                 )
                 render_compact_bet_action_row(
                     key_prefix="ud_sp_home",
@@ -5742,12 +5736,13 @@ def render_underdog_props_and_betslip_modal(
                     kelly_units=home_sp_k,
                     team_abbr=home_tm,
                     team_color_override=home_color,
+                    button_text_override=home_sp_line,
                 )
 
         with tm_c2:
             with st.container(border=True):
                 render_html(
-                    f'<div class="context-cell-title" style="margin-bottom:6px;">Moneyline (Win Prob: {away_tm} {away_wp_raw*100:.0f}% / {home_tm} {home_wp_raw*100:.0f}%)</div>'
+                    f'<div class="context-cell-title" style="margin-bottom:6px;">Moneyline (<b style="color:{away_color};">{away_tm} {away_wp_raw*100:.0f}%</b> | <b style="color:{home_color};">{home_tm} {home_wp_raw*100:.0f}%</b>)</div>'
                 )
                 render_compact_bet_action_row(
                     key_prefix="ud_ml_away",
@@ -5764,6 +5759,7 @@ def render_underdog_props_and_betslip_modal(
                     kelly_units=away_ml_k,
                     team_abbr=away_tm,
                     team_color_override=away_color,
+                    button_text_override=f"{away_tm} ML ({away_ml_odds:+d})",
                 )
                 render_compact_bet_action_row(
                     key_prefix="ud_ml_home",
@@ -5780,12 +5776,13 @@ def render_underdog_props_and_betslip_modal(
                     kelly_units=home_ml_k,
                     team_abbr=home_tm,
                     team_color_override=home_color,
+                    button_text_override=f"{home_tm} ML ({home_ml_odds:+d})",
                 )
 
         with tm_c3:
             with st.container(border=True):
                 render_html(
-                    f'<div class="context-cell-title" style="margin-bottom:6px;">Game Total (Model Proj: {fair_tot_val:.1f} Pts)</div>'
+                    f'<div class="context-cell-title" style="margin-bottom:6px;">Game Total (Model Proj: <b style="color:#F8FAFC;">{fair_tot_val:.1f} Pts</b>)</div>'
                 )
                 render_compact_bet_action_row(
                     key_prefix="ud_tot_over",
@@ -5793,7 +5790,7 @@ def render_underdog_props_and_betslip_modal(
                     week=selected_week,
                     matchup=matchup_str,
                     category="Total (O/U)",
-                    selection=f"OVER {tot_line_num:.1f}",
+                    selection=f"OVER {tot_line_num:.1f} Total Pts",
                     market_line=f"O/U {tot_line_num:.1f}",
                     model_proj=f"Proj {fair_tot_val:.1f}",
                     american_odds=default_odds,
@@ -5802,6 +5799,7 @@ def render_underdog_props_and_betslip_modal(
                     kelly_units=over_k,
                     team_abbr=away_tm,
                     team_color_override="#34D399",
+                    button_text_override=f"OVER {tot_line_num:.1f}",
                 )
                 render_compact_bet_action_row(
                     key_prefix="ud_tot_under",
@@ -5809,7 +5807,7 @@ def render_underdog_props_and_betslip_modal(
                     week=selected_week,
                     matchup=matchup_str,
                     category="Total (O/U)",
-                    selection=f"UNDER {tot_line_num:.1f}",
+                    selection=f"UNDER {tot_line_num:.1f} Total Pts",
                     market_line=f"O/U {tot_line_num:.1f}",
                     model_proj=f"Proj {fair_tot_val:.1f}",
                     american_odds=default_odds,
@@ -5818,16 +5816,17 @@ def render_underdog_props_and_betslip_modal(
                     kelly_units=under_k,
                     team_abbr=home_tm,
                     team_color_override="#38BDF8",
+                    button_text_override=f"UNDER {tot_line_num:.1f}",
                 )
 
         # ---------------------------------------------------------------------
-        # 2. BEST & MOST POPULAR PLAYER PICKS (UNDERDOG-STYLE BOARD BELOW TEAM PICKS)
+        # 2. BEST & MOST POPULAR PLAYER PICKS (CLEAN SCANNABLE LINES + CLICKABLE PLAYERS)
         # ---------------------------------------------------------------------
         render_html(
             f"""
             <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:6px; margin:12px 0 6px 0;">
                 <h4 style="margin:0; color:#F8FAFC;">Best & Most Popular Player Picks ({away_tm} @ {home_tm})</h4>
-                <span class="metric-subtext">Tap Higher (Over) or Lower (Under) on any player prop card to add to your Bet Slip</span>
+                <span class="metric-subtext">Click Player Name for Dossier • Tap OVER or UNDER to add to Bet Slip</span>
             </div>
             """
         )
@@ -5859,17 +5858,35 @@ def render_underdog_props_and_betslip_modal(
 
                 with pop_cols[idx_p % 2]:
                     with st.container(border=True):
+                        # Selectable Player Name Trigger at the top of each Prop Card
+                        hdr_l, hdr_r = st.columns([1.45, 0.95])
+                        with hdr_l:
+                            render_inline_player_trigger(
+                                pk["player_name"],
+                                pk["team"],
+                                pk["position"],
+                                f"ud_pop_plr_{idx_p}",
+                                f"[{pk['team']} {pk['position']}]",
+                            )
+                        with hdr_r:
+                            render_html(
+                                f'<div style="text-align:right; padding-top:2px;">'
+                                f'<span class="badge-elite">[PROJ {pk["model_proj"]:.1f} • {pk["ev_pct"]:+.1f}% EV]</span>'
+                                f"</div>"
+                            )
+
+                        # Prominent, At-a-Glance Prop Line Callout + Centered Avatar + L5 Sparkbar
                         render_html(
                             f"""
-                            <div style="display:flex; align-items:center; justify-content:space-between; gap:10px; border-left:4px solid {p_tm_c}; padding-left:8px; margin-bottom:6px;">
+                            <div style="display:flex; align-items:center; justify-content:space-between; gap:10px; border-left:4px solid {p_tm_c}; padding-left:8px; margin:4px 0 8px 0;">
                                 <div style="display:flex; align-items:center; gap:10px;">
                                     {p_pic_html}
                                     <div>
-                                        <div style="font-family:monospace; font-size:0.92rem; font-weight:800; color:#F8FAFC;">
-                                            {pk['player_name']} <span class="badge-sage" style="border-left:2px solid {p_tm_c};">[{pk['team']} {pk['position']}]</span>
+                                        <div style="font-family:monospace; font-size:1.06rem; font-weight:900; color:#FBBF24; line-height:1.2;">
+                                            {pk['line_val']:.1f} {pk['mkt_label']}
                                         </div>
-                                        <div class="metric-subtext" style="font-size:0.72rem;">
-                                            <b style="color:#FBBF24;">Line: {pk['line_val']:.1f} {pk['mkt_label']}</b> &bull; Model Proj: <b>{pk['model_proj']:.1f}</b> &bull; Hit: <b>{pk['hit_record']}</b>
+                                        <div class="metric-subtext" style="font-size:0.74rem; color:#CBD5E1; margin-top:2px;">
+                                            Model: <b>{pk['model_proj']:.1f}</b> &bull; Hit: <b>{pk['hit_record']}</b>
                                         </div>
                                     </div>
                                 </div>
@@ -5880,6 +5897,8 @@ def render_underdog_props_and_betslip_modal(
                             </div>
                             """
                         )
+
+                        # Clean OVER / UNDER Buttons (Only the Line Text!)
                         btn_o_col, btn_u_col = st.columns(2)
                         with btn_o_col:
                             render_compact_bet_action_row(
@@ -5897,6 +5916,7 @@ def render_underdog_props_and_betslip_modal(
                                 kelly_units=pk["kelly_units"],
                                 team_abbr=pk["team"],
                                 team_color_override=p_tm_c,
+                                button_text_override=pk["play_label"],
                             )
                         with btn_u_col:
                             render_compact_bet_action_row(
@@ -5914,6 +5934,7 @@ def render_underdog_props_and_betslip_modal(
                                 kelly_units=under_k,
                                 team_abbr=pk["team"],
                                 team_color_override="#64748B",
+                                button_text_override=pk["under_label"],
                             )
 
         # Custom Prop Explorer inside the pop-out modal
@@ -5967,6 +5988,7 @@ def render_underdog_props_and_betslip_modal(
                     kelly_units=c_k,
                     team_abbr=c_tm,
                     team_color_override=c_color,
+                    button_text_override=f"{c_dir} {c_line} {c_mkt}",
                 )
 
     with tab_bet_slip:
@@ -6592,7 +6614,7 @@ if not is_league_hub:
                 """
             )
 
-            # HYPERLINKED TEAM PICK BOXES (NO SIDE '+' BUTTON; OPENS MATCHUP PICKS POP-OUT ON CLICK)
+            # HYPERLINKED TEAM PICK BOXES (CLEAN LINE TEXT ONLY; OPENS MATCHUP PICKS POP-OUT ON CLICK)
             q_bet1, q_bet2, q_bet3 = st.columns([1.15, 1.15, 1.35])
             sp_ev_v, sp_kelly_v = compute_ev_and_kelly(model_proj_dict["spread_cover_prob"], default_odds, kelly_mult)
             tot_ev_v, tot_kelly_v = compute_ev_and_kelly(model_proj_dict["total_hit_prob"], default_odds, kelly_mult)
@@ -6614,6 +6636,7 @@ if not is_league_hub:
                     team_abbr=backed_tm_code,
                     team_color_override=backed_tm_color,
                     open_matchup_modal_on_click=True,
+                    button_text_override=model_proj_dict["backed_spread_line_str"],
                 )
             with q_bet2:
                 if pd.notna(total_v):
@@ -6624,7 +6647,7 @@ if not is_league_hub:
                         week=selected_week,
                         matchup=f"{away_tm} @ {home_tm}",
                         category="Total (O/U)",
-                        selection=tot_pick_lbl,
+                        selection=f"{tot_pick_lbl} Total Pts",
                         market_line=f"O/U {float(total_v):.1f}",
                         model_proj=f"Proj {model_proj_dict['fair_total']:.1f}",
                         american_odds=default_odds,
@@ -6634,6 +6657,7 @@ if not is_league_hub:
                         team_abbr=home_tm,
                         team_color_override=home_color,
                         open_matchup_modal_on_click=True,
+                        button_text_override=f"{tot_pick_lbl} Total Pts",
                     )
             with q_bet3:
                 with st.expander("What-If Injury Simulator (Toggle Starters)", expanded=False):
@@ -6923,7 +6947,7 @@ if not is_league_hub:
                             """
                         )
 
-            # 4. TOP 3 MATCHUP PLAYER PICKS WITH HYPERLINKED PICK BOXES & CENTERED GRADIENT HEADSHOTS
+            # 4. TOP 3 MATCHUP PLAYER PICKS WITH CLEAN LINE BUTTONS & CENTERED GRADIENT HEADSHOTS
             with col_brief_right:
                 top_3_picks = build_top_player_picks(
                     usage_matchup,
@@ -6942,7 +6966,7 @@ if not is_league_hub:
                         f"""
                         <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:6px; margin-bottom:6px;">
                             <h4 style="margin:0; color:#F1F5F9;">Top 3 Matchup Player Picks</h4>
-                            <span class="metric-subtext">Click Player Name for Dossier • Click Pick Box for Picks Hub</span>
+                            <span class="metric-subtext">Click Player Name for Dossier • Click Line for Picks Hub</span>
                         </div>
                         """
                     )
@@ -6957,7 +6981,7 @@ if not is_league_hub:
                             spark_html = render_l5_sparkbars_html(pick["l5_values"], pick["line_val"])
 
                             with st.container(border=True):
-                                pk_top_l, pk_top_r = st.columns([1.15, 1.35])
+                                pk_top_l, pk_top_r = st.columns([1.25, 1.15])
                                 with pk_top_l:
                                     render_inline_player_trigger(
                                         pick["player_name"],
@@ -6984,6 +7008,7 @@ if not is_league_hub:
                                         team_color_override=p_tm_c,
                                         open_matchup_modal_on_click=True,
                                         focus_player=pick["player_name"],
+                                        button_text_override=pick["play_label"],
                                     )
 
                                 render_html(
@@ -6993,8 +7018,8 @@ if not is_league_hub:
                                             {p_pic_html}
                                             <div class="metric-subtext" style="line-height:1.38;">
                                                 {pick["usage_tag"]} {pick["matchup_tag"]}
-                                                <span class="badge-mid">[HIT: {pick["hit_record"]}]</span>
-                                                <span class="badge-sage">[{pick["kelly_units"]:.2f}u KELLY]</span><br>
+                                                <span class="badge-elite">[PROJ {pick["model_proj"]:.1f} • {pick["ev_pct"]:+.1f}% EV]</span>
+                                                <span class="badge-mid">[HIT: {pick["hit_record"]}]</span><br>
                                                 <span style="color:#CBD5E1;">{pick["rationale"]}</span>
                                             </div>
                                         </div>
@@ -7898,6 +7923,7 @@ if not is_league_hub:
                             kelly_units=prop_kelly_u,
                             team_abbr=sel_player_team,
                             team_color_override=sel_plr_color,
+                            button_text_override=f"{recommended_dir} {prop_threshold} {selected_market_label}",
                         )
 
                 chart_col_left, chart_col_right = st.columns([1.35, 1.0])
@@ -8239,6 +8265,7 @@ else:
                         kelly_units=float(g_r["Kelly Units"]),
                         team_abbr=bk_tm,
                         team_color_override=bk_c,
+                        button_text_override=f"{g_r['Best Bet']} ({g_r['Matchup']})",
                     )
 
                 with st.expander("View Full Week Spread & Total Leaderboard Table", expanded=False):
@@ -8289,6 +8316,7 @@ else:
                         kelly_units=float(p_r["Kelly Units"]),
                         team_abbr=p_tm,
                         team_color_override=p_c,
+                        button_text_override=f"{p_r['Player']} — {p_r['Prop Play']}",
                     )
 
                 with st.expander("View Full Week Player Props Leaderboard Table", expanded=False):
@@ -8461,6 +8489,7 @@ else:
                 kelly_units=lg_kelly,
                 team_abbr=lg_p_team,
                 team_color_override=lg_p_color,
+                button_text_override=f"{lg_dir} {lg_line_val} {lg_mkt_lbl}",
             )
 
             fig_lg = go.Figure()
