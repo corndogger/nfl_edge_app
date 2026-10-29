@@ -408,28 +408,41 @@ div[data-testid="stHorizontalBlock"]:has(.nfl-ticker-marker) > div[data-testid="
     display: flex !important;
     flex-direction: column !important;
     gap: 0px !important;
+    position: relative !important;
+}
+div[data-testid="stHorizontalBlock"]:has(.nfl-ticker-marker) div[data-testid="stVerticalBlock"] {
+    position: relative !important;
+    gap: 0px !important;
 }
 
-/* Individual Ticker Card Visuals */
+/* Individual Ticker Card Visuals (Full-Card Clickable Target) */
 .ticker-card {
     background-color: #131823;
     border: 1px solid #242E3E;
-    border-bottom: none;
     border-top: 2px solid #334155;
-    border-radius: 6px 6px 0 0;
-    padding: 8px 10px 8px 10px;
-    margin-bottom: -10px;
+    border-radius: 6px;
+    padding: 8px 10px;
+    margin-bottom: 0px;
     white-space: nowrap;
+    cursor: pointer;
     transition: all 0.14s ease-in-out;
 }
 .ticker-card-active {
     background-color: #161E2E;
-    border: 1px solid #64748B;
-    border-bottom: none;
-    border-radius: 6px 6px 0 0;
-    padding: 8px 10px 8px 10px;
-    margin-bottom: -10px;
+    border: 1.5px solid #64748B;
+    border-radius: 6px;
+    padding: 8px 10px;
+    margin-bottom: 0px;
     white-space: nowrap;
+    cursor: pointer;
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.45);
+}
+div[data-testid="stHorizontalBlock"]:has(.nfl-ticker-marker) > div[data-testid="stColumn"]:hover .ticker-card,
+div[data-testid="stHorizontalBlock"]:has(.nfl-ticker-marker) > div[data-testid="column"]:hover .ticker-card {
+    background-color: #182030;
+    border-color: #64748B;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.42);
 }
 .ticker-top-bar {
     display: flex;
@@ -509,17 +522,36 @@ div[data-testid="stHorizontalBlock"]:has(.nfl-ticker-marker) > div[data-testid="
     white-space: nowrap;
 }
 
-/* Style the action button docked seamlessly at the bottom of each ticker card */
+/* Stretch the Streamlit button into an invisible full-card overlay across the entire ticker card */
+div[data-testid="stHorizontalBlock"]:has(.nfl-ticker-marker) div[data-testid="stElementContainer"]:has(div[data-testid="stButton"]),
+div[data-testid="stHorizontalBlock"]:has(.nfl-ticker-marker) div.element-container:has(div[data-testid="stButton"]),
+div[data-testid="stHorizontalBlock"]:has(.nfl-ticker-marker) div[data-testid="stButton"] {
+    position: absolute !important;
+    top: 0 !important;
+    left: 0 !important;
+    right: 0 !important;
+    bottom: 0 !important;
+    width: 100% !important;
+    height: 100% !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    z-index: 20 !important;
+}
 div[data-testid="stHorizontalBlock"]:has(.nfl-ticker-marker) div[data-testid="stButton"] > button {
-    border-radius: 0 0 6px 6px !important;
-    font-family: monospace !important;
-    font-size: 0.70rem !important;
-    font-weight: 700 !important;
-    height: 27px !important;
-    min-height: 27px !important;
-    padding: 0 8px !important;
-    margin-top: 0 !important;
-    white-space: nowrap !important;
+    position: absolute !important;
+    top: 0 !important;
+    left: 0 !important;
+    width: 100% !important;
+    height: 100% !important;
+    min-height: 100% !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    opacity: 0 !important;
+    background: transparent !important;
+    border: none !important;
+    box-shadow: none !important;
+    cursor: pointer !important;
+    z-index: 25 !important;
 }
 
 /* Streamlined Active Game Selection Banner (Team-Colored) */
@@ -1114,15 +1146,36 @@ div.element-container:has(.floating-plus-fab-marker) + div.element-container div
    CUSTOM TEAM-COLORED DIVISIONAL STANDINGS & 5-YEAR H2H CARDS
    ============================================================================ */
 .nfl-div-card {
-    background-color: #121722;
-    border: 1px solid #222B3A;
-    border-top: 3px solid #64748B;
-    border-radius: 8px;
-    padding: 12px 14px;
+    background: transparent;
+    border: none;
+    border-radius: 0;
+    padding: 2px 0;
     margin-bottom: 12px;
     color: #E2E8F0;
     max-width: 100%;
     overflow-x: auto;
+}
+a.depth-chart-link-btn,
+a.depth-chart-link-btn:visited {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    font-family: monospace;
+    font-size: 0.69rem;
+    font-weight: 800;
+    letter-spacing: 0.03em;
+    padding: 2px 8px;
+    border-radius: 4px;
+    border: 1px solid #475569;
+    background-color: rgba(148, 163, 184, 0.14);
+    color: #F8FAFC !important;
+    text-decoration: none !important;
+    transition: all 0.14s ease-in-out;
+}
+a.depth-chart-link-btn:hover {
+    filter: brightness(1.2);
+    transform: translateY(-1px);
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.35);
 }
 .nfl-div-header {
     display: flex;
@@ -1468,8 +1521,129 @@ TEAM_TO_CONFERENCE["LA"] = "NFC"
 TEAM_TO_DIVISION["WSH"] = "NFC East"
 TEAM_TO_CONFERENCE["WSH"] = "NFC"
 
-if "injury_status_overrides" not in st.session_state:
-    st.session_state["injury_status_overrides"] = {}
+# Official 32-Team NFL Franchise Depth Chart URLs (Opens in New Browser Tab)
+NFL_OFFICIAL_DEPTH_CHART_URLS: dict[str, str] = {
+    "ARI": "https://www.azcardinals.com/team/depth-chart",
+    "ATL": "https://www.atlantafalcons.com/team/depth-chart",
+    "BAL": "https://www.baltimoreravens.com/team/depth-chart",
+    "BUF": "https://www.buffalobills.com/team/depth-chart",
+    "CAR": "https://www.panthers.com/team/depth-chart",
+    "CHI": "https://www.chicagobears.com/team/depth-chart",
+    "CIN": "https://www.bengals.com/team/depth-chart",
+    "CLE": "https://www.clevelandbrowns.com/team/depth-chart",
+    "DAL": "https://www.dallascowboys.com/team/depth-chart",
+    "DEN": "https://www.denverbroncos.com/team/depth-chart",
+    "DET": "https://www.detroitlions.com/team/depth-chart",
+    "GB": "https://www.packers.com/team/depth-chart",
+    "HOU": "https://www.houstontexans.com/team/depth-chart",
+    "IND": "https://www.colts.com/team/depth-chart",
+    "JAX": "https://www.jaguars.com/team/depth-chart",
+    "KC": "https://www.chiefs.com/team/depth-chart",
+    "LA": "https://www.therams.com/team/depth-chart",
+    "LAR": "https://www.therams.com/team/depth-chart",
+    "LAC": "https://www.chargers.com/team/depth-chart",
+    "LV": "https://www.raiders.com/team/depth-chart",
+    "MIA": "https://www.miamidolphins.com/team/depth-chart",
+    "MIN": "https://www.vikings.com/team/depth-chart",
+    "NE": "https://www.patriots.com/team/depth-chart",
+    "NO": "https://www.neworleanssaints.com/team/depth-chart",
+    "NYG": "https://www.giants.com/team/depth-chart",
+    "NYJ": "https://www.newyorkjets.com/team/depth-chart",
+    "PHI": "https://www.philadelphiaeagles.com/team/depth-chart",
+    "PIT": "https://www.steelers.com/team/depth-chart",
+    "SEA": "https://www.seahawks.com/team/depth-chart",
+    "SF": "https://www.49ers.com/team/depth-chart",
+    "TB": "https://www.buccaneers.com/team/depth-chart",
+    "TEN": "https://www.tennesseetitans.com/team/depth-chart",
+    "WAS": "https://www.commanders.com/team/depth-chart",
+    "WSH": "https://www.commanders.com/team/depth-chart",
+}
+
+
+def get_team_depth_chart_url(team_abbr: str) -> str:
+    """Returns the official NFL franchise depth chart URL for a given team."""
+    clean = str(team_abbr).strip().upper()
+    return NFL_OFFICIAL_DEPTH_CHART_URLS.get(clean, "https://www.nfl.com/teams/")
+
+
+def normalize_guard_position(
+    pos_val: str,
+    depth_pos_val: str = "",
+    player_name: str = "",
+    team_abbr: str = "",
+    slot_idx: int | None = None,
+) -> str:
+    """
+    Ensures offensive guards are labeled specifically as LG or RG rather than generic G / OG.
+    Uses official depth_chart_position when available, and deterministically assigns LG / RG otherwise.
+    """
+    pos = str(pos_val or "").strip().upper()
+    d_pos = str(depth_pos_val or "").strip().upper()
+    if d_pos in ("LG", "RG"):
+        return d_pos
+    if pos in ("LG", "RG"):
+        return pos
+    if pos in ("G", "OG") or d_pos in ("G", "OG"):
+        if slot_idx is not None:
+            return "LG" if (slot_idx % 2 == 0) else "RG"
+        seed_str = f"{str(team_abbr).strip().upper()}|{str(player_name).strip().lower()}"
+        h_val = sum((i + 1) * ord(ch) for i, ch in enumerate(seed_str))
+        return "LG" if (h_val % 2 == 0) else "RG"
+    return pos
+
+
+def normalize_dataframe_guard_positions(
+    df: pd.DataFrame,
+    pos_col: str = "position",
+    name_col: str = "player_name",
+) -> pd.DataFrame:
+    """
+    Normalizes any generic G / OG positions in a DataFrame into specific LG or RG designations,
+    respecting depth_chart_position first and alternating LG/RG across guards on each team.
+    """
+    if df.empty or pos_col not in df.columns:
+        return df
+    df = df.copy()
+    raw_pos = df[pos_col].fillna("").astype(str).str.strip().str.upper()
+    depth_col = "depth_chart_position" if "depth_chart_position" in df.columns else None
+    if depth_col:
+        d_series = df[depth_col].fillna("").astype(str).str.strip().str.upper()
+        raw_pos = np.where(
+            raw_pos.isin(["G", "OG", "OL"]) & d_series.isin(["LG", "RG"]),
+            d_series,
+            raw_pos,
+        )
+        raw_pos = pd.Series(raw_pos, index=df.index)
+
+    guard_mask = raw_pos.isin(["G", "OG"])
+    if guard_mask.any():
+        actual_name_col = name_col if name_col in df.columns else (
+            "full_name" if "full_name" in df.columns else (
+                "player" if "player" in df.columns else (
+                    "player_display" if "player_display" in df.columns else None
+                )
+            )
+        )
+        team_col = "team" if "team" in df.columns else None
+        team_guard_map: dict[tuple[str, str], str] = {}
+        team_counters: dict[str, int] = {}
+        new_pos_list = list(raw_pos)
+        for idx_i, is_g in enumerate(guard_mask):
+            if not is_g:
+                continue
+            row_i = df.iloc[idx_i]
+            tm_i = str(row_i[team_col]).strip().upper() if team_col else "NFL"
+            nm_i = str(row_i[actual_name_col]).strip().lower() if actual_name_col else str(idx_i)
+            key_i = (tm_i, nm_i)
+            if key_i not in team_guard_map:
+                cnt = team_counters.get(tm_i, 0)
+                team_guard_map[key_i] = "LG" if (cnt % 2 == 0) else "RG"
+                team_counters[tm_i] = cnt + 1
+            new_pos_list[idx_i] = team_guard_map[key_i]
+        df[pos_col] = new_pos_list
+    else:
+        df[pos_col] = raw_pos
+    return df
 if "injury_refresh_token" not in st.session_state:
     st.session_state["injury_refresh_token"] = 0
 if "bet_slip" not in st.session_state:
@@ -2711,8 +2885,8 @@ def render_nfl_division_standings_card(
     all_strips = "\n".join(strips_html)
     render_html(
         f"""
-        <div class="nfl-div-card" style="border-top: 4px solid {accent_hex}; border-left: 3px solid {accent_hex}; background: linear-gradient(180deg, {hex_to_rgba(accent_hex, 0.16)} 0%, #121722 42%);">
-            <div class="nfl-div-header" style="border-bottom-color:{hex_to_rgba(accent_hex, 0.45)};">
+        <div class="nfl-div-card">
+            <div class="nfl-div-header">
                 <div class="nfl-div-title">
                     <span class="{conf_badge_cls}">[{conf_str}]</span>
                     <span>{div_name} Standings</span>
@@ -2920,11 +3094,16 @@ def render_nfl_horizontal_ticker(
             status_text = f"{gameday_str} {gametime_str}".strip() or "UPCOMING"
 
         slot_html = render_slot_badge_html(slot_code)
+        active_pill_html = (
+            f'<span style="background:{hex_to_rgba(home_c, 0.30)}; color:#F8FAFC; border:1px solid {home_c}; padding:0px 5px; border-radius:3px; font-size:0.60rem; font-weight:800;">ACTIVE</span>'
+            if is_selected
+            else slot_html
+        )
         spread_lbl = f"{home_tm} {spread_v:+.1f}" if pd.notna(spread_v) else "Line TBD"
         ou_lbl = f"O/U {total_v:.1f}" if pd.notna(total_v) else ""
         card_cls = "ticker-card-active" if is_selected else "ticker-card"
         active_border_style = (
-            f'style="border-color:{home_c}; border-top:3px solid {home_c}; background:{hex_to_rgba(home_c, 0.14)};"'
+            f'style="border:1.5px solid {home_c}; border-top:3px solid {home_c}; background:{hex_to_rgba(home_c, 0.16)};"'
             if is_selected
             else f'style="border-top:2px solid {home_c};"'
         )
@@ -2935,7 +3114,7 @@ def render_nfl_horizontal_ticker(
                 <div class="nfl-ticker-marker {card_cls}" {active_border_style}>
                     <div class="ticker-top-bar">
                         <span>{status_text}</span>
-                        {slot_html}
+                        {active_pill_html}
                     </div>
                     <div class="ticker-team-row">
                         <span class="ticker-team-left">
@@ -2962,15 +3141,9 @@ def render_nfl_horizontal_ticker(
                 </div>
                 """
             )
-            btn_label = (
-                f"[ACTIVE: {away_tm} @ {home_tm}]"
-                if is_selected
-                else f"{away_tm} @ {home_tm}"
-            )
             if st.button(
-                btn_label,
+                f"{away_tm} @ {home_tm}",
                 key=f"ticker_btn_{game_id}_{idx}",
-                type="primary" if is_selected else "secondary",
                 use_container_width=True,
             ):
                 st.session_state["selected_game"] = game_id
@@ -3286,6 +3459,8 @@ def load_snap_counts_csv(season: int) -> tuple[pd.DataFrame, int]:
         url = f"https://github.com/nflverse/nflverse-data/releases/download/snap_counts/snap_counts_{yr}.csv"
         try:
             df = pd.read_csv(url, low_memory=False)
+            if not df.empty and "position" in df.columns:
+                df = normalize_dataframe_guard_positions(df, pos_col="position", name_col="player")
             return df, yr
         except Exception:
             continue
@@ -3323,7 +3498,7 @@ def load_injuries_csv(season: int, refresh_token: int = 0) -> tuple[pd.DataFrame
     try:
         wr_df = pd.read_csv(
             weekly_roster_url,
-            usecols=lambda c: c in ["full_name", "player_name", "team", "position", "week", "status", "status_description_abbr"],
+            usecols=lambda c: c in ["full_name", "player_name", "team", "position", "depth_chart_position", "week", "status", "status_description_abbr"],
             low_memory=False,
         )
     except Exception:
@@ -3366,9 +3541,12 @@ def load_injuries_csv(season: int, refresh_token: int = 0) -> tuple[pd.DataFrame
                 wr_df["clean_name"] = wr_df[wr_name_col].astype(str).str.strip().str.lower()
                 wr_df["team"] = wr_df["team"].astype(str).str.strip().str.upper()
                 wr_df["week"] = pd.to_numeric(wr_df["week"], errors="coerce").fillna(0).astype(int)
+                wr_sub_cols = ["team", "clean_name", "week", "status"]
+                if "depth_chart_position" in wr_df.columns:
+                    wr_sub_cols.append("depth_chart_position")
                 wr_sub = wr_df.drop_duplicates(subset=["team", "clean_name", "week"], keep="last")
                 inj_df = inj_df.merge(
-                    wr_sub[["team", "clean_name", "week", "status"]],
+                    wr_sub[wr_sub_cols],
                     on=["team", "clean_name", "week"],
                     how="left",
                     suffixes=("", "_roster"),
@@ -3376,6 +3554,9 @@ def load_injuries_csv(season: int, refresh_token: int = 0) -> tuple[pd.DataFrame
                 roster_st = inj_df["status"].fillna("").astype(str).str.upper()
                 inj_df.loc[roster_st.isin(["RES", "IR", "PUP", "NFI"]), "normalized_status"] = "IR"
                 inj_df.loc[roster_st.isin(["INA", "OUT"]), "normalized_status"] = "OUT"
+
+        if "position" in inj_df.columns:
+            inj_df = normalize_dataframe_guard_positions(inj_df, pos_col="position", name_col=name_col)
 
     return inj_df, loaded_yr
 
@@ -3398,6 +3579,7 @@ def load_rosters_headshots_csv(season: int) -> dict[str, dict]:
                         "player_name",
                         "team",
                         "position",
+                        "depth_chart_position",
                         "headshot_url",
                         "jersey_number",
                         "college",
@@ -3410,13 +3592,20 @@ def load_rosters_headshots_csv(season: int) -> dict[str, dict]:
                 name_col = "full_name" if "full_name" in df.columns else "player_name"
                 if name_col not in df.columns:
                     continue
+                if "position" in df.columns:
+                    df = normalize_dataframe_guard_positions(df, pos_col="position", name_col=name_col)
 
                 lookup: dict[str, dict] = {}
                 for _, r in df.dropna(subset=[name_col]).iterrows():
                     nm = str(r[name_col]).strip()
                     clean_nm = nm.lower()
                     tm = str(r.get("team", "")).strip().upper()
-                    pos = str(r.get("position", "")).strip().upper()
+                    pos = normalize_guard_position(
+                        r.get("position", ""),
+                        r.get("depth_chart_position", ""),
+                        nm,
+                        tm,
+                    )
                     h_url = str(r.get("headshot_url", "")).strip() if pd.notna(r.get("headshot_url")) else ""
                     jersey = str(r.get("jersey_number", "")).split(".")[0] if pd.notna(r.get("jersey_number")) else ""
                     college = str(r.get("college", "")).strip() if pd.notna(r.get("college")) else ""
@@ -4375,6 +4564,7 @@ def build_roster_usage_table(
         merged[c] = pd.to_numeric(merged[c], errors="coerce").fillna(0.0)
 
     merged["position"] = merged["position"].astype(str).str.strip().str.upper()
+    merged = normalize_dataframe_guard_positions(merged, pos_col="position", name_col="player_name")
     merged["unit_group"] = merged.apply(classify_unit_side, axis=1)
     merged["team_logo"] = merged["team"].apply(get_team_logo_url)
     merged["target_share_pct"] = (merged["calc_target_share"] * 100.0).round(1)
@@ -4406,19 +4596,18 @@ def build_injury_impact_report(
     usage_df: pd.DataFrame,
     teams: list[str],
     selected_week: int,
-    status_overrides: dict[str, str] | None = None,
     game_is_completed: bool = False,
     snaps_season_matches: bool = False,
 ) -> pd.DataFrame:
     """Cross-references official weekly injury designations and mid-week practice participation."""
-    status_overrides = status_overrides or {}
-
     if injuries_df.empty or "team" not in injuries_df.columns:
-        team_inj = pd.DataFrame()
-    else:
-        team_inj = injuries_df[injuries_df["team"].isin(teams)].copy()
+        return pd.DataFrame()
 
-    if not team_inj.empty and "week" in team_inj.columns:
+    team_inj = injuries_df[injuries_df["team"].isin(teams)].copy()
+    if team_inj.empty:
+        return pd.DataFrame()
+
+    if "week" in team_inj.columns:
         team_inj["week"] = pd.to_numeric(team_inj["week"], errors="coerce").fillna(1).astype(int)
         if selected_week in team_inj["week"].values:
             team_inj = team_inj[team_inj["week"] == selected_week].copy()
@@ -4430,6 +4619,9 @@ def build_injury_impact_report(
             else:
                 latest_wk = int(team_inj["week"].max())
                 team_inj = team_inj[team_inj["week"] == latest_wk].copy()
+
+    if team_inj.empty:
+        return pd.DataFrame()
 
     played_in_selected_week: set[tuple[str, str]] = set()
     if (
@@ -4451,105 +4643,49 @@ def build_injury_impact_report(
                     (str(s_r["team"]).strip().upper(), str(s_r["player"]).strip().lower())
                 )
 
-    if team_inj.empty and not status_overrides:
-        return pd.DataFrame()
+    name_col = "full_name" if "full_name" in team_inj.columns else "player_name"
+    team_inj["clean_name"] = team_inj[name_col].astype(str).str.strip().str.lower()
+    team_inj["player_display"] = team_inj[name_col].astype(str).str.strip()
+    if "position" in team_inj.columns:
+        team_inj = normalize_dataframe_guard_positions(team_inj, pos_col="position", name_col="player_display")
 
-    if not team_inj.empty:
-        name_col = "full_name" if "full_name" in team_inj.columns else "player_name"
-        team_inj["clean_name"] = team_inj[name_col].astype(str).str.strip().str.lower()
-        team_inj["player_display"] = team_inj[name_col].astype(str).str.strip()
+    raw_status_col = "report_status" if "report_status" in team_inj.columns else (
+        "game_status" if "game_status" in team_inj.columns else None
+    )
+    prac_col = "practice_status" if "practice_status" in team_inj.columns else None
 
-        raw_status_col = "report_status" if "report_status" in team_inj.columns else (
-            "game_status" if "game_status" in team_inj.columns else None
-        )
-        prac_col = "practice_status" if "practice_status" in team_inj.columns else None
+    r_vals = team_inj[raw_status_col] if raw_status_col else pd.Series([""] * len(team_inj), index=team_inj.index)
+    p_vals = team_inj[prac_col] if prac_col else pd.Series([""] * len(team_inj), index=team_inj.index)
+    norm_list = [normalize_injury_designation(r_v, p_v) for r_v, p_v in zip(r_vals, p_vals)]
 
-        r_vals = team_inj[raw_status_col] if raw_status_col else pd.Series([""] * len(team_inj), index=team_inj.index)
-        p_vals = team_inj[prac_col] if prac_col else pd.Series([""] * len(team_inj), index=team_inj.index)
-        norm_list = [normalize_injury_designation(r_v, p_v) for r_v, p_v in zip(r_vals, p_vals)]
+    team_inj["report_status"] = norm_list
+    team_inj["practice_status_clean"] = (
+        team_inj[prac_col].fillna("Unspecified").astype(str).str.strip()
+        if prac_col
+        else "N/A"
+    )
+    team_inj["combined_injury_desc"] = team_inj.apply(extract_combined_injury_name, axis=1)
 
-        team_inj["report_status"] = norm_list
-        team_inj["practice_status_clean"] = (
-            team_inj[prac_col].fillna("Unspecified").astype(str).str.strip()
-            if prac_col
-            else "N/A"
-        )
-        team_inj["combined_injury_desc"] = team_inj.apply(extract_combined_injury_name, axis=1)
+    updated_statuses = []
+    status_notes = []
+    for _, r_inj in team_inj.iterrows():
+        tm_u = str(r_inj["team"]).strip().upper()
+        nm_l = str(r_inj["clean_name"]).strip().lower()
+        cur_st = str(r_inj["report_status"]).strip().upper()
 
-        updated_statuses = []
-        status_notes = []
-        for _, r_inj in team_inj.iterrows():
-            tm_u = str(r_inj["team"]).strip().upper()
-            nm_l = str(r_inj["clean_name"]).strip().lower()
-            cur_st = str(r_inj["report_status"]).strip().upper()
-            override_key = f"{nm_l}|{tm_u}"
-
-            if override_key in status_overrides:
-                ov_st = status_overrides[override_key].strip().upper()
-                updated_statuses.append(ov_st)
-                status_notes.append("Real-Time Manual Override Applied")
-            elif (tm_u, nm_l) in played_in_selected_week:
-                updated_statuses.append("ACTIVE / CLEARED")
-                status_notes.append(f"Confirmed Active on Field (Wk {selected_week} Snaps Logged)")
-            else:
-                updated_statuses.append(cur_st)
-                status_notes.append(
-                    "Full Practice Participant (Expected to Play)"
-                    if not is_active_unresolved_injury(cur_st)
-                    else "Official NFL Injury / Practice Report"
-                )
-
-        team_inj["report_status"] = updated_statuses
-        team_inj["status_source_note"] = status_notes
-    else:
-        team_inj = pd.DataFrame(
-            columns=[
-                "team",
-                "clean_name",
-                "player_display",
-                "position",
-                "report_status",
-                "practice_status_clean",
-                "combined_injury_desc",
-                "status_source_note",
-            ]
-        )
-
-    for ov_key, ov_status in status_overrides.items():
-        if "|" not in ov_key:
-            continue
-        nm_l, tm_u = ov_key.split("|", 1)
-        if tm_u not in teams:
-            continue
-        exists_mask = (team_inj["team"] == tm_u) & (team_inj["clean_name"] == nm_l) if not team_inj.empty else pd.Series([], dtype=bool)
-        if not exists_mask.any():
-            disp_nm = nm_l.title()
-            pos_guess = "UNK"
-            if not usage_df.empty:
-                u_m = usage_df[(usage_df["team"] == tm_u) & (usage_df["player_name"].astype(str).str.lower() == nm_l)]
-                if not u_m.empty:
-                    disp_nm = str(u_m.iloc[0]["player_name"])
-                    pos_guess = str(u_m.iloc[0]["position"])
-            elif not snaps_df.empty and {"player", "team", "position"}.issubset(snaps_df.columns):
-                s_m = snaps_df[(snaps_df["team"] == tm_u) & (snaps_df["player"].astype(str).str.lower() == nm_l)]
-                if not s_m.empty:
-                    disp_nm = str(s_m.iloc[0]["player"])
-                    pos_guess = str(s_m.iloc[0]["position"])
-            new_row = pd.DataFrame(
-                [
-                    {
-                        "team": tm_u,
-                        "clean_name": nm_l,
-                        "player_display": disp_nm,
-                        "position": pos_guess,
-                        "report_status": ov_status.strip().upper(),
-                        "practice_status_clean": "What-If Toggle / Override",
-                        "combined_injury_desc": "Lineup Simulation / Coach Update",
-                        "status_source_note": "Real-Time Manual Override Applied",
-                    }
-                ]
+        if (tm_u, nm_l) in played_in_selected_week:
+            updated_statuses.append("ACTIVE / CLEARED")
+            status_notes.append(f"Confirmed Active on Field (Wk {selected_week} Snaps Logged)")
+        else:
+            updated_statuses.append(cur_st)
+            status_notes.append(
+                "Full Practice Participant (Expected to Play)"
+                if not is_active_unresolved_injury(cur_st)
+                else "Official NFL Injury / Practice Report"
             )
-            team_inj = pd.concat([team_inj, new_row], ignore_index=True)
+
+    team_inj["report_status"] = updated_statuses
+    team_inj["status_source_note"] = status_notes
 
     valid_statuses = list(ACTIVE_INJURY_DESIGNATIONS | CLEARED_DESIGNATIONS)
     team_inj = team_inj[
@@ -4597,6 +4733,9 @@ def build_injury_impact_report(
         "LT": 0.042,
         "RT": 0.032,
         "G": 0.022,
+        "OG": 0.022,
+        "LG": 0.022,
+        "RG": 0.022,
         "C": 0.025,
         "WR": 0.035,
         "TE": 0.020,
@@ -4641,7 +4780,7 @@ def build_injury_impact_report(
             penalty = 0.0
         else:
             if is_key_player:
-                if pos in ["T", "LT", "RT", "G", "C"]:
+                if pos in ["T", "LT", "RT", "G", "OG", "LG", "RG", "C"]:
                     roles.append("[STARTING OL ANCHOR]")
                 elif pos == "WR" or tgt >= 0.18:
                     roles.append("[PRIMARY TARGET / WR1]")
@@ -4665,7 +4804,7 @@ def build_injury_impact_report(
 
         epa_penalties.append(penalty)
 
-        if pos in ["QB", "WR", "TE", "T", "LT", "RT", "G", "C", "RB"]:
+        if pos in ["QB", "WR", "TE", "T", "LT", "RT", "G", "OG", "LG", "RG", "C", "RB"]:
             impact_units.append("Offense")
         else:
             impact_units.append("Defense")
@@ -4731,7 +4870,6 @@ def build_slate_best_bets_leaderboard(
             all_usage[all_usage["team"].isin([at, ht])] if not all_usage.empty else pd.DataFrame(),
             [at, ht],
             selected_week,
-            st.session_state.get("injury_status_overrides", {}),
             game_is_completed=bool(pd.notna(g_row.get("away_score")) and pd.notna(g_row.get("home_score"))),
         )
 
@@ -4850,11 +4988,9 @@ def get_player_season_injury_history(
     snaps_df: pd.DataFrame,
     player_name: str,
     team_abbr: str = "",
-    status_overrides: dict[str, str] | None = None,
     selected_week: int | None = None,
 ) -> pd.DataFrame:
     """Extracts a player's week-by-week historical injury log across the entire season."""
-    status_overrides = status_overrides or {}
     clean_nm = str(player_name).strip().lower()
     clean_tm = str(team_abbr).strip().upper()
 
@@ -4906,11 +5042,6 @@ def get_player_season_injury_history(
                 if "normalized_status" in r and pd.notna(r["normalized_status"])
                 else normalize_injury_designation(raw_st, prac_st)
             )
-
-            ov_key = f"{clean_nm}|{tm_r}"
-            if selected_week is not None and wk == selected_week and ov_key in status_overrides:
-                norm_st = status_overrides[ov_key].strip().upper()
-                prac_st = f"{prac_st} (Manual Override)" if prac_st != "N/A" else "Manual Override"
 
             injury_ailment = extract_combined_injury_name(r)
 
@@ -5207,12 +5338,12 @@ def render_player_popup_contents(
             f"</div>"
         )
 
+    p_pos = normalize_guard_position(p_pos, "", p_name, p_team)
     player_inj_history = get_player_season_injury_history(
         injuries_full_df,
         snaps_df,
         p_name,
         p_team,
-        st.session_state.get("injury_status_overrides", {}),
         selected_week=selected_week,
     )
 
@@ -5538,43 +5669,6 @@ def render_player_popup_contents(
             st.info(f"No weekly stat or snap logs recorded for {p_name} in {stat_season}.")
 
     with tab_inj_hist:
-        ov_key = f"{clean_nm}|{p_team}"
-        current_ov = st.session_state["injury_status_overrides"].get(ov_key, "Auto (Official Feed)")
-        ov_options = [
-            "Auto (Official Feed)",
-            "ACTIVE / CLEARED",
-            "UNSPECIFIED (FP)",
-            "UNSPECIFIED (DNP)",
-            "UNSPECIFIED (LP)",
-            "QUESTIONABLE",
-            "DOUBTFUL",
-            "OUT",
-            "IR",
-        ]
-        ov_idx = ov_options.index(current_ov) if current_ov in ov_options else 0
-
-        ov_col1, ov_col2 = st.columns([1.6, 1.4])
-        with ov_col1:
-            selected_ov = st.selectbox(
-                f"Week {selected_week} Status Override",
-                options=ov_options,
-                index=ov_idx,
-                key=f"dossier_ov_select_{clean_nm}_{p_team}",
-            )
-        with ov_col2:
-            st.write("")
-            if st.button(
-                "Apply Status Update",
-                key=f"dossier_ov_btn_{clean_nm}_{p_team}",
-                type="primary",
-                use_container_width=True,
-            ):
-                if selected_ov == "Auto (Official Feed)":
-                    st.session_state["injury_status_overrides"].pop(ov_key, None)
-                else:
-                    st.session_state["injury_status_overrides"][ov_key] = selected_ov
-                st.toast(f"Updated {p_name} status override: {selected_ov}")
-
         if player_inj_history.empty:
             render_html(
                 f"""
@@ -6121,7 +6215,7 @@ kelly_choice = st.sidebar.selectbox(
 st.session_state["kelly_fraction_mult"] = float(kelly_choice[1])
 
 st.sidebar.divider()
-st.sidebar.markdown("### Feed & Override Sync")
+st.sidebar.markdown("### Live Injury Feed Sync")
 if st.sidebar.button(
     "Refresh Injury Feed",
     use_container_width=True,
@@ -6129,13 +6223,6 @@ if st.sidebar.button(
     st.session_state["injury_refresh_token"] += 1
     load_injuries_csv.clear()
     st.rerun()
-
-active_ov_count = len(st.session_state.get("injury_status_overrides", {}))
-if active_ov_count > 0:
-    st.sidebar.caption(f"`{active_ov_count}` What-If / status override(s) active.")
-    if st.sidebar.button("Reset Injury Overrides", use_container_width=True):
-        st.session_state["injury_status_overrides"] = {}
-        st.rerun()
 
 week_games = schedule_df[schedule_df["week"] == selected_week].copy()
 if selected_team != "All Teams":
@@ -6284,24 +6371,12 @@ a_eff = eff_df.loc[away_tm] if away_tm in eff_df.index else None
 h_eff = eff_df.loc[home_tm] if home_tm in eff_df.index else None
 usage_matchup = aggregate_team_skill_usage(player_df, [away_tm, home_tm])
 
-inj_matchup_baseline = build_injury_impact_report(
-    injuries_df,
-    snaps_df,
-    usage_matchup,
-    [away_tm, home_tm],
-    selected_week,
-    {},
-    game_is_completed=active_game_is_completed,
-    snaps_season_matches=(snaps_season == selected_season and snaps_season == inj_season),
-)
-
 inj_matchup = build_injury_impact_report(
     injuries_df,
     snaps_df,
     usage_matchup,
     [away_tm, home_tm],
     selected_week,
-    st.session_state.get("injury_status_overrides", {}),
     game_is_completed=active_game_is_completed,
     snaps_season_matches=(snaps_season == selected_season and snaps_season == inj_season),
 )
@@ -6332,11 +6407,6 @@ away_def_pen = get_unit_penalty_from_df(inj_matchup, away_tm, "Defense")
 home_off_pen = get_unit_penalty_from_df(inj_matchup, home_tm, "Offense")
 home_def_pen = get_unit_penalty_from_df(inj_matchup, home_tm, "Defense")
 
-base_away_off_pen = get_unit_penalty_from_df(inj_matchup_baseline, away_tm, "Offense")
-base_away_def_pen = get_unit_penalty_from_df(inj_matchup_baseline, away_tm, "Defense")
-base_home_off_pen = get_unit_penalty_from_df(inj_matchup_baseline, home_tm, "Offense")
-base_home_def_pen = get_unit_penalty_from_df(inj_matchup_baseline, home_tm, "Defense")
-
 model_proj_dict = (
     compute_model_fair_line_and_totals(
         a_eff,
@@ -6345,27 +6415,6 @@ model_proj_dict = (
         away_def_pen,
         home_off_pen,
         home_def_pen,
-        away_tm,
-        home_tm,
-        spread_v,
-        total_v,
-        rest_v,
-        roof_str,
-        wind_val if pd.notna(wind_val) else 0.0,
-        temp_val if pd.notna(temp_val) else 65.0,
-    )
-    if (a_eff is not None and h_eff is not None)
-    else {}
-)
-
-base_model_proj_dict = (
-    compute_model_fair_line_and_totals(
-        a_eff,
-        h_eff,
-        base_away_off_pen,
-        base_away_def_pen,
-        base_home_off_pen,
-        base_home_def_pen,
         away_tm,
         home_tm,
         spread_v,
@@ -6614,10 +6663,33 @@ if not is_league_hub:
                 """
             )
 
-            # HYPERLINKED TEAM PICK BOXES (CLEAN LINE TEXT ONLY; OPENS MATCHUP PICKS POP-OUT ON CLICK)
-            q_bet1, q_bet2, q_bet3 = st.columns([1.15, 1.15, 1.35])
+            # HYPERLINKED TEAM PICK BOXES (SPREAD, TOTAL O/U & MONEYLINE; OPENS MATCHUP PICKS POP-OUT ON CLICK)
+            q_bet1, q_bet2, q_bet3 = st.columns(3)
             sp_ev_v, sp_kelly_v = compute_ev_and_kelly(model_proj_dict["spread_cover_prob"], default_odds, kelly_mult)
             tot_ev_v, tot_kelly_v = compute_ev_and_kelly(model_proj_dict["total_hit_prob"], default_odds, kelly_mult)
+
+            ov_away_ml_odds = int(line_move_dict.get("away_ml_int", -110))
+            ov_home_ml_odds = int(line_move_dict.get("home_ml_int", -110))
+            ov_away_wp = float(model_proj_dict.get("away_win_prob_raw", 0.50))
+            ov_home_wp = float(model_proj_dict.get("home_win_prob_raw", 0.50))
+            ov_away_ml_ev, ov_away_ml_k = compute_ev_and_kelly(ov_away_wp, ov_away_ml_odds, kelly_mult)
+            ov_home_ml_ev, ov_home_ml_k = compute_ev_and_kelly(ov_home_wp, ov_home_ml_odds, kelly_mult)
+
+            if ov_away_ml_ev > ov_home_ml_ev or (ov_away_ml_ev == ov_home_ml_ev and ov_away_wp > ov_home_wp):
+                ml_pick_tm = away_tm
+                ml_pick_color = away_color
+                ml_pick_odds = ov_away_ml_odds
+                ml_pick_wp = ov_away_wp
+                ml_pick_ev = ov_away_ml_ev
+                ml_pick_kelly = ov_away_ml_k
+            else:
+                ml_pick_tm = home_tm
+                ml_pick_color = home_color
+                ml_pick_odds = ov_home_ml_odds
+                ml_pick_wp = ov_home_wp
+                ml_pick_ev = ov_home_ml_ev
+                ml_pick_kelly = ov_home_ml_k
+            ml_pick_lbl = f"{ml_pick_tm} ML ({ml_pick_odds:+d})"
 
             with q_bet1:
                 render_compact_bet_action_row(
@@ -6660,49 +6732,24 @@ if not is_league_hub:
                         button_text_override=f"{tot_pick_lbl} Total Pts",
                     )
             with q_bet3:
-                with st.expander("What-If Injury Simulator (Toggle Starters)", expanded=False):
-                    sim_candidates = []
-                    if not inj_matchup.empty:
-                        for _, r_s in inj_matchup.iterrows():
-                            sim_candidates.append(
-                                f"{r_s['player_display']} ({r_s['team']} - {r_s.get('position', 'POS')}) [{r_s['report_status']}]"
-                            )
-                    if not roster_matchup_table.empty:
-                        for _, r_s in roster_matchup_table.head(24).iterrows():
-                            cand_lbl = f"{r_s['player_name']} ({r_s['team']} - {r_s['position']}) [STARTER]"
-                            if not any(cand_lbl.split(" (")[0] in x for x in sim_candidates):
-                                sim_candidates.append(cand_lbl)
-
-                    if sim_candidates:
-                        wi_c1, wi_c2, wi_c3 = st.columns([1.6, 1.1, 0.9])
-                        with wi_c1:
-                            wi_plr = st.selectbox("Select Starter / Flagged Player", sim_candidates, key="ov_whatif_plr")
-                        with wi_c2:
-                            wi_state = st.selectbox(
-                                "Simulate Status",
-                                ["OUT", "QUESTIONABLE", "ACTIVE / CLEARED", "Auto (Official Feed)"],
-                                key="ov_whatif_state",
-                            )
-                        with wi_c3:
-                            st.write("")
-                            if st.button("Simulate", type="primary", use_container_width=True, key="ov_whatif_btn"):
-                                p_nm_clean = wi_plr.split(" (")[0].strip().lower()
-                                p_tm_clean = wi_plr.split(" (")[1].split(" - ")[0].strip().upper()
-                                ov_k = f"{p_nm_clean}|{p_tm_clean}"
-                                if wi_state == "Auto (Official Feed)":
-                                    st.session_state["injury_status_overrides"].pop(ov_k, None)
-                                else:
-                                    st.session_state["injury_status_overrides"][ov_k] = wi_state
-                                st.rerun()
-
-                        sp_shift = model_proj_dict["fair_home_spread"] - base_model_proj_dict["fair_home_spread"]
-                        if abs(sp_shift) >= 0.05 or len(st.session_state.get("injury_status_overrides", {})) > 0:
-                            render_html(
-                                f'<div class="metric-subtext" style="margin-top:4px; color:#34D399;">'
-                                f'<b>What-If Impact:</b> Fair Spread shifted from <b>{base_model_proj_dict["fair_spread_str"]}</b> '
-                                f'&rarr; <b>{model_proj_dict["fair_spread_str"]}</b> ({sp_shift:+.1f} pts).'
-                                f"</div>"
-                            )
+                render_compact_bet_action_row(
+                    key_prefix=f"ov_ml_{active_game['game_id']}",
+                    season=selected_season,
+                    week=selected_week,
+                    matchup=f"{away_tm} @ {home_tm}",
+                    category="Moneyline",
+                    selection=ml_pick_lbl,
+                    market_line=f"{ml_pick_odds:+d}",
+                    model_proj=f"Win {ml_pick_wp*100:.1f}%",
+                    american_odds=ml_pick_odds,
+                    edge_score=round(ml_pick_wp * 100.0, 1),
+                    ev_pct=ml_pick_ev,
+                    kelly_units=ml_pick_kelly,
+                    team_abbr=ml_pick_tm,
+                    team_color_override=ml_pick_color,
+                    open_matchup_modal_on_click=True,
+                    button_text_override=ml_pick_lbl,
+                )
 
             col_brief_left, col_brief_right = st.columns([1.15, 1.05])
 
@@ -7409,56 +7456,6 @@ if not is_league_hub:
     # CURRENT GAME TAB 3: DEDICATED TOP-LEVEL INJURY REPORT TAB
     # -------------------------------------------------------------------------
     with game_tab_injuries:
-        with st.expander("Status Override Control", expanded=False):
-            ov_candidates = []
-            if not inj_matchup.empty:
-                for _, r_c in inj_matchup.iterrows():
-                    ov_candidates.append(
-                        f"{r_c['player_display']} ({r_c['team']} - {r_c.get('position', 'POS')}) [{r_c['report_status']}]"
-                    )
-            if not roster_matchup_table.empty:
-                for _, r_c in roster_matchup_table.head(40).iterrows():
-                    lbl_c = f"{r_c['player_name']} ({r_c['team']} - {r_c['position']}) [ROSTER]"
-                    if not any(lbl_c.split(" (")[0] in x for x in ov_candidates):
-                        ov_candidates.append(lbl_c)
-
-            if ov_candidates:
-                q_c1, q_c2, q_c3 = st.columns([1.8, 1.2, 1.0])
-                with q_c1:
-                    chosen_ov_plr = st.selectbox(
-                        "Player",
-                        options=ov_candidates,
-                        key="quick_ov_player_select",
-                    )
-                with q_c2:
-                    chosen_ov_st = st.selectbox(
-                        "Status",
-                        options=[
-                            "ACTIVE / CLEARED",
-                            "UNSPECIFIED (FP)",
-                            "UNSPECIFIED (DNP)",
-                            "UNSPECIFIED (LP)",
-                            "QUESTIONABLE",
-                            "DOUBTFUL",
-                            "OUT",
-                            "IR",
-                            "Auto (Official Feed)",
-                        ],
-                        index=0,
-                        key="quick_ov_status_select",
-                    )
-                with q_c3:
-                    st.write("")
-                    if st.button("Apply Override", type="primary", use_container_width=True, key="quick_ov_apply_btn"):
-                        p_part = chosen_ov_plr.split(" (")[0].strip().lower()
-                        tm_part = chosen_ov_plr.split(" (")[1].split(" - ")[0].strip().upper()
-                        k_ov = f"{p_part}|{tm_part}"
-                        if chosen_ov_st == "Auto (Official Feed)":
-                            st.session_state["injury_status_overrides"].pop(k_ov, None)
-                        else:
-                            st.session_state["injury_status_overrides"][k_ov] = chosen_ov_st
-                        st.rerun()
-
         inj_view_mode = st.radio(
             "Filter",
             options=[
@@ -7470,97 +7467,98 @@ if not is_league_hub:
             key="inj_report_view_filter",
         )
 
-        if inj_matchup.empty:
-            render_html(
-                f"""
-                <div class="terminal-card-elite">
-                    <span class="badge-elite">[CLEAN INJURY REPORT]</span>
-                    <p style="margin:6px 0 0 0;" class="metric-subtext">
-                        No active Out, Doubtful, Questionable, or DNP/LP practice designations found for {away_tm} or {home_tm} in Week {selected_week}.
-                    </p>
-                </div>
-                """
-            )
-        else:
-            col_away_inj, col_home_inj = st.columns(2)
+        col_away_inj, col_home_inj = st.columns(2)
 
-            for col_obj, tm, tm_c in [(col_away_inj, away_tm, away_color), (col_home_inj, home_tm, home_color)]:
-                with col_obj:
-                    tm_inj_all = inj_matchup[inj_matchup["team"] == tm].copy()
-                    total_off_drop = tm_inj_all[
-                        (tm_inj_all["unit_side"] == "Offense") & (~tm_inj_all["is_cleared"])
-                    ]["est_epa_penalty"].sum()
-                    total_def_drop = tm_inj_all[
-                        (tm_inj_all["unit_side"] == "Defense") & (~tm_inj_all["is_cleared"])
-                    ]["est_epa_penalty"].sum()
-                    flagged_tm_count = int((~tm_inj_all["is_cleared"]).sum()) if not tm_inj_all.empty else 0
-                    cleared_tm_count = int(tm_inj_all["is_cleared"].sum()) if not tm_inj_all.empty else 0
+        for col_obj, tm, tm_c in [(col_away_inj, away_tm, away_color), (col_home_inj, home_tm, home_color)]:
+            with col_obj:
+                tm_inj_all = inj_matchup[inj_matchup["team"] == tm].copy() if not inj_matchup.empty else pd.DataFrame()
+                total_off_drop = (
+                    tm_inj_all[(tm_inj_all["unit_side"] == "Offense") & (~tm_inj_all["is_cleared"])]["est_epa_penalty"].sum()
+                    if not tm_inj_all.empty
+                    else 0.0
+                )
+                total_def_drop = (
+                    tm_inj_all[(tm_inj_all["unit_side"] == "Defense") & (~tm_inj_all["is_cleared"])]["est_epa_penalty"].sum()
+                    if not tm_inj_all.empty
+                    else 0.0
+                )
+                flagged_tm_count = int((~tm_inj_all["is_cleared"]).sum()) if not tm_inj_all.empty else 0
+                cleared_tm_count = int(tm_inj_all["is_cleared"].sum()) if not tm_inj_all.empty else 0
 
-                    if inj_view_mode == "Flagged (Out / Q / DNP / LP)":
-                        tm_inj = tm_inj_all[~tm_inj_all["is_cleared"]].copy()
-                    elif inj_view_mode == "Full Practice (FP / Cleared)":
-                        tm_inj = tm_inj_all[tm_inj_all["is_cleared"]].copy()
-                    else:
-                        tm_inj = tm_inj_all.copy()
+                if tm_inj_all.empty:
+                    tm_inj = pd.DataFrame()
+                elif inj_view_mode == "Flagged (Out / Q / DNP / LP)":
+                    tm_inj = tm_inj_all[~tm_inj_all["is_cleared"]].copy()
+                elif inj_view_mode == "Full Practice (FP / Cleared)":
+                    tm_inj = tm_inj_all[tm_inj_all["is_cleared"]].copy()
+                else:
+                    tm_inj = tm_inj_all.copy()
 
-                    badge_cls = "badge-bad" if flagged_tm_count > 0 else "badge-elite"
-                    render_html(
-                        f"""
-                        <div class="terminal-card" style="border-left: 4px solid {tm_c}; background: linear-gradient(90deg, {hex_to_rgba(tm_c, 0.14)} 0%, #121722 65%);">
-                            <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:6px;">
+                badge_cls = "badge-bad" if flagged_tm_count > 0 else "badge-elite"
+                depth_url = get_team_depth_chart_url(tm)
+                render_html(
+                    f"""
+                    <div class="terminal-card" style="border-left: 4px solid {tm_c}; background: linear-gradient(90deg, {hex_to_rgba(tm_c, 0.14)} 0%, #121722 65%);">
+                        <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:6px;">
+                            <div style="display:flex; align-items:center; gap:8px; flex-wrap:wrap;">
                                 <h4 style="margin:0;">{render_inline_logo(tm, 20)}{tm} Injury Report</h4>
-                                <div>
-                                    <span class="{badge_cls}">[{flagged_tm_count} FLAGGED]</span>
-                                    <span class="badge-elite">[{cleared_tm_count} FP / CLEARED]</span>
-                                </div>
+                                <a class="depth-chart-link-btn" href="{depth_url}" target="_blank" rel="noopener noreferrer"
+                                   style="border-color:{hex_to_rgba(tm_c, 0.78)}; background:{hex_to_rgba(tm_c, 0.22)};">
+                                   {tm} DEPTH CHART &#8599;
+                                </a>
                             </div>
-                            <p style="margin:6px 0 0 0;" class="metric-subtext">
-                                Off EPA Drag: <b>{-total_off_drop:+.3f}/play</b> |
-                                Def EPA Drag: <b>+{total_def_drop:.3f}/play</b>
-                            </p>
+                            <div>
+                                <span class="{badge_cls}">[{flagged_tm_count} FLAGGED]</span>
+                                <span class="badge-elite">[{cleared_tm_count} FP / CLEARED]</span>
+                            </div>
                         </div>
-                        """
-                    )
+                        <p style="margin:6px 0 0 0;" class="metric-subtext">
+                            Off EPA Drag: <b>{-total_off_drop:+.3f}/play</b> |
+                            Def EPA Drag: <b>+{total_def_drop:.3f}/play</b>
+                        </p>
+                    </div>
+                    """
+                )
 
-                    if tm_inj.empty:
-                        st.caption(f"No {tm} players match the current filter.")
-                    else:
-                        for i_idx, (_, r_inj) in enumerate(tm_inj.head(14).iterrows()):
-                            badge_html = render_injury_badge(r_inj["report_status"])
-                            prac_html = render_practice_badge(r_inj.get("practice_status_clean", ""))
-                            snap_pct = r_inj["snap_share"] * 100
-                            pos_str = str(r_inj.get("position", "POS"))
-                            is_clr = bool(r_inj.get("is_cleared", False))
-                            epa_color = "#34D399" if is_clr else "#F87171"
-                            epa_str = "0.000 (Full Practice / Expected to Play)" if is_clr else f"-{r_inj['est_epa_penalty']:.3f}/play"
-                            inj_pic_html = render_mismatch_headshot_html(
-                                r_inj["player_display"], tm, headshot_lookup
-                            )
+                if tm_inj.empty:
+                    st.caption(f"No {tm} players match the current filter.")
+                else:
+                    for i_idx, (_, r_inj) in enumerate(tm_inj.head(14).iterrows()):
+                        badge_html = render_injury_badge(r_inj["report_status"])
+                        prac_html = render_practice_badge(r_inj.get("practice_status_clean", ""))
+                        snap_pct = r_inj["snap_share"] * 100
+                        pos_str = normalize_guard_position(r_inj.get("position", "POS"), "", r_inj["player_display"], tm, i_idx)
+                        is_clr = bool(r_inj.get("is_cleared", False))
+                        epa_color = "#34D399" if is_clr else "#F87171"
+                        epa_str = "0.000 (Full Practice / Expected to Play)" if is_clr else f"-{r_inj['est_epa_penalty']:.3f}/play"
+                        inj_pic_html = render_mismatch_headshot_html(
+                            r_inj["player_display"], tm, headshot_lookup
+                        )
 
-                            with st.container(border=True):
-                                ic1, ic2 = st.columns([1.4, 1.2])
-                                with ic1:
-                                    render_inline_player_trigger(
-                                        r_inj["player_display"],
-                                        tm,
-                                        pos_str,
-                                        f"inj_{tm}_{i_idx}",
-                                        f"[{tm} {pos_str}]",
-                                    )
-                                with ic2:
-                                    render_html(f'<div style="text-align:right;">{badge_html} {prac_html}</div>')
-                                render_html(
-                                    f"""
-                                    <div style="display:flex; align-items:center; gap:10px; margin-top:4px; border-left:3px solid {tm_c}; padding-left:8px;">
-                                        {inj_pic_html}
-                                        <div class="metric-subtext">
-                                            {r_inj['role_tier']} • <b>{r_inj['primary_injury']}</b><br>
-                                            Snaps: <b>{snap_pct:.0f}%</b> |
-                                            EPA: <span style="color:{epa_color}; font-weight:700;">{epa_str}</span>
-                                        </div>
-                                    </div>
-                                    """
+                        with st.container(border=True):
+                            ic1, ic2 = st.columns([1.4, 1.2])
+                            with ic1:
+                                render_inline_player_trigger(
+                                    r_inj["player_display"],
+                                    tm,
+                                    pos_str,
+                                    f"inj_{tm}_{i_idx}",
+                                    f"[{tm} {pos_str}]",
                                 )
+                            with ic2:
+                                render_html(f'<div style="text-align:right;">{badge_html} {prac_html}</div>')
+                            render_html(
+                                f"""
+                                <div style="display:flex; align-items:center; gap:10px; margin-top:4px; border-left:3px solid {tm_c}; padding-left:8px;">
+                                    {inj_pic_html}
+                                    <div class="metric-subtext">
+                                        {r_inj['role_tier']} • <b>{r_inj['primary_injury']}</b><br>
+                                        Snaps: <b>{snap_pct:.0f}%</b> |
+                                        EPA: <span style="color:{epa_color}; font-weight:700;">{epa_str}</span>
+                                    </div>
+                                </div>
+                                """
+                            )
 
     # -------------------------------------------------------------------------
     # CURRENT GAME TAB 4: UNIT EPA & TRENCHES
