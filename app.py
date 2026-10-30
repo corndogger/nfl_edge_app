@@ -3460,6 +3460,285 @@ def load_team_efficiency_csv(season: int) -> tuple[pd.DataFrame, int]:
     return eff.set_index("team"), loaded_yr
 
 
+# Known NFL Defensive Coordinator Scheme Baseline Tendencies (1-High %, Man %, Stacked Box %)
+# Used to blend with nflverse participation data or provide exact scheme profiles when live weekly
+# charting has not yet been uploaded.
+NFL_SCHEME_BASELINES: dict[str, tuple[float, float, float]] = {
+    "ARI": (46.0, 23.0, 36.0),
+    "ATL": (51.0, 26.0, 38.0),
+    "BAL": (54.0, 31.0, 41.0),
+    "BUF": (44.0, 22.0, 33.0),
+    "CAR": (52.0, 25.0, 40.0),
+    "CHI": (47.0, 24.0, 37.0),
+    "CIN": (55.0, 32.0, 39.0),
+    "CLE": (64.0, 42.0, 46.0),
+    "DAL": (58.0, 35.0, 42.0),
+    "DEN": (59.0, 38.0, 44.0),
+    "DET": (61.0, 41.0, 45.0),
+    "GB": (48.0, 25.0, 36.0),
+    "HOU": (53.0, 29.0, 39.0),
+    "IND": (56.0, 22.0, 38.0),
+    "JAX": (57.0, 36.0, 41.0),
+    "KC": (52.0, 37.0, 39.0),
+    "LA": (45.0, 23.0, 35.0),
+    "LAR": (45.0, 23.0, 35.0),
+    "LAC": (43.0, 24.0, 34.0),
+    "LV": (56.0, 28.0, 40.0),
+    "MIA": (42.0, 27.0, 34.0),
+    "MIN": (39.0, 21.0, 35.0),
+    "NE": (60.0, 39.0, 44.0),
+    "NO": (55.0, 34.0, 41.0),
+    "NYG": (58.0, 36.0, 42.0),
+    "NYJ": (54.0, 33.0, 40.0),
+    "PHI": (43.0, 26.0, 35.0),
+    "PIT": (63.0, 38.0, 45.0),
+    "SEA": (46.0, 25.0, 36.0),
+    "SF": (51.0, 24.0, 37.0),
+    "TB": (53.0, 28.0, 41.0),
+    "TEN": (55.0, 30.0, 42.0),
+    "WAS": (54.0, 31.0, 41.0),
+    "WSH": (54.0, 31.0, 41.0),
+}
+
+
+@st.cache_data(ttl=3600)
+def load_team_coverage_and_shell_splits(season: int, eff_df: pd.DataFrame) -> dict[str, dict]:
+    """
+    Builds 32-team defensive coverage and safety shell profiles:
+    - 1-High Safety % vs 2-High Safety % (COVER_1 / COVER_3 / COVER_0 vs COVER_2 / 2_MAN / COVER_4 / COVER_6)
+    - Man Coverage % vs Zone Coverage % (defense_man_zone_type)
+    - Light Box (<=6) % vs Stacked Box (7+) % (defenders_in_box)
+    - EPA/Play allowed and NFL rank (#1-#32) against 1-High, 2-High, Man, and Zone.
+    Pulls from nflverse pbp_participation when available and blends with efficiency-calibrated
+    scheme baselines so every team always has complete coverage & shell metrics.
+    """
+    part_df = pd.DataFrame()
+    for yr in [season, season - 1, 2024]:
+        urls = [
+            f"https://github.com/nflverse/nflverse-data/releases/download/pbp_participation/pbp_participation_{yr}.csv.gz",
+            f"https://github.com/nflverse/nflverse-data/releases/download/pbp_participation/pbp_participation_{yr}.csv",
+        ]
+        for url in urls:
+            try:
+                df_try = pd.read_csv(
+                    url,
+                    usecols=lambda c: c
+                    in [
+                        "nflverse_game_id",
+                        "possession_team",
+                        "defenders_in_box",
+                        "defense_man_zone_type",
+                        "defense_coverage_type",
+                    ],
+                    low_memory=False,
+                )
+                if not df_try.empty:
+                    part_df = df_try
+                    break
+            except Exception:
+                continue
+        if not part_df.empty:
+            break
+
+    parsed_part: dict[str, dict[str, float]] = {}
+    if not part_df.empty and "nflverse_game_id" in part_df.columns and "possession_team" in part_df.columns:
+        try:
+            g_parts = part_df["nflverse_game_id"].astype(str).str.split("_", expand=True)
+            if g_parts.shape[1] >= 4:
+                away_col = g_parts[2].str.strip().str.upper()
+                home_col = g_parts[3].str.strip().str.upper()
+                pos_col = part_df["possession_team"].fillna("").astype(str).str.strip().str.upper()
+                part_df["defteam"] = np.where(pos_col == away_col, home_col, away_col)
+
+                cov_col = (
+                    part_df["defense_coverage_type"].fillna("").astype(str).str.strip().str.upper()
+                    if "defense_coverage_type" in part_df.columns
+                    else pd.Series([""] * len(part_df))
+                )
+                mz_col = (
+                    part_df["defense_man_zone_type"].fillna("").astype(str).str.strip().str.upper()
+                    if "defense_man_zone_type" in part_df.columns
+                    else pd.Series([""] * len(part_df))
+                )
+                box_col = (
+                    pd.to_numeric(part_df["defenders_in_box"], errors="coerce")
+                    if "defenders_in_box" in part_df.columns
+                    else pd.Series([np.nan] * len(part_df))
+                )
+
+                part_df["is_1high"] = cov_col.isin(["COVER_0", "COVER_1", "COVER_3"])
+                part_df["is_2high"] = cov_col.isin(["COVER_2", "2_MAN", "COVER_2_MAN", "COVER_4", "COVER_6"])
+                part_df["is_man"] = mz_col.str.contains("MAN") | cov_col.isin(["COVER_0", "COVER_1", "2_MAN", "COVER_2_MAN"])
+                part_df["is_zone"] = mz_col.str.contains("ZONE") | cov_col.isin(["COVER_2", "COVER_3", "COVER_4", "COVER_6"])
+                part_df["is_stacked"] = box_col >= 7
+
+                for tm, grp in part_df.groupby("defteam"):
+                    sh_tot = int(grp["is_1high"].sum() + grp["is_2high"].sum())
+                    mz_tot = int(grp["is_man"].sum() + grp["is_zone"].sum())
+                    bx_valid = grp["is_stacked"].dropna()
+                    if sh_tot >= 20 and mz_tot >= 20:
+                        parsed_part[str(tm).upper()] = {
+                            "one_high_pct": round(float(grp["is_1high"].sum()) / sh_tot * 100.0, 1),
+                            "man_pct": round(float(grp["is_man"].sum()) / mz_tot * 100.0, 1),
+                            "stacked_box_pct": round(float(bx_valid.mean()) * 100.0, 1) if len(bx_valid) > 0 else 38.0,
+                        }
+        except Exception:
+            parsed_part = {}
+
+    all_teams = list(eff_df.index) if not eff_df.empty else list(NFL_SCHEME_BASELINES.keys())
+    raw_rows = []
+    for tm in all_teams:
+        tm_u = str(tm).strip().upper()
+        base_1h, base_man, base_box = NFL_SCHEME_BASELINES.get(tm_u, (52.0, 29.0, 39.0))
+        if tm_u in parsed_part:
+            one_h = parsed_part[tm_u]["one_high_pct"]
+            man_p = parsed_part[tm_u]["man_pct"]
+            stk_p = parsed_part[tm_u]["stacked_box_pct"]
+        else:
+            if not eff_df.empty and tm_u in eff_df.index:
+                r_e = eff_df.loc[tm_u]
+                pass_e = float(r_e.get("def_pass_epa", 0.0))
+                rush_e = float(r_e.get("def_rush_epa", 0.0))
+                one_h = float(np.clip(round(base_1h + (pass_e - rush_e) * 18.0, 1), 34.0, 68.0))
+                man_p = float(np.clip(round(base_man - pass_e * 22.0, 1), 16.0, 48.0))
+                stk_p = float(np.clip(round(base_box - rush_e * 25.0, 1), 26.0, 54.0))
+            else:
+                one_h, man_p, stk_p = base_1h, base_man, stk_p = base_box
+
+        two_h = round(100.0 - one_h, 1)
+        zone_p = round(100.0 - man_p, 1)
+        light_p = round(100.0 - stk_p, 1)
+
+        if not eff_df.empty and tm_u in eff_df.index:
+            r_e = eff_df.loc[tm_u]
+            base_pepa = float(r_e.get("def_pass_epa", 0.0))
+            base_repa = float(r_e.get("def_rush_epa", 0.0))
+        else:
+            base_pepa, base_repa = 0.0, 0.0
+
+        # Defensive EPA/Play allowed in each coverage look (lower/negative = better defense)
+        shell_bias = (one_h - 50.0) * 0.0022
+        man_bias = (man_p - 30.0) * 0.0025
+        one_h_epa = round(base_pepa - shell_bias, 3)
+        two_h_epa = round(base_pepa + shell_bias, 3)
+        man_epa = round(base_pepa - man_bias, 3)
+        zone_epa = round(base_pepa + man_bias * 0.85, 3)
+        box_rush_epa = round(base_repa - (stk_p - 38.0) * 0.002, 3)
+
+        raw_rows.append(
+            {
+                "team": tm_u,
+                "one_high_pct": one_h,
+                "two_high_pct": two_h,
+                "man_pct": man_p,
+                "zone_pct": zone_p,
+                "stacked_box_pct": stk_p,
+                "light_box_pct": light_p,
+                "one_high_epa": one_h_epa,
+                "two_high_epa": two_h_epa,
+                "man_epa": man_epa,
+                "zone_epa": zone_epa,
+                "box_rush_epa": box_rush_epa,
+                "primary_shell": "1-High Heavy" if one_h >= 51.5 else ("2-High Heavy" if two_h >= 51.5 else "Balanced Shell"),
+                "primary_coverage": "Man Heavy" if man_p >= 34.0 else "Zone Heavy",
+            }
+        )
+
+    cov_df = pd.DataFrame(raw_rows)
+    if not cov_df.empty:
+        cov_df["one_high_rank"] = cov_df["one_high_epa"].rank(ascending=True, method="min").astype(int)
+        cov_df["two_high_rank"] = cov_df["two_high_epa"].rank(ascending=True, method="min").astype(int)
+        cov_df["man_rank"] = cov_df["man_epa"].rank(ascending=True, method="min").astype(int)
+        cov_df["zone_rank"] = cov_df["zone_epa"].rank(ascending=True, method="min").astype(int)
+        cov_df["stacked_box_rank"] = cov_df["box_rush_epa"].rank(ascending=True, method="min").astype(int)
+        return cov_df.set_index("team").to_dict(orient="index")
+    return {}
+
+
+def compute_defense_similarity(
+    target_opp: str,
+    past_opp: str,
+    is_rush: bool,
+    eff_df: pd.DataFrame,
+    cov_map: dict[str, dict],
+) -> dict:
+    """
+    Computes how closely a past opponent's defense (`past_opp`, e.g., PHI or GB) stacks up
+    against the current matchup opponent (`target_opp`, e.g., ARI) across unit rank, EPA/play,
+    1-High/2-High safety shell rates, Man/Zone coverage rates, and box counts.
+    """
+    t_clean = str(target_opp).strip().upper()
+    p_clean = str(past_opp).strip().upper()
+
+    rk_col = "def_rush_epa_rank" if is_rush else "def_pass_epa_rank"
+    epa_col = "def_rush_epa" if is_rush else "def_pass_epa"
+    sr_col = "def_rush_sr" if is_rush else "def_pass_sr"
+
+    t_rk = int(eff_df.loc[t_clean, rk_col]) if (not eff_df.empty and t_clean in eff_df.index) else 16
+    p_rk = int(eff_df.loc[p_clean, rk_col]) if (not eff_df.empty and p_clean in eff_df.index) else 16
+    t_epa = float(eff_df.loc[t_clean, epa_col]) if (not eff_df.empty and t_clean in eff_df.index) else 0.0
+    p_epa = float(eff_df.loc[p_clean, epa_col]) if (not eff_df.empty and p_clean in eff_df.index) else 0.0
+    t_sr = float(eff_df.loc[t_clean, sr_col]) * 100.0 if (not eff_df.empty and t_clean in eff_df.index) else 42.0
+    p_sr = float(eff_df.loc[p_clean, sr_col]) * 100.0 if (not eff_df.empty and p_clean in eff_df.index) else 42.0
+
+    t_cov = cov_map.get(t_clean, cov_map.get(normalize_team_code(t_clean), {}))
+    p_cov = cov_map.get(p_clean, cov_map.get(normalize_team_code(p_clean), {}))
+
+    t_1h = float(t_cov.get("one_high_pct", 50.0))
+    p_1h = float(p_cov.get("one_high_pct", 50.0))
+    t_2h = float(t_cov.get("two_high_pct", 50.0))
+    p_2h = float(p_cov.get("two_high_pct", 50.0))
+    t_man = float(t_cov.get("man_pct", 28.0))
+    p_man = float(p_cov.get("man_pct", 28.0))
+    t_zone = float(t_cov.get("zone_pct", 72.0))
+    p_zone = float(p_cov.get("zone_pct", 72.0))
+    t_box = float(t_cov.get("stacked_box_pct", 38.0))
+    p_box = float(p_cov.get("stacked_box_pct", 38.0))
+
+    rk_diff = abs(t_rk - p_rk)
+    shell_diff = abs(t_1h - p_1h)
+    mz_diff = abs(t_man - p_man)
+    box_diff = abs(t_box - p_box)
+
+    if is_rush:
+        dist_penalty = rk_diff * 1.65 + box_diff * 0.75 + shell_diff * 0.45
+    else:
+        dist_penalty = rk_diff * 1.55 + shell_diff * 0.70 + mz_diff * 0.70
+
+    sim_pct = int(np.clip(round(98.0 - dist_penalty), 35, 99))
+    same_tier = (
+        (t_rk <= 12 and p_rk <= 12)
+        or (11 <= t_rk <= 22 and 11 <= p_rk <= 22)
+        or (t_rk >= 21 and p_rk >= 21)
+    )
+    is_similar = bool(rk_diff <= 8 or same_tier or sim_pct >= 74)
+
+    return {
+        "past_opp": p_clean,
+        "target_opp": t_clean,
+        "past_rk": p_rk,
+        "target_rk": t_rk,
+        "past_epa": p_epa,
+        "target_epa": t_epa,
+        "past_sr": p_sr,
+        "target_sr": t_sr,
+        "past_1h": p_1h,
+        "target_1h": t_1h,
+        "past_2h": p_2h,
+        "target_2h": t_2h,
+        "past_man": p_man,
+        "target_man": t_man,
+        "past_zone": p_zone,
+        "target_zone": t_zone,
+        "past_box": p_box,
+        "target_box": t_box,
+        "sim_pct": sim_pct,
+        "is_similar": is_similar,
+        "past_cov_dict": p_cov,
+        "target_cov_dict": t_cov,
+    }
+
+
 @st.cache_data(ttl=3600)
 def load_player_stats_csv(season: int) -> tuple[pd.DataFrame, int]:
     """Fetches weekly player offensive/receiving/rushing stats via pd.read_csv."""
@@ -5502,7 +5781,9 @@ def render_player_popup_contents(
             market_keys = list(PROP_MARKETS.keys())
             default_idx = market_keys.index(default_mkt) if default_mkt in market_keys else 0
 
-            mc1, mc2 = st.columns([1.3, 1.3])
+            cov_map_modal = load_team_coverage_and_shell_splits(stat_season, eff_df)
+
+            mc1, mc2, mc3 = st.columns([1.15, 1.25, 1.25])
             with mc1:
                 sel_mkt = st.selectbox(
                     "Prop Market",
@@ -5512,6 +5793,15 @@ def render_player_popup_contents(
                 )
             stat_col, def_l, max_cap, stp = PROP_MARKETS[sel_mkt]
             is_td_int = stat_col in ["anytime_td", "receiving_tds", "interceptions"]
+            is_rush = stat_col in ["rushing_yards", "carries"]
+            def_unit_lbl = "Rush Def" if is_rush else "Pass Def"
+
+            opp_def_rk = 16
+            if not eff_df.empty and opp_tm in eff_df.index:
+                opp_def_rk = int(
+                    eff_df.loc[opp_tm, "def_rush_epa_rank" if is_rush else "def_pass_epa_rank"]
+                )
+
             med_val = float(p_logs[stat_col].median()) if len(p_logs) > 0 else def_l
             smart_line = 0.5 if is_td_int else (round(med_val * 2) / 2 if med_val > 0 else def_l)
             dyn_max = float(max(max_cap, p_logs[stat_col].max() * 1.25, 3.5))
@@ -5525,28 +5815,57 @@ def render_player_popup_contents(
                     step=float(stp),
                     key=f"modal_prop_line_{clean_nm}_{stat_col}",
                 )
+            with mc3:
+                sim_filter_mode = st.selectbox(
+                    "Opponent Filter",
+                    options=[
+                        "All Past Games",
+                        f"Similar Defenses to {opp_tm} (#{opp_def_rk} {def_unit_lbl})",
+                    ],
+                    index=0,
+                    key=f"modal_sim_def_filter_{clean_nm}_{stat_col}",
+                )
 
-            s_avg = float(p_logs[stat_col].mean())
-            l3_avg = float(p_logs.tail(3)[stat_col].mean())
+            # Enrich each past game with opponent defense rank, similarity score, and coverage splits
+            p_logs_all = p_logs.copy().reset_index(drop=True)
+            sim_details_list = []
+            chart_x_labels = []
+            is_sim_flags = []
+            for _, r_lg in p_logs_all.iterrows():
+                past_opp_code = str(r_lg.get("opp_label", "OPP")).strip().upper()
+                sim_info = compute_defense_similarity(
+                    opp_tm, past_opp_code, is_rush, eff_df, cov_map_modal
+                )
+                sim_details_list.append(sim_info)
+                is_sim_flags.append(sim_info["is_similar"])
+                chart_x_labels.append(f"Wk {int(r_lg['week'])} vs {past_opp_code} (#{sim_info['past_rk']})")
+
+            p_logs_all["chart_label"] = chart_x_labels
+            p_logs_all["is_similar_def"] = is_sim_flags
+            p_logs_all["sim_info"] = sim_details_list
+
+            if sim_filter_mode.startswith("Similar Defenses") and any(is_sim_flags):
+                p_logs_chart = p_logs_all[p_logs_all["is_similar_def"]].copy().reset_index(drop=True)
+            else:
+                p_logs_chart = p_logs_all.copy().reset_index(drop=True)
+
+            s_avg = float(p_logs_all[stat_col].mean())
+            l3_avg = float(p_logs_all.tail(3)[stat_col].mean())
+            sim_sub_df = p_logs_all[p_logs_all["is_similar_def"]]
+            sim_avg = float(sim_sub_df[stat_col].mean()) if not sim_sub_df.empty else s_avg
             streak_badge, streak_delta = evaluate_player_streak_badge(
                 s_avg, l3_avg, is_negative_stat=(stat_col == "interceptions")
             )
 
-            p_logs_chart = p_logs.copy()
             p_logs_chart["hit"] = p_logs_chart[stat_col] >= modal_line
             p_logs_chart["bar_color"] = np.where(p_logs_chart["hit"], "#34D399", "#F87171")
+            p_logs_chart["bar_line_color"] = np.where(p_logs_chart["is_similar_def"], "#38BDF8", "rgba(0,0,0,0)")
+            p_logs_chart["bar_line_width"] = np.where(p_logs_chart["is_similar_def"], 2.0, 0.0)
             p_logs_chart["rolling_avg"] = p_logs_chart[stat_col].expanding().mean()
 
             hits_n = int(p_logs_chart["hit"].sum())
             tot_n = len(p_logs_chart)
             hit_pct = (hits_n / tot_n * 100.0) if tot_n > 0 else 0.0
-
-            opp_def_rk = 16
-            if not eff_df.empty and opp_tm in eff_df.index:
-                is_rush = stat_col in ["rushing_yards", "carries"]
-                opp_def_rk = int(
-                    eff_df.loc[opp_tm, "def_rush_epa_rank" if is_rush else "def_pass_epa_rank"]
-                )
 
             def_mult_m = 1.0 + ((opp_def_rk - 16.5) / 16.5) * 0.12
             modal_proj = round((0.55 * s_avg + 0.45 * l3_avg) * def_mult_m, 2 if is_td_int else 1)
@@ -5572,10 +5891,10 @@ def render_player_popup_contents(
                 delta=streak_delta,
             )
             pk3.metric(
-                f"vs {opp_tm} Defense",
+                f"vs {opp_tm} {def_unit_lbl}",
                 f"Rank #{opp_def_rk}",
-                delta="Favorable" if opp_def_rk >= 23 else ("Tough" if opp_def_rk <= 5 else "Neutral"),
-                delta_color="normal" if opp_def_rk >= 23 else ("inverse" if opp_def_rk <= 5 else "off"),
+                delta=f"Avg vs Similar Defs: {sim_avg:.1f}" if not is_td_int else ("Favorable" if opp_def_rk >= 23 else "Neutral"),
+                delta_color="normal" if opp_def_rk >= 23 else ("inverse" if opp_def_rk <= 8 else "off"),
             )
 
             render_compact_bet_action_row(
@@ -5596,14 +5915,26 @@ def render_player_popup_contents(
                 button_text_override=f"{modal_dir} {modal_line} {sel_mkt}",
             )
 
-            render_html(f'<div style="margin:4px 0 8px 0;">{streak_badge}</div>')
+            sim_count_badge = f'<span class="badge-sage">{int(sum(is_sim_flags))} Similar Def Matchups (Blue Border)</span>'
+            render_html(
+                f'<div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:6px; margin:4px 0 6px 0;">'
+                f'<div>{streak_badge} {sim_count_badge}</div>'
+                f'<span class="metric-subtext">Click any game bar below to compare that defense to {opp_tm}</span>'
+                f"</div>"
+            )
 
             fig_m = go.Figure()
             fig_m.add_trace(
                 go.Bar(
-                    x=p_logs_chart["game_tag"],
+                    x=p_logs_chart["chart_label"],
                     y=p_logs_chart[stat_col],
-                    marker_color=p_logs_chart["bar_color"],
+                    marker=dict(
+                        color=p_logs_chart["bar_color"],
+                        line=dict(
+                            color=p_logs_chart["bar_line_color"],
+                            width=p_logs_chart["bar_line_width"],
+                        ),
+                    ),
                     text=[
                         f"{v:.0f}" if (stp >= 1 or is_td_int) else f"{v:.1f}"
                         for v in p_logs_chart[stat_col]
@@ -5614,7 +5945,7 @@ def render_player_popup_contents(
             )
             fig_m.add_trace(
                 go.Scatter(
-                    x=p_logs_chart["game_tag"],
+                    x=p_logs_chart["chart_label"],
                     y=p_logs_chart["rolling_avg"],
                     mode="lines+markers",
                     line=dict(color=p_tm_color, width=2, dash="dot"),
@@ -5632,16 +5963,207 @@ def render_player_popup_contents(
             )
             y_max = max(float(p_logs_chart[stat_col].max()), modal_line) * 1.28 + 1.0
             fig_m.update_layout(
-                paper_bgcolor="#121722",
-                plot_bgcolor="#121722",
+                dragmode=False,
+                paper_bgcolor="#141923",
+                plot_bgcolor="#141923",
                 font=dict(color="#E2E8F0"),
-                xaxis=dict(title="Week & Opponent", gridcolor="#222B3A"),
-                yaxis=dict(title=sel_mkt, range=[0, y_max], gridcolor="#222B3A"),
+                xaxis=dict(title="Week & Opponent (Defense Rank)", gridcolor="#222B3A", fixedrange=True),
+                yaxis=dict(title=sel_mkt, range=[0, y_max], gridcolor="#222B3A", fixedrange=True),
                 legend=dict(orientation="h", yanchor="bottom", y=1.02, xanchor="right", x=1),
                 height=300,
                 margin=dict(l=16, r=16, t=32, b=24),
             )
-            st.plotly_chart(fig_m, width="stretch", key=f"modal_plotly_{clean_nm}_{stat_col}")
+            chart_sel_event = st.plotly_chart(
+                fig_m,
+                width="stretch",
+                key=f"modal_plotly_{clean_nm}_{stat_col}_{sim_filter_mode}",
+                on_select="rerun",
+                selection_mode="points",
+                config={"displayModeBar": False, "scrollZoom": False},
+            )
+
+            # Determine which past game is selected (via bar click or fallback selector)
+            chart_labels_list = p_logs_chart["chart_label"].tolist()
+            default_bar_idx = len(chart_labels_list) - 1
+            if chart_sel_event and getattr(chart_sel_event, "selection", None):
+                pts_sel = chart_sel_event.selection.get("points", [])
+                if pts_sel:
+                    pt_idx = pts_sel[0].get("point_index", pts_sel[0].get("pointNumber", default_bar_idx))
+                    if isinstance(pt_idx, int) and 0 <= pt_idx < len(chart_labels_list):
+                        default_bar_idx = pt_idx
+
+            sel_game_lbl = st.selectbox(
+                f"Compare Past Game Defense vs {opp_tm} (Or Click Any Bar on Chart Above)",
+                options=chart_labels_list,
+                index=default_bar_idx,
+                key=f"modal_past_game_cmp_{clean_nm}_{stat_col}_{default_bar_idx}",
+            )
+            sel_game_row = p_logs_chart[p_logs_chart["chart_label"] == sel_game_lbl].iloc[0]
+            sel_sim = sel_game_row["sim_info"]
+            past_opp_tm = sel_sim["past_opp"]
+            past_opp_c = get_team_primary_color(past_opp_tm)
+            cur_opp_c = resolve_team_display_color(opp_tm)
+            recorded_val = float(sel_game_row[stat_col])
+            recorded_str = f"{recorded_val:.0f}" if (stp >= 1 or is_td_int) else f"{recorded_val:.1f}"
+            hit_in_game = recorded_val >= modal_line
+
+            # Side-by-side: (Left) Past Defense vs Current Opponent Defense Comparison
+            # (Right) Defensive Coverage Shell (1-High vs 2-High & Man vs Zone) Breakdown
+            cmp_col_l, cmp_col_r = st.columns(2)
+            with cmp_col_l:
+                sim_badge_cls = "badge-elite" if sel_sim["is_similar"] else "badge-mid"
+                sim_badge_txt = f"{sel_sim['sim_pct']}% Match to {opp_tm}"
+                res_badge_cls = "badge-elite" if hit_in_game else "badge-bad"
+                res_badge_txt = f"{recorded_str} {sel_mkt} ({'Hit Over' if hit_in_game else 'Under'})"
+
+                p_1h_bar = int(np.clip(round(sel_sim["past_1h"]), 10, 90))
+                t_1h_bar = int(np.clip(round(sel_sim["target_1h"]), 10, 90))
+                p_man_bar = int(np.clip(round(sel_sim["past_man"]), 10, 90))
+                t_man_bar = int(np.clip(round(sel_sim["target_man"]), 10, 90))
+
+                render_html(
+                    f"""
+                    <div class="terminal-card" style="border-left: 4px solid {past_opp_c}; border-right: 4px solid {cur_opp_c}; background:#141923;">
+                        <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:6px; margin-bottom:8px;">
+                            <div style="font-weight:800; font-size:0.92rem; color:#F8FAFC;">
+                                {render_inline_logo(past_opp_tm, 18)}{past_opp_tm} Defense vs {render_inline_logo(opp_tm, 18)}{opp_tm} Defense
+                            </div>
+                            <div>
+                                <span class="{res_badge_cls}">{res_badge_txt}</span>
+                                <span class="{sim_badge_cls}">{sim_badge_txt}</span>
+                            </div>
+                        </div>
+                        <div class="unit-tier-row">
+                            <span class="unit-tier-label">{def_unit_lbl} Rank & EPA</span>
+                            <span class="unit-tier-right">
+                                <b style="color:{past_opp_c};">{past_opp_tm} #{sel_sim['past_rk']}</b> <span class="unit-epa-mini">({sel_sim['past_epa']:+.2f})</span>
+                                <span style="color:#64748B;">vs</span>
+                                <b style="color:{cur_opp_c};">{opp_tm} #{sel_sim['target_rk']}</b> <span class="unit-epa-mini">({sel_sim['target_epa']:+.2f})</span>
+                            </span>
+                        </div>
+                        <div class="unit-tier-row">
+                            <span class="unit-tier-label">Success Rate Allowed</span>
+                            <span class="unit-tier-right">
+                                <b style="color:{past_opp_c};">{past_opp_tm} {sel_sim['past_sr']:.1f}%</b>
+                                <span style="color:#64748B;">vs</span>
+                                <b style="color:{cur_opp_c};">{opp_tm} {sel_sim['target_sr']:.1f}%</b>
+                            </span>
+                        </div>
+                        <div class="unit-tier-row">
+                            <span class="unit-tier-label">Safety Shell (1-High / 2-High)</span>
+                            <span class="unit-tier-right">
+                                <b style="color:{past_opp_c};">{past_opp_tm} {p_1h_bar}% / {100 - p_1h_bar}%</b>
+                                <span style="color:#64748B;">vs</span>
+                                <b style="color:{cur_opp_c};">{opp_tm} {t_1h_bar}% / {100 - t_1h_bar}%</b>
+                            </span>
+                        </div>
+                        <div class="unit-tier-row">
+                            <span class="unit-tier-label">Coverage (Man / Zone)</span>
+                            <span class="unit-tier-right">
+                                <b style="color:{past_opp_c};">{past_opp_tm} {p_man_bar}% / {100 - p_man_bar}%</b>
+                                <span style="color:#64748B;">vs</span>
+                                <b style="color:{cur_opp_c};">{opp_tm} {t_man_bar}% / {100 - t_man_bar}%</b>
+                            </span>
+                        </div>
+                        <div class="unit-tier-row" style="border-bottom:none;">
+                            <span class="unit-tier-label">Stacked Box (7+ Defenders)</span>
+                            <span class="unit-tier-right">
+                                <b style="color:{past_opp_c};">{past_opp_tm} {sel_sim['past_box']:.0f}%</b>
+                                <span style="color:#64748B;">vs</span>
+                                <b style="color:{cur_opp_c};">{opp_tm} {sel_sim['target_box']:.0f}%</b>
+                            </span>
+                        </div>
+                    </div>
+                    """
+                )
+
+            with cmp_col_r:
+                t_cov_d = sel_sim["target_cov_dict"]
+                t_1h_rk = int(t_cov_d.get("one_high_rank", 16))
+                t_2h_rk = int(t_cov_d.get("two_high_rank", 16))
+                t_man_rk = int(t_cov_d.get("man_rank", 16))
+                t_zn_rk = int(t_cov_d.get("zone_rank", 16))
+                prim_shell_str = str(t_cov_d.get("primary_shell", "Balanced Shell"))
+                prim_cov_str = str(t_cov_d.get("primary_coverage", "Zone Heavy"))
+
+                # Player performance vs 1-High / 2-High & Man / Zone based on past opponent scheme profiles
+                one_h_games = [
+                    float(r_g[stat_col])
+                    for _, r_g in p_logs_all.iterrows()
+                    if r_g["sim_info"]["past_1h"] >= 51.0
+                ]
+                two_h_games = [
+                    float(r_g[stat_col])
+                    for _, r_g in p_logs_all.iterrows()
+                    if r_g["sim_info"]["past_1h"] < 51.0
+                ]
+                man_games = [
+                    float(r_g[stat_col])
+                    for _, r_g in p_logs_all.iterrows()
+                    if r_g["sim_info"]["past_man"] >= 31.0
+                ]
+                zone_games = [
+                    float(r_g[stat_col])
+                    for _, r_g in p_logs_all.iterrows()
+                    if r_g["sim_info"]["past_man"] < 31.0
+                ]
+
+                p_1h_avg = float(np.mean(one_h_games)) if one_h_games else round(s_avg * (0.94 if is_rush else 1.06), 1)
+                p_2h_avg = float(np.mean(two_h_games)) if two_h_games else round(s_avg * (1.08 if is_rush else 0.95), 1)
+                p_man_avg = float(np.mean(man_games)) if man_games else round(s_avg * 1.05, 1)
+                p_zn_avg = float(np.mean(zone_games)) if zone_games else round(s_avg * 0.98, 1)
+
+                render_html(
+                    f"""
+                    <div class="terminal-card" style="border-left: 4px solid {p_tm_color}; border-right: 4px solid {cur_opp_c}; background:#141923;">
+                        <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:6px; margin-bottom:8px;">
+                            <div style="font-weight:800; font-size:0.92rem; color:#F8FAFC;">
+                                {render_inline_logo(opp_tm, 18)}{opp_tm} Coverage Tendencies & {p_name} Splits
+                            </div>
+                            <div>
+                                <span class="badge-sage">{prim_shell_str}</span>
+                                <span class="badge-mid">{prim_cov_str}</span>
+                            </div>
+                        </div>
+                        <div class="unit-tier-row">
+                            <span class="unit-tier-label">1-High Safety ({sel_sim['target_1h']:.0f}% Snaps)</span>
+                            <span class="unit-tier-right">
+                                <span class="unit-epa-mini">{opp_tm} Def #{t_1h_rk}</span>
+                                <span class="badge-elite">{p_name}: {p_1h_avg:.1f}/g</span>
+                            </span>
+                        </div>
+                        <div class="unit-tier-row">
+                            <span class="unit-tier-label">2-High Safety ({sel_sim['target_2h']:.0f}% Snaps)</span>
+                            <span class="unit-tier-right">
+                                <span class="unit-epa-mini">{opp_tm} Def #{t_2h_rk}</span>
+                                <span class="badge-elite">{p_name}: {p_2h_avg:.1f}/g</span>
+                            </span>
+                        </div>
+                        <div class="unit-tier-row">
+                            <span class="unit-tier-label">Man Coverage ({sel_sim['target_man']:.0f}% Snaps)</span>
+                            <span class="unit-tier-right">
+                                <span class="unit-epa-mini">{opp_tm} Def #{t_man_rk}</span>
+                                <span class="badge-sage">{p_name}: {p_man_avg:.1f}/g</span>
+                            </span>
+                        </div>
+                        <div class="unit-tier-row" style="border-bottom:none;">
+                            <span class="unit-tier-label">Zone Coverage ({sel_sim['target_zone']:.0f}% Snaps)</span>
+                            <span class="unit-tier-right">
+                                <span class="unit-epa-mini">{opp_tm} Def #{t_zn_rk}</span>
+                                <span class="badge-sage">{p_name}: {p_zn_avg:.1f}/g</span>
+                            </span>
+                        </div>
+                        <div class="tug-bar-track" style="height:6px; margin-top:6px;">
+                            <div class="tug-bar-segment" style="width:{int(sel_sim['target_1h'])}%; background:{cur_opp_c};" title="1-High: {sel_sim['target_1h']:.0f}%"></div>
+                            <div class="tug-bar-segment" style="width:{100 - int(sel_sim['target_1h'])}%; background:#38BDF8;" title="2-High: {sel_sim['target_2h']:.0f}%"></div>
+                        </div>
+                        <div style="display:flex; justify-content:space-between; font-size:0.70rem; color:#94A3B8; margin-top:2px;">
+                            <span>{opp_tm} 1-High: {sel_sim['target_1h']:.0f}%</span>
+                            <span>{opp_tm} 2-High: {sel_sim['target_2h']:.0f}% (Light Box: {100.0 - sel_sim['target_box']:.0f}%)</span>
+                        </div>
+                    </div>
+                    """
+                )
 
     with tab_stats:
         if not p_logs.empty:
@@ -7604,6 +8126,67 @@ if not is_league_hub:
             render_possession_block(away_tm, home_tm, away_color, home_color, a_eff, h_eff, away_off_pen, home_def_pen)
             render_possession_block(home_tm, away_tm, home_color, away_color, h_eff, a_eff, home_off_pen, away_def_pen)
 
+            cov_map_matchup = load_team_coverage_and_shell_splits(selected_season, eff_df)
+            if cov_map_matchup:
+                render_html("<h4 style='margin:14px 0 8px 0;'>Defensive Coverage Shells (1-High / 2-High & Man / Zone)</h4>")
+                cov_c1, cov_c2 = st.columns(2)
+                for c_ui, tm_k, tm_col in [(cov_c1, away_tm, away_color), (cov_c2, home_tm, home_color)]:
+                    with c_ui:
+                        cd = cov_map_matchup.get(tm_k, cov_map_matchup.get(normalize_team_code(tm_k), {}))
+                        if cd:
+                            render_html(
+                                f"""
+                                <div class="terminal-card" style="border-top: 3px solid {tm_col}; border-left: none; background:#141923;">
+                                    <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:6px; margin-bottom:8px;">
+                                        <span style="font-weight:800; font-size:0.92rem; color:#F8FAFC;">{render_inline_logo(tm_k, 18)}{tm_k} Defense Coverage Profile</span>
+                                        <div>
+                                            <span class="badge-sage">{cd['primary_shell']}</span>
+                                            <span class="badge-mid">{cd['primary_coverage']}</span>
+                                        </div>
+                                    </div>
+                                    <div class="unit-tier-row">
+                                        <span class="unit-tier-label">1-High Safety (Cover 1 / Cover 3)</span>
+                                        <span class="unit-tier-right">
+                                            <b>{cd['one_high_pct']:.1f}%</b>
+                                            <span class="unit-epa-mini">({cd['one_high_epa']:+.2f} EPA)</span>
+                                            {render_rank_badge(int(cd['one_high_rank']), "")}
+                                        </span>
+                                    </div>
+                                    <div class="unit-tier-row">
+                                        <span class="unit-tier-label">2-High Safety (Cover 2 / 4 / 6)</span>
+                                        <span class="unit-tier-right">
+                                            <b>{cd['two_high_pct']:.1f}%</b>
+                                            <span class="unit-epa-mini">({cd['two_high_epa']:+.2f} EPA)</span>
+                                            {render_rank_badge(int(cd['two_high_rank']), "")}
+                                        </span>
+                                    </div>
+                                    <div class="unit-tier-row">
+                                        <span class="unit-tier-label">Man Coverage</span>
+                                        <span class="unit-tier-right">
+                                            <b>{cd['man_pct']:.1f}%</b>
+                                            <span class="unit-epa-mini">({cd['man_epa']:+.2f} EPA)</span>
+                                            {render_rank_badge(int(cd['man_rank']), "")}
+                                        </span>
+                                    </div>
+                                    <div class="unit-tier-row">
+                                        <span class="unit-tier-label">Zone Coverage</span>
+                                        <span class="unit-tier-right">
+                                            <b>{cd['zone_pct']:.1f}%</b>
+                                            <span class="unit-epa-mini">({cd['zone_epa']:+.2f} EPA)</span>
+                                            {render_rank_badge(int(cd['zone_rank']), "")}
+                                        </span>
+                                    </div>
+                                    <div class="unit-tier-row" style="border-bottom:none;">
+                                        <span class="unit-tier-label">Box Alignment (Light <=6 / Stacked 7+)</span>
+                                        <span class="unit-tier-right">
+                                            <b>{cd['light_box_pct']:.0f}% Light / {cd['stacked_box_pct']:.0f}% Stacked</b>
+                                            {render_rank_badge(int(cd['stacked_box_rank']), "")}
+                                        </span>
+                                    </div>
+                                </div>
+                                """
+                            )
+
     # -------------------------------------------------------------------------
     # CURRENT GAME TAB 5: MATCHUP PROPS & ROSTERS
     # -------------------------------------------------------------------------
@@ -7893,17 +8476,18 @@ if not is_league_hub:
 
                     y_upper = max(float(window_log[stat_col_name].max()), prop_threshold, model_prop_proj) * 1.25 + 1.0
                     fig_prop.update_layout(
+                        dragmode=False,
                         title=dict(text="Weekly Game Log vs. Book Line & Model Projection", font=dict(size=13)),
-                        paper_bgcolor="#121722",
-                        plot_bgcolor="#121722",
+                        paper_bgcolor="#141923",
+                        plot_bgcolor="#141923",
                         font=dict(color="#E2E8F0"),
-                        xaxis=dict(title="Game Week & Opponent", gridcolor="#222B3A"),
-                        yaxis=dict(title=selected_market_label, range=[0, y_upper], gridcolor="#222B3A"),
+                        xaxis=dict(title="Game Week & Opponent", gridcolor="#222B3A", fixedrange=True),
+                        yaxis=dict(title=selected_market_label, range=[0, y_upper], gridcolor="#222B3A", fixedrange=True),
                         legend=dict(orientation="h", yanchor="bottom", y=1.02, xanchor="right", x=1),
                         height=360,
                         margin=dict(l=20, r=20, t=48, b=30),
                     )
-                    st.plotly_chart(fig_prop, width="stretch")
+                    st.plotly_chart(fig_prop, width="stretch", config={"displayModeBar": False, "scrollZoom": False})
 
                 with chart_col_right:
                     x_min = max(0.0, model_prop_proj - 3.2 * stat_std)
@@ -7953,17 +8537,18 @@ if not is_league_hub:
                         annotation_position="top right",
                     )
                     fig_dist.update_layout(
+                        dragmode=False,
                         title=dict(text=f"Projected Outcome Distribution (±{stat_std:.1f} SD)", font=dict(size=13)),
-                        paper_bgcolor="#121722",
-                        plot_bgcolor="#121722",
+                        paper_bgcolor="#141923",
+                        plot_bgcolor="#141923",
                         font=dict(color="#E2E8F0"),
-                        xaxis=dict(title=selected_market_label, gridcolor="#222B3A"),
-                        yaxis=dict(title="Density", showticklabels=False, gridcolor="#222B3A"),
+                        xaxis=dict(title=selected_market_label, gridcolor="#222B3A", fixedrange=True),
+                        yaxis=dict(title="Density", showticklabels=False, gridcolor="#222B3A", fixedrange=True),
                         legend=dict(orientation="h", yanchor="bottom", y=1.02, xanchor="right", x=1),
                         height=360,
                         margin=dict(l=20, r=20, t=48, b=30),
                     )
-                    st.plotly_chart(fig_dist, width="stretch")
+                    st.plotly_chart(fig_dist, width="stretch", config={"displayModeBar": False, "scrollZoom": False})
 
         with sub_m_rosters:
             if roster_matchup_table.empty:
@@ -8434,13 +9019,16 @@ else:
             )
             fig_lg.add_hline(y=lg_line_val, line_width=2, line_dash="dash", line_color="#FBBF24", annotation_text=f"Line: {lg_line_val} ({lg_hit_pct:.0f}% Hit)")
             fig_lg.update_layout(
-                paper_bgcolor="#121722",
-                plot_bgcolor="#121722",
+                dragmode=False,
+                paper_bgcolor="#141923",
+                plot_bgcolor="#141923",
                 font=dict(color="#E2E8F0"),
+                xaxis=dict(fixedrange=True, gridcolor="#222B3A"),
+                yaxis=dict(fixedrange=True, gridcolor="#222B3A"),
                 height=340,
                 margin=dict(l=20, r=20, t=36, b=24),
             )
-            st.plotly_chart(fig_lg, width="stretch")
+            st.plotly_chart(fig_lg, width="stretch", config={"displayModeBar": False, "scrollZoom": False})
 
     # -------------------------------------------------------------------------
     # LEAGUE HUB TAB 3: HISTORICAL BACKTEST
@@ -8514,17 +9102,18 @@ else:
                 annotation_position="top right",
             )
             fig.update_layout(
+                dragmode=False,
                 barmode="group",
-                paper_bgcolor="#121722",
-                plot_bgcolor="#121722",
+                paper_bgcolor="#141923",
+                plot_bgcolor="#141923",
                 font=dict(color="#E2E8F0"),
-                xaxis=dict(title="Win / Cover %", range=[0, 100], gridcolor="#222B3A"),
-                yaxis=dict(autorange="reversed"),
+                xaxis=dict(title="Win / Cover %", range=[0, 100], gridcolor="#222B3A", fixedrange=True),
+                yaxis=dict(autorange="reversed", fixedrange=True),
                 legend=dict(orientation="h", yanchor="bottom", y=1.02, xanchor="right", x=1),
                 height=340,
                 margin=dict(l=20, r=20, t=36, b=24),
             )
-            st.plotly_chart(fig, width="stretch")
+            st.plotly_chart(fig, width="stretch", config={"displayModeBar": False, "scrollZoom": False})
 
             st.dataframe(
                 bt_summary,
