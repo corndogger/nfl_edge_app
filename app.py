@@ -164,10 +164,10 @@ div[data-testid="stMetricDelta"] > div {
     margin-bottom: 12px;
 }
 .custom-kpi-card {
-    background-color: #121722;
-    border: 1px solid #222B3A;
-    border-top: 2px solid #475569;
-    border-radius: 8px;
+    background-color: #141923;
+    border: 1px solid rgba(255, 255, 255, 0.07);
+    border-top: 3px solid #475569;
+    border-radius: 10px;
     padding: 12px 14px;
     min-width: 0;
     display: flex;
@@ -189,7 +189,7 @@ div[data-testid="stMetricDelta"] > div {
 }
 .custom-kpi-label {
     font-size: 0.76rem;
-    font-family: monospace;
+    font-family: Inter, -apple-system, BlinkMacSystemFont, sans-serif; font-variant-numeric: tabular-nums;
     color: #94A3B8;
     font-weight: 600;
     text-transform: uppercase;
@@ -197,7 +197,7 @@ div[data-testid="stMetricDelta"] > div {
 }
 .custom-kpi-help {
     font-size: 0.66rem;
-    font-family: monospace;
+    font-family: Inter, -apple-system, BlinkMacSystemFont, sans-serif; font-variant-numeric: tabular-nums;
     color: #64748B;
     border: 1px solid #2A364B;
     border-radius: 4px;
@@ -207,7 +207,7 @@ div[data-testid="stMetricDelta"] > div {
 .custom-kpi-val {
     font-size: 1.38rem;
     font-weight: 800;
-    font-family: monospace;
+    font-family: Inter, -apple-system, BlinkMacSystemFont, sans-serif; font-variant-numeric: tabular-nums;
     color: #F8FAFC;
     line-height: 1.22;
     margin-bottom: 6px;
@@ -220,7 +220,7 @@ div[data-testid="stMetricDelta"] > div {
     padding: 2px 8px;
     border-radius: 4px;
     font-size: 0.72rem;
-    font-family: monospace;
+    font-family: Inter, -apple-system, BlinkMacSystemFont, sans-serif; font-variant-numeric: tabular-nums;
     font-weight: 700;
     display: inline-block;
     width: fit-content;
@@ -232,7 +232,7 @@ div[data-testid="stMetricDelta"] > div {
     padding: 2px 8px;
     border-radius: 4px;
     font-size: 0.72rem;
-    font-family: monospace;
+    font-family: Inter, -apple-system, BlinkMacSystemFont, sans-serif; font-variant-numeric: tabular-nums;
     font-weight: 700;
     display: inline-block;
     width: fit-content;
@@ -244,7 +244,7 @@ div[data-testid="stMetricDelta"] > div {
     padding: 2px 8px;
     border-radius: 4px;
     font-size: 0.72rem;
-    font-family: monospace;
+    font-family: Inter, -apple-system, BlinkMacSystemFont, sans-serif; font-variant-numeric: tabular-nums;
     font-weight: 600;
     display: inline-block;
     width: fit-content;
@@ -316,7 +316,7 @@ button[kind="tertiary"] {
     height: auto !important;
     max-width: 100% !important;
     color: #F1F5F9 !important;
-    font-family: monospace !important;
+    font-family: Inter, -apple-system, BlinkMacSystemFont, sans-serif !important; font-variant-numeric: tabular-nums !important;
     font-weight: 700 !important;
     font-size: 0.90rem !important;
     text-decoration: underline !important;
@@ -335,7 +335,7 @@ button[kind="tertiary"]:hover {
     border-radius: 3px !important;
 }
 button[kind="tertiary"] p {
-    font-family: monospace !important;
+    font-family: Inter, -apple-system, BlinkMacSystemFont, sans-serif !important; font-variant-numeric: tabular-nums !important;
     font-weight: 700 !important;
     font-size: 0.90rem !important;
     color: inherit !important;
@@ -361,7 +361,7 @@ button[kind="tertiary"] p {
     border-bottom: none;
     border-radius: 8px 8px 0 0;
     padding: 4px 12px;
-    font-family: monospace;
+    font-family: Inter, -apple-system, BlinkMacSystemFont, sans-serif; font-variant-numeric: tabular-nums;
     font-size: 0.68rem;
     color: #94A3B8;
 }
@@ -449,7 +449,7 @@ div[data-testid="stHorizontalBlock"]:has(.nfl-ticker-marker) > div[data-testid="
     justify-content: space-between;
     align-items: center;
     font-size: 0.66rem;
-    font-family: monospace;
+    font-family: Inter, -apple-system, BlinkMacSystemFont, sans-serif; font-variant-numeric: tabular-nums;
     color: #94A3B8;
     margin-bottom: 5px;
     padding-bottom: 3px;
@@ -464,14 +464,14 @@ div[data-testid="stHorizontalBlock"]:has(.nfl-ticker-marker) > div[data-testid="
     border-radius: 3px;
     font-size: 0.62rem;
     font-weight: 700;
-    font-family: monospace;
+    font-family: Inter, -apple-system, BlinkMacSystemFont, sans-serif; font-variant-numeric: tabular-nums;
 }
 .ticker-team-row {
     display: flex;
     justify-content: space-between;
     align-items: center;
     margin: 4px 0;
-    font-family: monospace;
+    font-family: Inter, -apple-system, BlinkMacSystemFont, sans-serif; font-variant-numeric: tabular-nums;
     font-size: 0.83rem;
     font-weight: 700;
     color: #F1F5F9;
@@ -484,26 +484,26 @@ div[data-testid="stHorizontalBlock"]:has(.nfl-ticker-marker) > div[data-testid="
     white-space: nowrap;
 }
 .ticker-team-record {
-    font-family: monospace;
+    font-family: Inter, -apple-system, BlinkMacSystemFont, sans-serif; font-variant-numeric: tabular-nums;
     font-size: 0.71rem;
     font-weight: 600;
     color: #64748B;
     margin-left: 2px;
 }
 .ticker-score-win {
-    font-family: monospace;
+    font-family: Inter, -apple-system, BlinkMacSystemFont, sans-serif; font-variant-numeric: tabular-nums;
     font-size: 0.86rem;
     font-weight: 800;
     color: #34D399;
 }
 .ticker-score {
-    font-family: monospace;
+    font-family: Inter, -apple-system, BlinkMacSystemFont, sans-serif; font-variant-numeric: tabular-nums;
     font-size: 0.84rem;
     font-weight: 700;
     color: #CBD5E1;
 }
 .ticker-score-muted {
-    font-family: monospace;
+    font-family: Inter, -apple-system, BlinkMacSystemFont, sans-serif; font-variant-numeric: tabular-nums;
     font-size: 0.74rem;
     color: #64748B;
 }
@@ -517,7 +517,7 @@ div[data-testid="stHorizontalBlock"]:has(.nfl-ticker-marker) > div[data-testid="
     border-top: 1px solid #1E293B;
     font-size: 0.68rem;
     font-weight: 600;
-    font-family: monospace;
+    font-family: Inter, -apple-system, BlinkMacSystemFont, sans-serif; font-variant-numeric: tabular-nums;
     color: #CBD5E1;
     white-space: nowrap;
 }
@@ -574,7 +574,7 @@ div[data-testid="stHorizontalBlock"]:has(.nfl-ticker-marker) div[data-testid="st
     font-size: 0.72rem;
     font-weight: 700;
     letter-spacing: 0.04em;
-    font-family: monospace;
+    font-family: Inter, -apple-system, BlinkMacSystemFont, sans-serif; font-variant-numeric: tabular-nums;
     display: inline-block;
     text-transform: uppercase;
 }
@@ -601,7 +601,7 @@ div[data-testid="stHorizontalBlock"]:has(.nfl-ticker-marker) div[data-testid="st
 }
 .context-cell-title {
     font-size: 0.69rem;
-    font-family: monospace;
+    font-family: Inter, -apple-system, BlinkMacSystemFont, sans-serif; font-variant-numeric: tabular-nums;
     color: #94A3B8;
     font-weight: 700;
     text-transform: uppercase;
@@ -626,7 +626,7 @@ div[data-testid="stHorizontalBlock"]:has(.nfl-ticker-marker) div[data-testid="st
     flex-wrap: wrap;
     gap: 6px;
     margin-bottom: 5px;
-    font-family: monospace;
+    font-family: Inter, -apple-system, BlinkMacSystemFont, sans-serif; font-variant-numeric: tabular-nums;
     font-size: 0.78rem;
 }
 .tug-bar-track {
@@ -657,7 +657,7 @@ div[data-testid="stHorizontalBlock"]:has(.nfl-ticker-marker) div[data-testid="st
     border: 1px solid #263246;
     border-radius: 6px;
     padding: 6px 10px;
-    font-family: monospace;
+    font-family: Inter, -apple-system, BlinkMacSystemFont, sans-serif; font-variant-numeric: tabular-nums;
     font-size: 0.76rem;
     color: #F1F5F9;
     min-height: 36px;
@@ -701,7 +701,7 @@ div.element-container:has(.floating-plus-fab-marker) + div.element-container div
 }
 div[data-testid="stElementContainer"]:has(.floating-plus-fab-marker) + div[data-testid="stElementContainer"] div[data-testid="stButton"] button p,
 div.element-container:has(.floating-plus-fab-marker) + div.element-container div[data-testid="stButton"] button p {
-    font-family: monospace !important;
+    font-family: Inter, -apple-system, BlinkMacSystemFont, sans-serif !important; font-variant-numeric: tabular-nums !important;
     font-size: 2.15rem !important;
     font-weight: 900 !important;
     line-height: 1 !important;
@@ -744,7 +744,7 @@ div.element-container:has(.floating-plus-fab-marker) + div.element-container div
     border-radius: 2px 2px 0 0;
 }
 .l5-bar-lbl {
-    font-family: monospace;
+    font-family: Inter, -apple-system, BlinkMacSystemFont, sans-serif; font-variant-numeric: tabular-nums;
     font-size: 0.55rem;
     color: #94A3B8;
     line-height: 1;
@@ -802,7 +802,7 @@ div.element-container:has(.floating-plus-fab-marker) + div.element-container div
     display: flex;
     align-items: center;
     justify-content: center;
-    font-family: monospace;
+    font-family: Inter, -apple-system, BlinkMacSystemFont, sans-serif; font-variant-numeric: tabular-nums;
     font-size: 0.82rem;
     font-weight: 700;
     color: #94A3B8;
@@ -813,7 +813,7 @@ div.element-container:has(.floating-plus-fab-marker) + div.element-container div
 .cb-wr-vs-divider {
     text-align: center;
     padding-top: 24px;
-    font-family: monospace;
+    font-family: Inter, -apple-system, BlinkMacSystemFont, sans-serif; font-variant-numeric: tabular-nums;
     font-weight: 800;
     color: #64748B;
 }
@@ -875,7 +875,7 @@ div.element-container:has(.floating-plus-fab-marker) + div.element-container div
     display: flex;
     align-items: center;
     justify-content: center;
-    font-family: monospace;
+    font-family: Inter, -apple-system, BlinkMacSystemFont, sans-serif; font-variant-numeric: tabular-nums;
     font-size: 1.5rem;
     font-weight: 800;
     color: #94A3B8;
@@ -895,7 +895,7 @@ div.element-container:has(.floating-plus-fab-marker) + div.element-container div
     border-radius: 4px;
     font-size: 0.72rem;
     font-weight: 700;
-    font-family: monospace;
+    font-family: Inter, -apple-system, BlinkMacSystemFont, sans-serif; font-variant-numeric: tabular-nums;
     display: inline-block;
     margin: 1px 2px;
     max-width: 100%;
@@ -909,7 +909,7 @@ div.element-container:has(.floating-plus-fab-marker) + div.element-container div
     border-radius: 4px;
     font-size: 0.72rem;
     font-weight: 700;
-    font-family: monospace;
+    font-family: Inter, -apple-system, BlinkMacSystemFont, sans-serif; font-variant-numeric: tabular-nums;
     display: inline-block;
     margin: 1px 2px;
     max-width: 100%;
@@ -923,7 +923,7 @@ div.element-container:has(.floating-plus-fab-marker) + div.element-container div
     border-radius: 4px;
     font-size: 0.72rem;
     font-weight: 600;
-    font-family: monospace;
+    font-family: Inter, -apple-system, BlinkMacSystemFont, sans-serif; font-variant-numeric: tabular-nums;
     display: inline-block;
     margin: 1px 2px;
     max-width: 100%;
@@ -937,7 +937,7 @@ div.element-container:has(.floating-plus-fab-marker) + div.element-container div
     border-radius: 4px;
     font-size: 0.72rem;
     font-weight: 700;
-    font-family: monospace;
+    font-family: Inter, -apple-system, BlinkMacSystemFont, sans-serif; font-variant-numeric: tabular-nums;
     display: inline-block;
     margin: 1px 2px;
     max-width: 100%;
@@ -951,7 +951,7 @@ div.element-container:has(.floating-plus-fab-marker) + div.element-container div
     border-radius: 4px;
     font-size: 0.72rem;
     font-weight: 700;
-    font-family: monospace;
+    font-family: Inter, -apple-system, BlinkMacSystemFont, sans-serif; font-variant-numeric: tabular-nums;
     display: inline-block;
     margin: 1px 2px;
     max-width: 100%;
@@ -965,7 +965,7 @@ div.element-container:has(.floating-plus-fab-marker) + div.element-container div
     border-radius: 4px;
     font-size: 0.72rem;
     font-weight: 600;
-    font-family: monospace;
+    font-family: Inter, -apple-system, BlinkMacSystemFont, sans-serif; font-variant-numeric: tabular-nums;
     display: inline-block;
     margin: 1px 2px;
     max-width: 100%;
@@ -979,7 +979,7 @@ div.element-container:has(.floating-plus-fab-marker) + div.element-container div
     border-radius: 4px;
     font-size: 0.72rem;
     font-weight: 700;
-    font-family: monospace;
+    font-family: Inter, -apple-system, BlinkMacSystemFont, sans-serif; font-variant-numeric: tabular-nums;
     display: inline-block;
     margin: 1px 2px;
     max-width: 100%;
@@ -993,7 +993,7 @@ div.element-container:has(.floating-plus-fab-marker) + div.element-container div
     border-radius: 4px;
     font-size: 0.72rem;
     font-weight: 600;
-    font-family: monospace;
+    font-family: Inter, -apple-system, BlinkMacSystemFont, sans-serif; font-variant-numeric: tabular-nums;
     display: inline-block;
     margin: 1px 2px;
     max-width: 100%;
@@ -1007,7 +1007,7 @@ div.element-container:has(.floating-plus-fab-marker) + div.element-container div
     border-radius: 6px;
     font-size: 0.82rem;
     font-weight: 700;
-    font-family: monospace;
+    font-family: Inter, -apple-system, BlinkMacSystemFont, sans-serif; font-variant-numeric: tabular-nums;
     display: inline-flex;
     align-items: center;
     gap: 6px;
@@ -1021,7 +1021,7 @@ div.element-container:has(.floating-plus-fab-marker) + div.element-container div
     border-radius: 8px;
     font-size: 1.18rem;
     font-weight: 800;
-    font-family: monospace;
+    font-family: Inter, -apple-system, BlinkMacSystemFont, sans-serif; font-variant-numeric: tabular-nums;
     display: inline-flex;
     align-items: center;
     gap: 8px;
@@ -1030,7 +1030,7 @@ div.element-container:has(.floating-plus-fab-marker) + div.element-container div
 .metric-subtext {
     font-size: 0.79rem;
     color: #94A3B8;
-    font-family: monospace;
+    font-family: Inter, -apple-system, BlinkMacSystemFont, sans-serif; font-variant-numeric: tabular-nums;
     overflow-wrap: break-word;
     word-break: break-word;
 }
@@ -1064,7 +1064,7 @@ div.element-container:has(.floating-plus-fab-marker) + div.element-container div
 }
 .unit-section-tag {
     font-size: 0.66rem;
-    font-family: monospace;
+    font-family: Inter, -apple-system, BlinkMacSystemFont, sans-serif; font-variant-numeric: tabular-nums;
     font-weight: 700;
     color: #94A3B8;
     text-transform: uppercase;
@@ -1077,13 +1077,13 @@ div.element-container:has(.floating-plus-fab-marker) + div.element-container div
     align-items: center;
     flex-wrap: wrap;
     gap: 4px;
-    padding: 4px 0;
-    font-size: 0.80rem;
-    border-bottom: 1px dashed rgba(71, 85, 105, 0.28);
+    padding: 6px 0;
+    font-size: 0.82rem;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.06);
 }
 .unit-tier-label {
     color: #CBD5E1;
-    font-family: monospace;
+    font-family: Inter, -apple-system, BlinkMacSystemFont, sans-serif; font-variant-numeric: tabular-nums;
     font-weight: 600;
     font-size: 0.76rem;
 }
@@ -1094,7 +1094,7 @@ div.element-container:has(.floating-plus-fab-marker) + div.element-container div
     flex-wrap: wrap;
 }
 .unit-epa-mini {
-    font-family: monospace;
+    font-family: Inter, -apple-system, BlinkMacSystemFont, sans-serif; font-variant-numeric: tabular-nums;
     font-size: 0.74rem;
     color: #94A3B8;
 }
@@ -1126,7 +1126,7 @@ div.element-container:has(.floating-plus-fab-marker) + div.element-container div
 }
 .epa-stat-label {
     font-size: 0.73rem;
-    font-family: monospace;
+    font-family: Inter, -apple-system, BlinkMacSystemFont, sans-serif; font-variant-numeric: tabular-nums;
     color: #94A3B8;
     margin-bottom: 3px;
     white-space: normal;
@@ -1135,7 +1135,7 @@ div.element-container:has(.floating-plus-fab-marker) + div.element-container div
 .epa-stat-num {
     font-size: 1.32rem;
     font-weight: 800;
-    font-family: monospace;
+    font-family: Inter, -apple-system, BlinkMacSystemFont, sans-serif; font-variant-numeric: tabular-nums;
     color: #F8FAFC;
     line-height: 1.2;
     margin-bottom: 5px;
@@ -1160,7 +1160,7 @@ a.depth-chart-link-btn:visited {
     display: inline-flex;
     align-items: center;
     gap: 4px;
-    font-family: monospace;
+    font-family: Inter, -apple-system, BlinkMacSystemFont, sans-serif; font-variant-numeric: tabular-nums;
     font-size: 0.69rem;
     font-weight: 800;
     letter-spacing: 0.03em;
@@ -1188,7 +1188,7 @@ a.depth-chart-link-btn:hover {
     border-bottom: 1px solid #232D3F;
 }
 .nfl-div-title {
-    font-family: monospace;
+    font-family: Inter, -apple-system, BlinkMacSystemFont, sans-serif; font-variant-numeric: tabular-nums;
     font-size: 0.95rem;
     font-weight: 800;
     letter-spacing: 0.04em;
@@ -1207,7 +1207,7 @@ a.depth-chart-link-btn:hover {
     border-radius: 7px;
     background-color: #151C28;
     border: 1px solid #232D3F;
-    font-family: monospace;
+    font-family: Inter, -apple-system, BlinkMacSystemFont, sans-serif; font-variant-numeric: tabular-nums;
 }
 .div-team-strip-top {
     display: flex;
@@ -1247,7 +1247,7 @@ a.depth-chart-link-btn:hover {
     border-radius: 8px;
     padding: 10px 14px;
     margin-bottom: 8px;
-    font-family: monospace;
+    font-family: Inter, -apple-system, BlinkMacSystemFont, sans-serif; font-variant-numeric: tabular-nums;
     display: flex;
     flex-direction: column;
     gap: 6px;
@@ -1277,7 +1277,7 @@ div[data-baseweb="tab-list"] {
 button[data-baseweb="tab"] {
     flex-shrink: 0 !important;
     white-space: nowrap !important;
-    font-family: monospace !important;
+    font-family: Inter, -apple-system, BlinkMacSystemFont, sans-serif !important; font-variant-numeric: tabular-nums !important;
     font-weight: 700 !important;
     font-size: 0.84rem !important;
     padding: 8px 16px !important;
@@ -1287,21 +1287,38 @@ button[data-baseweb="tab"] {
 /* ============================================================================
    MOBILE & TABLET RESPONSIVE MEDIA QUERIES (MAX-WIDTH: 768PX & 480PX)
    ============================================================================ */
+/* Flat Modern Card Containers */
+div[data-testid="stVerticalBlockBorderWrapper"] {
+    background-color: #141923 !important;
+    border: 1px solid rgba(255, 255, 255, 0.08) !important;
+    border-radius: 10px !important;
+    padding: 12px 14px !important;
+}
+
 @media (max-width: 768px) {
     .stApp, .main {
         max-width: 100vw !important;
         overflow-x: hidden !important;
     }
     .block-container {
-        padding-left: 0.75rem !important;
-        padding-right: 0.75rem !important;
-        padding-top: 1.25rem !important;
-        max-width: 100% !important;
+        padding-left: 0.45rem !important;
+        padding-right: 0.45rem !important;
+        padding-top: 0.85rem !important;
+        padding-bottom: 4.5rem !important;
+        max-width: 100vw !important;
+        width: 100vw !important;
+    }
+    div[data-testid="stVerticalBlockBorderWrapper"] {
+        padding: 10px 11px !important;
+        border-radius: 10px !important;
+        margin-bottom: 6px !important;
+        width: 100% !important;
     }
     div[data-testid="stHorizontalBlock"]:not(:has(.nfl-ticker-marker)):not(:has(.compact-bet-pill)) {
         flex-direction: column !important;
-        flex-wrap: wrap !important;
-        gap: 0.55rem !important;
+        flex-wrap: nowrap !important;
+        gap: 0.5rem !important;
+        width: 100% !important;
     }
     div[data-testid="stHorizontalBlock"]:not(:has(.nfl-ticker-marker)):not(:has(.compact-bet-pill)) > div[data-testid="stColumn"],
     div[data-testid="stHorizontalBlock"]:not(:has(.nfl-ticker-marker)):not(:has(.compact-bet-pill)) > div[data-testid="column"] {
@@ -1314,15 +1331,17 @@ button[data-baseweb="tab"] {
         flex-direction: row !important;
         flex-wrap: nowrap !important;
         overflow-x: auto !important;
-        gap: 6px !important;
-        padding: 6px 6px 10px 6px !important;
+        gap: 8px !important;
+        padding: 8px 6px 10px 6px !important;
+        margin-left: -2px !important;
+        margin-right: -2px !important;
     }
     div[data-testid="stHorizontalBlock"]:has(.nfl-ticker-marker) > div[data-testid="stColumn"],
     div[data-testid="stHorizontalBlock"]:has(.nfl-ticker-marker) > div[data-testid="column"] {
-        flex: 0 0 174px !important;
-        min-width: 174px !important;
-        max-width: 174px !important;
-        width: 174px !important;
+        flex: 0 0 168px !important;
+        min-width: 168px !important;
+        max-width: 168px !important;
+        width: 168px !important;
     }
     .brief-grid,
     .promoted-context-strip {
@@ -1330,60 +1349,68 @@ button[data-baseweb="tab"] {
         gap: 8px !important;
     }
     .custom-kpi-grid {
-        grid-template-columns: 1fr 1fr !important;
+        grid-template-columns: 1fr !important;
+        gap: 8px !important;
     }
-    .promoted-context-cell {
-        border-right: none !important;
-        border-bottom: 1px solid #1E293B;
-        padding-bottom: 6px;
+    .custom-kpi-card {
+        padding: 12px 14px !important;
+        border-radius: 10px !important;
+        width: 100% !important;
+    }
+    .custom-kpi-val {
+        font-size: 1.24rem !important;
+    }
+    .cross-unit-row,
+    .div-team-strip,
+    .h2h-game-card,
+    .terminal-card,
+    .terminal-card-elite,
+    .terminal-card-vuln {
+        width: 100% !important;
+        padding: 11px 12px !important;
+        border-radius: 10px !important;
+        margin-bottom: 8px !important;
+    }
+    div[data-baseweb="tab-list"] {
+        gap: 4px !important;
+        padding: 5px 6px !important;
+        border-radius: 10px !important;
+        width: 100% !important;
+    }
+    button[data-baseweb="tab"] {
+        font-size: 0.80rem !important;
+        padding: 8px 12px !important;
+        border-radius: 7px !important;
+    }
+    div[data-testid="stButton"] > button {
+        min-height: 42px !important;
     }
     .epa-stat-num {
         font-size: 1.12rem !important;
     }
     .epa-stat-box {
-        padding: 7px 8px !important;
+        padding: 8px 10px !important;
     }
     .active-game-spotlight {
         padding: 12px 12px !important;
+        border-radius: 10px !important;
     }
     .team-pill-lg {
-        font-size: 0.98rem !important;
-        padding: 4px 9px !important;
+        font-size: 1.0rem !important;
+        padding: 4px 10px !important;
         margin: 2px 2px !important;
     }
     .team-pill {
         font-size: 0.78rem !important;
-        padding: 2px 7px !important;
+        padding: 2px 8px !important;
     }
     .cb-wr-vs-divider {
         padding: 4px 0 !important;
         margin: 2px 0 !important;
         text-align: left !important;
-        font-size: 0.76rem !important;
-        border-top: 1px dashed #232C3D;
-        border-bottom: 1px dashed #232C3D;
-    }
-    div[data-testid="stColumn"] div[style*="text-align:right"],
-    div[data-testid="column"] div[style*="text-align:right"] {
-        text-align: left !important;
-        padding-top: 2px !important;
-    }
-    .player-modal-banner {
-        padding: 12px 14px 4px 14px !important;
-        gap: 10px !important;
-    }
-    .player-modal-left {
-        flex-direction: column !important;
-        align-items: flex-start !important;
-        gap: 8px !important;
-    }
-    .player-headshot-wrap {
-        width: 116px !important;
-        height: 94px !important;
-    }
-    .player-headshot-img {
-        height: 94px !important;
-        max-width: 116px !important;
+        font-size: 0.75rem !important;
+        border-top: 1px solid rgba(255, 255, 255, 0.06);
+        border-bottom: 1px solid rgba(255, 255, 255, 0.06);
     }
 }
 
@@ -1867,7 +1894,7 @@ def render_compact_bet_action_row(
         div[data-testid="stElementContainer"]:has(.{safe_cls}) + div[data-testid="stElementContainer"] div[data-testid="stButton"] button p,
         div.element-container:has(.{safe_cls}) + div.element-container div[data-testid="stButton"] button p {{
             color: #F8FAFC !important;
-            font-family: monospace !important;
+            font-family: Inter, -apple-system, BlinkMacSystemFont, sans-serif !important; font-variant-numeric: tabular-nums !important;
             font-weight: 800 !important;
             font-size: 0.85rem !important;
             text-decoration: none !important;
@@ -2049,7 +2076,7 @@ def compute_model_fair_line_and_totals(
 def render_l5_sparkbars_html(values: list[float], line_val: float) -> str:
     """Renders a compact 5-game mini vertical sparkbar strip colored by hit/miss vs line."""
     if not values:
-        return '<span class="badge-mid">[NO L5 LOGS]</span>'
+        return '<span class="badge-mid">No L5 Logs</span>'
     last5 = values[-5:]
     max_v = max(max(last5), line_val, 1.0)
     cols_html = []
@@ -2207,7 +2234,7 @@ def render_inline_player_trigger(
     tm_hex = color_override if color_override else resolve_team_display_color(tm_clean)
     if not clean_p or "Rotation" in clean_p:
         render_html(
-            f'<span style="display:inline-block; background:{hex_to_rgba(tm_hex, 0.16)}; border:1px solid {hex_to_rgba(tm_hex, 0.55)}; border-left:3px solid {tm_hex}; border-radius:6px; padding:3px 9px; font-family:monospace; font-size:0.84rem; font-weight:700; color:#F8FAFC;">'
+            f'<span style="display:inline-block; background:{hex_to_rgba(tm_hex, 0.16)}; border:1px solid {hex_to_rgba(tm_hex, 0.55)}; border-left:3px solid {tm_hex}; border-radius:6px; padding:3px 9px; font-family:Inter, -apple-system, BlinkMacSystemFont, sans-serif; font-variant-numeric:tabular-nums; font-size:0.84rem; font-weight:700; color:#F8FAFC;">'
             f"{clean_p} {extra_label}</span>"
         )
         return
@@ -2236,7 +2263,7 @@ def render_inline_player_trigger(
         div.element-container:has(.{safe_plr_cls}) + div.element-container div[data-testid="stButton"] button p {{
             text-decoration: none !important;
             color: #F8FAFC !important;
-            font-family: monospace !important;
+            font-family: Inter, -apple-system, BlinkMacSystemFont, sans-serif !important; font-variant-numeric: tabular-nums !important;
             font-weight: 700 !important;
             font-size: 0.85rem !important;
         }}
@@ -2308,17 +2335,17 @@ def render_team_pill(
 
 def render_rank_badge(rank: int, prefix: str = "") -> str:
     """
-    Renders standardized unit ranking tags (strictly evaluative green/red/neutral):
-    - Top 5 (1-5): ELITE [#X] (Green)
-    - Bottom 10 (23-32): BAD [#X] (Red)
-    - Middle Tier (6-22): MID [#X] (Slate)
+    Renders concise, flat unit ranking pills without bracket clutter:
+    - Top 10 (1-10): Green (#X)
+    - Bottom 10 (23-32): Red (#X)
+    - Middle (11-22): Neutral (#X)
     """
     lbl = f"{prefix} " if prefix else ""
-    if rank <= 5:
-        return f'<span class="badge-elite">{lbl}ELITE [#{rank}]</span>'
+    if rank <= 10:
+        return f'<span class="badge-elite">{lbl}#{rank}</span>'
     if rank >= 23:
-        return f'<span class="badge-bad">{lbl}BAD [#{rank}]</span>'
-    return f'<span class="badge-mid">{lbl}MID [#{rank}]</span>'
+        return f'<span class="badge-bad">{lbl}#{rank}</span>'
+    return f'<span class="badge-mid">{lbl}#{rank}</span>'
 
 
 def is_active_unresolved_injury(status_str: str) -> bool:
@@ -2436,43 +2463,43 @@ def normalize_injury_designation(
 
 
 def render_injury_badge(status: str) -> str:
-    """Renders an evaluative HTML badge for official NFL injury report designations."""
+    """Renders a concise flat badge for official NFL injury report designations."""
     status_clean = str(status).strip().upper()
     if status_clean == "UNSPECIFIED (DNP)":
-        return '<span class="badge-bad">[UNSPECIFIED • DNP]</span>'
+        return '<span class="badge-bad">DNP</span>'
     if status_clean == "UNSPECIFIED (LP)":
-        return '<span class="badge-amber">[UNSPECIFIED • LP]</span>'
+        return '<span class="badge-amber">LP</span>'
     if status_clean == "UNSPECIFIED (FP)":
-        return '<span class="badge-elite">[UNSPECIFIED • FP (EXPECTED TO PLAY)]</span>'
+        return '<span class="badge-elite">FP</span>'
     if status_clean in CLEARED_DESIGNATIONS or "CLEARED" in status_clean or "PLAYED" in status_clean:
-        return '<span class="badge-elite">[ACTIVE / CLEARED]</span>'
+        return '<span class="badge-elite">Cleared</span>'
     if status_clean in ["OUT", "IR", "PUP", "SUSPENDED", "NFI"]:
-        return f'<span class="badge-bad">[{status_clean}]</span>'
+        return f'<span class="badge-bad">{status_clean.title() if len(status_clean) > 3 else status_clean}</span>'
     if status_clean == "DOUBTFUL":
-        return f'<span class="badge-bad">[{status_clean}]</span>'
+        return '<span class="badge-bad">Doubtful</span>'
     if status_clean == "QUESTIONABLE":
-        return f'<span class="badge-amber">[{status_clean}]</span>'
-    return f'<span class="badge-mid">[{status_clean}]</span>'
+        return '<span class="badge-amber">Questionable</span>'
+    return f'<span class="badge-mid">{status_clean.title()}</span>'
 
 
 def render_practice_badge(practice_status: str) -> str:
-    """Renders a clean tag badge for weekly practice participation (FP, LP, DNP)."""
+    """Renders a compact flat tag for weekly practice participation (FP, LP, DNP)."""
     if pd.isna(practice_status) or not str(practice_status).strip():
-        return '<span class="badge-mid">[PRACTICE: N/A]</span>'
+        return ""
     p_clean = str(practice_status).strip().upper()
-    if p_clean in ["NAN", "NONE", "NULL"]:
-        return '<span class="badge-mid">[PRACTICE: N/A]</span>'
+    if p_clean in ["NAN", "NONE", "NULL", "UNSPECIFIED", "N/A"]:
+        return ""
     if "FULL" in p_clean or p_clean == "FP":
-        return '<span class="badge-elite">[FP]</span>'
+        return '<span class="badge-elite">FP</span>'
     if "LIMITED" in p_clean or p_clean == "LP":
-        return '<span class="badge-amber">[LP]</span>'
-    if "DID NOT" in p_clean or "DNP" in p_clean or "NONE" in p_clean:
-        return '<span class="badge-bad">[DNP]</span>'
-    return f'<span class="badge-mid">[{p_clean}]</span>'
+        return '<span class="badge-amber">LP</span>'
+    if "DID NOT" in p_clean or "DNP" in p_clean:
+        return '<span class="badge-bad">DNP</span>'
+    return f'<span class="badge-mid">{p_clean}</span>'
 
 
 def classify_primetime_code(row: pd.Series) -> str:
-    """Detects compact broadcast tags ([TNF], [SNF], [MNF], [SPC])."""
+    """Detects compact broadcast tags (TNF, SNF, MNF, SPC)."""
     weekday = str(row.get("weekday", "")).strip().lower()
     gameday = str(row.get("gameday", "")).strip()
     gametime = str(row.get("gametime", "")).strip()
@@ -2491,21 +2518,22 @@ def classify_primetime_code(row: pd.Series) -> str:
             hour = 13
 
     if "thursday" in weekday:
-        return "[TNF]"
+        return "TNF"
     if "monday" in weekday:
-        return "[MNF]"
+        return "MNF"
     if "sunday" in weekday and hour >= 19:
-        return "[SNF]"
+        return "SNF"
     if "friday" in weekday or "saturday" in weekday or hour < 12:
-        return "[SPC]"
+        return "SPC"
     return ""
 
 
 def render_slot_badge_html(slot_code: str) -> str:
     """Returns a clean, uniform slate badge for broadcast slots."""
-    if slot_code in ["[TNF]", "[SNF]", "[MNF]", "[SPC]"]:
-        return f'<span class="ticker-slot-tag">{slot_code}</span>'
-    return '<span class="ticker-score-muted">[SUN]</span>'
+    clean_slot = str(slot_code).strip("[]")
+    if clean_slot in ["TNF", "SNF", "MNF", "SPC"]:
+        return f'<span class="ticker-slot-tag">{clean_slot}</span>'
+    return '<span class="ticker-score-muted">SUN</span>'
 
 
 def normalize_team_code(team_abbr: str) -> str:
@@ -2805,7 +2833,7 @@ def render_nfl_division_standings_card(
             ord_sfx = {1: "1st", 2: "2nd", 3: "3rd", 4: "4th"}.get(rk, f"#{rk}")
             tm_c = resolve_team_display_color(tm_code)
             matchup_tags.append(
-                f'<span class="badge-sage" style="border-left:3px solid {tm_c}; background:{hex_to_rgba(tm_c, 0.22)};">[{tm_code}: {ord_sfx} in {div_name} ({r["Record"]} • {r["PCT"]})]</span>'
+                f'<span class="badge-sage" style="border-left:3px solid {tm_c}; background:{hex_to_rgba(tm_c, 0.22)};">{tm_code} • {ord_sfx} ({r["Record"]})</span>'
             )
 
     header_right_html = (
@@ -2848,7 +2876,7 @@ def render_nfl_division_standings_card(
             else f"1px solid {hex_to_rgba(tm_color, 0.35)}"
         )
         playing_pill = (
-            f'<span style="background:{hex_to_rgba(tm_color, 0.30)}; color:#F8FAFC; border:1px solid {tm_color}; padding:1px 6px; border-radius:4px; font-size:0.63rem; font-weight:800; margin-left:5px;">[ACTIVE MATCHUP]</span>'
+            f'<span style="background:{hex_to_rgba(tm_color, 0.30)}; color:#F8FAFC; border:1px solid {tm_color}; padding:1px 6px; border-radius:4px; font-size:0.63rem; font-weight:800; margin-left:5px;">Playing</span>'
             if is_playing
             else ""
         )
@@ -2866,9 +2894,9 @@ def render_nfl_division_standings_card(
                     </div>
                     <div style="display:flex; align-items:center; gap:6px;">
                         <span style="font-size:0.92rem; font-weight:800; color:#F8FAFC;">{r['Record']}</span>
-                        <span class="badge-sage" style="border-left:2px solid {tm_color};">[{r['PCT']}]</span>
-                        <span class="{net_badge_cls}">[{net_str}]</span>
-                        <span class="{strk_badge_cls}">[{strk_str}]</span>
+                        <span class="badge-sage" style="border-left:2px solid {tm_color};">{r['PCT']}</span>
+                        <span class="{net_badge_cls}">{net_str}</span>
+                        <span class="{strk_badge_cls}">{strk_str}</span>
                     </div>
                 </div>
                 <div class="tug-bar-track" style="height:5px; margin:2px 0;">
@@ -2888,8 +2916,8 @@ def render_nfl_division_standings_card(
         <div class="nfl-div-card">
             <div class="nfl-div-header">
                 <div class="nfl-div-title">
-                    <span class="{conf_badge_cls}">[{conf_str}]</span>
-                    <span>{div_name} Standings</span>
+                    <span class="{conf_badge_cls}">{conf_str}</span>
+                    <span>{div_name}</span>
                 </div>
                 <div>{header_right_html}</div>
             </div>
@@ -2914,13 +2942,13 @@ def render_five_year_h2h_visual(
     render_html(
         f"<h4 style='margin:14px 0 8px 0;'>"
         f"{render_inline_logo(away_tm, 20)}{away_tm} vs {render_inline_logo(home_tm, 20)}{home_tm} — "
-        f"5-Year Matchup History ({selected_season - 5}–{selected_season})</h4>"
+        f"Last 5 Meetings ({selected_season - 5}–{selected_season})</h4>"
     )
     if h2h_df.empty:
         render_html(
             f"""
             <div class="terminal-card">
-                <span class="badge-mid">[NO RECENT MEETINGS]</span>
+                <span class="badge-mid">No Recent Meetings</span>
                 <p class="metric-subtext" style="margin:6px 0 0 0;">
                     No completed matchups between {away_tm} and {home_tm} in the {selected_season - 5}–{selected_season} window.
                 </p>
@@ -2957,13 +2985,13 @@ def render_five_year_h2h_visual(
 
         if su_win == away_tm:
             win_color = away_color
-            win_badge = f'<span style="background:{hex_to_rgba(away_color, 0.28)}; color:#F8FAFC; border:1px solid {away_color}; padding:2px 8px; border-radius:4px; font-size:0.72rem; font-weight:800;">[{away_tm} WON BY {abs(hs_g - as_g)} PTS]</span>'
+            win_badge = f'<span style="background:{hex_to_rgba(away_color, 0.28)}; color:#F8FAFC; border:1px solid {away_color}; padding:2px 8px; border-radius:4px; font-size:0.72rem; font-weight:800;">{away_tm} +{abs(hs_g - as_g)}</span>'
         elif su_win == home_tm:
             win_color = home_color
-            win_badge = f'<span style="background:{hex_to_rgba(home_color, 0.28)}; color:#F8FAFC; border:1px solid {home_color}; padding:2px 8px; border-radius:4px; font-size:0.72rem; font-weight:800;">[{home_tm} WON BY {abs(hs_g - as_g)} PTS]</span>'
+            win_badge = f'<span style="background:{hex_to_rgba(home_color, 0.28)}; color:#F8FAFC; border:1px solid {home_color}; padding:2px 8px; border-radius:4px; font-size:0.72rem; font-weight:800;">{home_tm} +{abs(hs_g - as_g)}</span>'
         else:
             win_color = "#64748B"
-            win_badge = '<span class="badge-mid">[OVERTIME TIE]</span>'
+            win_badge = '<span class="badge-mid">Tie</span>'
 
         at_c = away_color if at_g == away_tm else home_color
         ht_c = home_color if ht_g == home_tm else away_color
@@ -2978,12 +3006,12 @@ def render_five_year_h2h_visual(
             <div class="h2h-game-card" style="background:linear-gradient(90deg, {hex_to_rgba(win_color, 0.22)} 0%, #141B28 70%); border:1px solid {hex_to_rgba(win_color, 0.65)}; border-left:5px solid {win_color};">
                 <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px;">
                     <div style="display:flex; align-items:center; gap:8px; flex-wrap:wrap;">
-                        <span class="badge-mid">[{s_yr} • WK {wk_num} • {g_date}]</span>
+                        <span class="badge-mid">{s_yr} Wk {wk_num}</span>
                         {win_badge}
                     </div>
                     <div style="display:flex; align-items:center; gap:6px; flex-wrap:wrap;">
-                        <span class="badge-sage" style="border-left:3px solid {win_color};">[ATS: {ats_str}]</span>
-                        <span class="badge-mid">[TOTAL: {tot_pts} PTS]</span>
+                        <span class="badge-sage" style="border-left:3px solid {win_color};">ATS: {ats_str}</span>
+                        <span class="badge-mid">{tot_pts} Pts</span>
                     </div>
                 </div>
                 <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px; margin-top:2px;">
@@ -3015,11 +3043,11 @@ def render_five_year_h2h_visual(
             <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px; margin-bottom:6px;">
                 <div>
                     {render_team_pill(away_tm, f"{a_wins} Wins", color_override=away_color)}
-                    <span style="font-family:monospace; font-size:0.80rem; color:#94A3B8; margin:0 6px;">5-YR SERIES ({total_meetings} GAMES{ties_str})</span>
+                    <span style="font-family:Inter, -apple-system, BlinkMacSystemFont, sans-serif; font-variant-numeric:tabular-nums; font-size:0.80rem; color:#94A3B8; margin:0 6px;">5-YR SERIES ({total_meetings} GAMES{ties_str})</span>
                     {render_team_pill(home_tm, f"{h_wins} Wins", color_override=home_color)}
                 </div>
                 <div>
-                    <span class="badge-sage">[AVG COMBINED TOTAL: {avg_total:.1f} PTS]</span>
+                    <span class="badge-sage">Avg Total: {avg_total:.1f} Pts</span>
                 </div>
             </div>
             <div class="tug-bar-track" style="height:9px; margin-bottom:12px;">
@@ -3050,8 +3078,8 @@ def render_nfl_horizontal_ticker(
     render_html(
         f"""
         <div class="ticker-scroll-hint-bar">
-            <span>SLATE CAROUSEL ({total_games} GAMES) • CLICK ANY CARD TO SWITCH ACTIVE MATCHUP</span>
-            <span style="color:#CBD5E1;">[GAME {cur_idx + 1} OF {total_games} ACTIVE • SCROLL HORIZONTALLY &rarr;]</span>
+            <span>WEEK SLATE ({total_games} GAMES)</span>
+            <span style="color:#CBD5E1;">Game {cur_idx + 1} of {total_games} &rarr;</span>
         </div>
         """
     )
@@ -3246,32 +3274,32 @@ def evaluate_player_streak_badge(
     if is_negative_stat:
         if diff >= 0.35:
             return (
-                f'<span class="badge-bad">[TURNOVER SPIKE: L3 {l3_avg:.2f}/g vs {season_avg:.2f} Avg]</span>',
-                f"{diff:+.2f} vs Season Avg",
+                f'<span class="badge-bad">L3: {l3_avg:.1f}/g</span>',
+                f"{diff:+.2f} vs Avg",
             )
         if diff <= -0.25:
             return (
-                f'<span class="badge-elite">[CLEAN POCKET: L3 {l3_avg:.2f}/g vs {season_avg:.2f} Avg]</span>',
-                f"{diff:+.2f} vs Season Avg",
+                f'<span class="badge-elite">L3: {l3_avg:.1f}/g</span>',
+                f"{diff:+.2f} vs Avg",
             )
         return (
-            f'<span class="badge-mid">[STEADY RATE: L3 {l3_avg:.2f}/g]</span>',
-            f"{diff:+.2f} vs Season Avg",
+            f'<span class="badge-mid">L3: {l3_avg:.1f}/g</span>',
+            f"{diff:+.2f} vs Avg",
         )
 
     if rel_pct >= 15.0 or (season_avg < 1.5 and diff >= 0.35):
         return (
-            f'<span class="badge-hot">[HOT L3: {l3_avg:.1f} vs {season_avg:.1f} Avg]</span>',
-            f"{diff:+.1f} L3 Surge ({rel_pct:+.0f}%)",
+            f'<span class="badge-hot">Hot L3: {l3_avg:.1f}</span>',
+            f"{diff:+.1f} L3 ({rel_pct:+.0f}%)",
         )
     if rel_pct <= -15.0 or (season_avg < 1.5 and diff <= -0.35):
         return (
-            f'<span class="badge-cold">[COLD L3: {l3_avg:.1f} vs {season_avg:.1f} Avg]</span>',
-            f"{diff:+.1f} L3 Dip ({rel_pct:+.0f}%)",
+            f'<span class="badge-cold">Cold L3: {l3_avg:.1f}</span>',
+            f"{diff:+.1f} L3 ({rel_pct:+.0f}%)",
         )
     return (
-        f'<span class="badge-sage">[STEADY L3: {l3_avg:.1f} vs {season_avg:.1f} Avg]</span>',
-        f"{diff:+.1f} vs Season Avg",
+        f'<span class="badge-sage">L3 Avg: {l3_avg:.1f}</span>',
+        f"{diff:+.1f} vs Avg",
     )
 
 
@@ -4002,8 +4030,8 @@ def build_top_player_picks(
             epa_pts = float(np.clip(epa_pg * 1.5, -2.5, 4.0))
             score += vol_pts + prod_pts + air_pts + def_pts + form_pts + epa_pts
 
-            usage_tag = f"[{tgt_sh:.1f}% TGT • {air_sh:.0f}% AIR]"
-            matchup_tag = f"[VS #{opp_pass_rk} {opp_tm} PASS DEF]"
+            usage_tag = f"{tgt_sh:.0f}% Tgt"
+            matchup_tag = f"vs #{opp_pass_rk} Pass Def"
             rationale = (
                 f"Projects at {model_proj:.1f} {mkt_label} ({model_proj - line_val:+.1f} vs line) • "
                 f"L3 form {l3_val:.1f} YPG vs {opp_tm} ({opp_pass_epa:+.2f} pass def EPA)."
@@ -4031,8 +4059,8 @@ def build_top_player_picks(
             epa_pts = float(np.clip(epa_pg * 1.4, -2.5, 4.0))
             score += vol_pts + prod_pts + def_pts + form_pts + epa_pts
 
-            usage_tag = f"[{touches_pg:.1f} TOUCHES/G • {rush_sh:.0f}% RUSH]"
-            matchup_tag = f"[VS #{opp_rush_rk} {opp_tm} RUSH DEF]"
+            usage_tag = f"{touches_pg:.1f} Touches/G"
+            matchup_tag = f"vs #{opp_rush_rk} Rush Def"
             rationale = (
                 f"Projects at {model_proj:.1f} {mkt_label} ({model_proj - line_val:+.1f} vs line) • "
                 f"L3 form {l3_val:.1f} YPG vs {opp_tm} ({opp_rush_epa:+.2f} rush def EPA)."
@@ -4058,8 +4086,8 @@ def build_top_player_picks(
             epa_pts = float(np.clip(epa_pg * 1.2, -3.5, 6.0))
             score += prod_pts + def_pts + form_pts + epa_pts
 
-            usage_tag = f"[{pass_ypg:.1f} PASS YPG • {epa_pg:+.2f} EPA/G]"
-            matchup_tag = f"[VS #{opp_pass_rk} {opp_tm} PASS DEF]"
+            usage_tag = f"{pass_ypg:.0f} Pass YPG"
+            matchup_tag = f"vs #{opp_pass_rk} Pass Def"
             rationale = (
                 f"Projects at {model_proj:.1f} {mkt_label} ({model_proj - line_val:+.1f} vs line) • "
                 f"L3 form {l3_val:.1f} YPG vs {opp_tm} ({opp_pass_epa:+.2f} pass def EPA)."
@@ -4259,7 +4287,7 @@ def build_cb_wr_matchup_battles(
     def_pass_rk = int(eff_df.loc[def_tm, "def_pass_epa_rank"]) if def_tm in eff_df.index else 16
     def_pass_epa = float(eff_df.loc[def_tm, "def_pass_epa"]) if def_tm in eff_df.index else 0.0
 
-    alignments = ["Alpha Perimeter (X)", "Flanker / Field (Z)", "Slot / Motion (Y)"]
+    alignments = ["WR1 vs CB1", "WR2 vs CB2", "Slot vs Nickel"]
     battles = []
 
     for idx, (_, wr_row) in enumerate(top_wrs.iterrows()):
@@ -4343,46 +4371,39 @@ def build_cb_wr_matchup_battles(
             score = 72.5
 
         if score >= 75.0:
-            tier_badge = '<span class="badge-elite">[ELITE MISMATCH]</span>'
-            tier_plain = "[ELITE MISMATCH]"
+            tier_badge = '<span class="badge-elite">WR Edge</span>'
+            tier_plain = "WR Edge"
             card_style = "terminal-card-elite"
         elif score >= 60.0:
-            tier_badge = '<span class="badge-sage">[ADVANTAGE WR]</span>'
-            tier_plain = "[ADVANTAGE WR]"
+            tier_badge = '<span class="badge-sage">Slight WR Edge</span>'
+            tier_plain = "Slight WR Edge"
             card_style = "terminal-card"
         elif score <= 40.0:
-            tier_badge = '<span class="badge-bad">[CB LOCKDOWN SPOT]</span>'
-            tier_plain = "[CB LOCKDOWN SPOT]"
+            tier_badge = '<span class="badge-bad">CB Edge</span>'
+            tier_plain = "CB Edge"
             card_style = "terminal-card-vuln"
         else:
-            tier_badge = '<span class="badge-mid">[NEUTRAL BATTLE]</span>'
-            tier_plain = "[NEUTRAL BATTLE]"
+            tier_badge = '<span class="badge-mid">Even</span>'
+            tier_plain = "Even"
             card_style = "terminal-card"
 
         if streak_type == "HOT":
-            wr_streak_badge = f'<span class="badge-hot">[WR HOT L4: {l4_val:.1f} YPG ({diff_yds:+.1f})]</span>'
+            wr_streak_badge = f'<span class="badge-hot">Hot L4: {l4_val:.1f} YPG</span>'
         elif streak_type == "WARM":
-            wr_streak_badge = f'<span class="badge-amber">[WR L4 UPTICK: {l4_val:.1f} YPG ({diff_yds:+.1f})]</span>'
+            wr_streak_badge = f'<span class="badge-amber">L4: {l4_val:.1f} YPG</span>'
         elif streak_type == "COLD":
-            wr_streak_badge = f'<span class="badge-cold">[WR COLD L4: {l4_val:.1f} YPG ({diff_yds:+.1f})]</span>'
+            wr_streak_badge = f'<span class="badge-cold">Cold L4: {l4_val:.1f} YPG</span>'
         else:
-            wr_streak_badge = f'<span class="badge-mid">[WR L4: {l4_val:.1f} YPG]</span>'
-
-        if wr_is_fp_expected:
-            wr_streak_badge += ' <span class="badge-elite">[FP • EXPECTED TO PLAY]</span>'
+            wr_streak_badge = f'<span class="badge-mid">L4: {l4_val:.1f} YPG</span>'
 
         if missing_starting_cbs and idx < len(missing_starting_cbs):
-            cb_status_badge = '<span class="badge-bad">[BACKUP CB ELEVATED]</span>'
+            cb_status_badge = '<span class="badge-bad">Backup CB</span>'
         elif cb_has_active_inj:
-            cb_status_badge = f'<span class="badge-amber">[CB {cb_assigned["status"]}]</span>'
+            cb_status_badge = f'<span class="badge-amber">{cb_assigned["status"].title()}</span>'
         elif def_pass_rk <= 5:
-            cb_status_badge = f'<span class="badge-bad">[SHUTDOWN CB • {cb_assigned["snap_pct"]:.0f}% SNAPS]</span>'
-        elif cb_assigned["status"] == "UNSPECIFIED (FP)":
-            cb_status_badge = f'<span class="badge-elite">[CB FP / EXPECTED TO PLAY • {cb_assigned["snap_pct"]:.0f}% SNAPS]</span>'
-        elif cb_assigned["status"] == "ACTIVE / CLEARED":
-            cb_status_badge = f'<span class="badge-elite">[CB CLEARED / ACTIVE • {cb_assigned["snap_pct"]:.0f}% SNAPS]</span>'
+            cb_status_badge = '<span class="badge-bad">Top-5 Pass Def</span>'
         else:
-            cb_status_badge = f'<span class="badge-mid">[ACTIVE • {cb_assigned["snap_pct"]:.0f}% DEF SNAPS]</span>'
+            cb_status_badge = f'<span class="badge-mid">{cb_assigned["snap_pct"]:.0f}% Snaps</span>'
 
         if not rationale_clauses:
             clr_prefix = (
@@ -4776,26 +4797,26 @@ def build_injury_impact_report(
         is_anchor_flags.append(is_anchor)
 
         if is_cleared:
-            roles.append("[FULL PRACTICE / EXPECTED TO PLAY]")
+            roles.append("Full Practice")
             penalty = 0.0
         else:
             if is_key_player:
                 if pos in ["T", "LT", "RT", "G", "OG", "LG", "RG", "C"]:
-                    roles.append("[STARTING OL ANCHOR]")
+                    roles.append("Starting OL")
                 elif pos == "WR" or tgt >= 0.18:
-                    roles.append("[PRIMARY TARGET / WR1]")
+                    roles.append("Primary Target")
                 elif pos in ["DE", "EDGE", "DT"]:
-                    roles.append("[PRIMARY PASS RUSHER]")
+                    roles.append("Pass Rusher")
                 elif pos in ["CB", "S"]:
-                    roles.append("[STARTING COVERAGE ANCHOR]")
+                    roles.append("Starting DB")
                 elif pos == "QB":
-                    roles.append("[STARTING QUARTERBACK]")
+                    roles.append("Starting QB")
                 else:
-                    roles.append("[KEY STARTING ANCHOR]")
+                    roles.append("Starter")
             elif snap >= 0.35 or tgt >= 0.10:
-                roles.append("[ROTATIONAL CONTRIBUTOR]")
+                roles.append("Rotation")
             else:
-                roles.append("[DEPTH / SPECIAL TEAMS]")
+                roles.append("Depth")
 
             base_w = pos_weights.get(pos, 0.015)
             usage_boost = 1.35 if tgt >= 0.20 else (1.15 if snap >= 0.75 else 0.75)
@@ -5362,20 +5383,20 @@ def render_player_popup_contents(
             if not is_active_unresolved_injury(current_status_str):
                 inj_badge_html = (
                     f'{render_injury_badge(current_status_str)} '
-                    f'<span class="badge-mid">[{prim_inj_val}]</span> '
-                    f'<span class="badge-sage">[0.000 EPA DRAG]</span> '
+                    f'<span class="badge-mid">{prim_inj_val}</span> '
+                    f'<span class="badge-sage">0.00 EPA</span> '
                     f'{current_prac_badge}'
                 )
             else:
                 inj_badge_html = (
                     f'{render_injury_badge(current_status_str)} '
-                    f'<span class="badge-bad">[{prim_inj_val}]</span> '
+                    f'<span class="badge-bad">{prim_inj_val}</span> '
                     f'{current_prac_badge}'
                 )
         else:
-            inj_badge_html = '<span class="badge-elite">[ACTIVE / CLEAN REPORT]</span>'
+            inj_badge_html = '<span class="badge-elite">Active</span>'
     else:
-        inj_badge_html = '<span class="badge-elite">[ACTIVE / CLEAN REPORT]</span>'
+        inj_badge_html = '<span class="badge-elite">Active</span>'
 
     opp_tm = home_tm if p_team == away_tm else away_tm
     render_html(
@@ -5385,12 +5406,12 @@ def render_player_popup_contents(
                 {headshot_html}
                 <div class="player-modal-meta">
                     <div style="display:flex; align-items:center; flex-wrap:wrap; gap:6px;">
-                        <span style="font-size:1.35rem; font-weight:800; color:#F8FAFC; font-family:monospace;">
+                        <span style="font-size:1.35rem; font-weight:800; color:#F8FAFC; font-family:Inter, -apple-system, BlinkMacSystemFont, sans-serif; font-variant-numeric:tabular-nums;">
                             {p_name}
                         </span>
                         {render_team_pill(p_team) if p_team else ""}
-                        <span class="badge-sage">[{p_pos or "NFL"}]</span>
-                        <span class="badge-mid">[{unit_side.upper()}]</span>
+                        <span class="badge-sage">{p_pos or "NFL"}</span>
+                        <span class="badge-mid">{unit_side}</span>
                     </div>
                     <div class="metric-subtext" style="margin-top:4px;">
                         {jersey_tag}{stat_season} Season • vs {opp_tm}{college_tag}
@@ -5444,9 +5465,9 @@ def render_player_popup_contents(
     hist_count = len(player_inj_history)
     tab_props, tab_stats, tab_inj_hist = st.tabs(
         [
-            "Season Props & Projections",
-            "Season Game Logs & Snaps",
-            f"Current & Past Season Injuries ({hist_count})" if hist_count > 0 else "Current & Past Season Injuries",
+            "Props",
+            "Game Logs",
+            f"Injuries ({hist_count})" if hist_count > 0 else "Injuries",
         ]
     )
 
@@ -5673,7 +5694,7 @@ def render_player_popup_contents(
             render_html(
                 f"""
                 <div class="terminal-card-elite" style="margin-top:8px;">
-                    <span class="badge-elite">[CLEAN {inj_season} INJURY LOG]</span>
+                    <span class="badge-elite">Clean {inj_season} Injury Log</span>
                     <p class="metric-subtext" style="margin:6px 0 0 0;">
                         {p_name} ({p_team} {p_pos}) has no weekly injury report entries in {inj_season}.
                     </p>
@@ -5720,9 +5741,9 @@ def render_underdog_props_and_betslip_modal(
     focus_sel = str(focus_info.get("selection", "")).strip()
 
     focus_banner_html = (
-        f'<span class="badge-elite">[FOCUSED PICK: {focus_sel}]</span>'
+        f'<span class="badge-elite">Selected: {focus_sel}</span>'
         if focus_sel
-        else f'<span class="badge-sage">[ODDS BASIS: {default_odds:+d} • KELLY: {kelly_mult:.2f}x]</span>'
+        else f'<span class="badge-sage">Odds {default_odds:+d} • {kelly_mult:.2f}x Kelly</span>'
     )
 
     render_html(
@@ -5731,13 +5752,13 @@ def render_underdog_props_and_betslip_modal(
             <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px;">
                 <div style="display:flex; align-items:center; gap:8px; flex-wrap:wrap;">
                     {render_team_pill(away_tm, "Away", color_override=away_color)}
-                    <span style="font-family:monospace; font-weight:800; color:#94A3B8;">@</span>
+                    <span style="font-family:Inter, -apple-system, BlinkMacSystemFont, sans-serif; font-variant-numeric:tabular-nums; font-weight:800; color:#94A3B8;">@</span>
                     {render_team_pill(home_tm, "Home", color_override=home_color)}
                     <span class="metric-subtext">Matchup Picks & Prop Board</span>
                 </div>
                 <div>
                     {focus_banner_html}
-                    <span class="badge-elite">[ACTIVE SLIP: {slip_count} PICKS • {total_kelly_staked:.2f}u]</span>
+                    <span class="badge-elite">{slip_count} Picks • {total_kelly_staked:.2f}u</span>
                 </div>
             </div>
         </div>
@@ -5746,8 +5767,8 @@ def render_underdog_props_and_betslip_modal(
 
     tab_matchup_board, tab_bet_slip = st.tabs(
         [
-            f"Matchup Picks & Player Props ({away_tm} @ {home_tm})",
-            f"Active Bet Slip ({slip_count} Picks • {total_kelly_staked:.2f}u)",
+            "Picks & Props",
+            f"Bet Slip ({slip_count})" if slip_count > 0 else "Bet Slip",
         ]
     )
 
@@ -5758,7 +5779,7 @@ def render_underdog_props_and_betslip_modal(
         render_html(
             f"""
             <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:6px; margin-bottom:6px;">
-                <h4 style="margin:0; color:#F8FAFC;">Current Matchup Team Picks ({away_tm} @ {home_tm})</h4>
+                <h4 style="margin:0; color:#F8FAFC;">Team Picks ({away_tm} @ {home_tm})</h4>
                 <span class="metric-subtext">Tap any Spread, Moneyline, or Total line to toggle in your Bet Slip</span>
             </div>
             """
@@ -5919,7 +5940,7 @@ def render_underdog_props_and_betslip_modal(
         render_html(
             f"""
             <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:6px; margin:12px 0 6px 0;">
-                <h4 style="margin:0; color:#F8FAFC;">Best & Most Popular Player Picks ({away_tm} @ {home_tm})</h4>
+                <h4 style="margin:0; color:#F8FAFC;">Player Props ({away_tm} @ {home_tm})</h4>
                 <span class="metric-subtext">Click Player Name for Dossier • Tap OVER or UNDER to add to Bet Slip</span>
             </div>
             """
@@ -5960,12 +5981,12 @@ def render_underdog_props_and_betslip_modal(
                                 pk["team"],
                                 pk["position"],
                                 f"ud_pop_plr_{idx_p}",
-                                f"[{pk['team']} {pk['position']}]",
+                                f"{pk['team']} {pk['position']}",
                             )
                         with hdr_r:
                             render_html(
                                 f'<div style="text-align:right; padding-top:2px;">'
-                                f'<span class="badge-elite">[PROJ {pk["model_proj"]:.1f} • {pk["ev_pct"]:+.1f}% EV]</span>'
+                                f'<span class="badge-elite">Proj {pk["model_proj"]:.1f}</span>'
                                 f"</div>"
                             )
 
@@ -5976,7 +5997,7 @@ def render_underdog_props_and_betslip_modal(
                                 <div style="display:flex; align-items:center; gap:10px;">
                                     {p_pic_html}
                                     <div>
-                                        <div style="font-family:monospace; font-size:1.06rem; font-weight:900; color:#FBBF24; line-height:1.2;">
+                                        <div style="font-family:Inter, -apple-system, BlinkMacSystemFont, sans-serif; font-variant-numeric:tabular-nums; font-size:1.06rem; font-weight:900; color:#FBBF24; line-height:1.2;">
                                             {pk['line_val']:.1f} {pk['mkt_label']}
                                         </div>
                                         <div class="metric-subtext" style="font-size:0.74rem; color:#CBD5E1; margin-top:2px;">
@@ -6112,7 +6133,7 @@ def render_underdog_props_and_betslip_modal(
                 with row_l:
                     render_html(
                         f"""
-                        <div style="background:{hex_to_rgba(tm_hex, 0.16)}; border:1px solid {hex_to_rgba(tm_hex, 0.55)}; border-left:4px solid {tm_hex}; border-radius:6px; padding:7px 10px; margin-bottom:5px; font-family:monospace; font-size:0.78rem;">
+                        <div style="background:{hex_to_rgba(tm_hex, 0.16)}; border:1px solid {hex_to_rgba(tm_hex, 0.55)}; border-left:4px solid {tm_hex}; border-radius:6px; padding:7px 10px; margin-bottom:5px; font-family:Inter, -apple-system, BlinkMacSystemFont, sans-serif; font-variant-numeric:tabular-nums; font-size:0.78rem;">
                             <div>{render_inline_logo(tm_code, 15) if tm_code else ""}<b>{item['Selection']}</b> <span style="color:#94A3B8;">({item['Matchup']} • {item['Market Type']})</span></div>
                             <div style="color:#CBD5E1; margin-top:2px;">{item['Model Projection']} • Odds <b>{item['Odds']}</b> • <span style="color:#34D399; font-weight:700;">{item['EV %']:+.1f}% EV</span> • <b>{item['Kelly Stake (u)']:.2f}u Kelly</b></div>
                         </div>
@@ -6277,8 +6298,8 @@ with top_hdr_left:
     st.markdown(f"### Football Edger — {selected_season} Week {selected_week}")
 with top_hdr_mid:
     workspace_options = [
-        f"Current Matchup ({away_tm} @ {home_tm})",
-        f"NFL League Hub (Week {selected_week} Best Picks & League Analytics)",
+        "Matchup",
+        "League Hub",
     ]
     cur_ws_idx = 1 if st.session_state.get("top_workspace_section") == "NFL League Hub" else 0
     chosen_ws = st.radio(
@@ -6289,7 +6310,7 @@ with top_hdr_mid:
         label_visibility="collapsed",
         key="primary_workspace_radio",
     )
-    is_league_hub = chosen_ws.startswith("NFL League Hub")
+    is_league_hub = chosen_ws == "League Hub"
     st.session_state["top_workspace_section"] = "NFL League Hub" if is_league_hub else "Current Matchup"
 with top_hdr_right:
     if not is_league_hub:
@@ -6354,18 +6375,18 @@ active_game_is_completed = bool(pd.notna(away_pts) and pd.notna(home_pts))
 spread_str = f"{home_tm} {spread_v:+.1f}" if pd.notna(spread_v) else "Spread TBD"
 total_str = f"O/U {total_v:.1f}" if pd.notna(total_v) else "Total TBD"
 final_score_badge = (
-    f'<span class="badge-amber">[FINAL: {away_tm} {int(away_pts)} - {home_tm} {int(home_pts)}]</span>'
+    f'<span class="badge-amber">Final: {away_tm} {int(away_pts)} - {home_tm} {int(home_pts)}</span>'
     if active_game_is_completed
-    else '<span class="badge-sage">[UPCOMING]</span>'
+    else '<span class="badge-sage">Upcoming</span>'
 )
 slot_badge = f'<span class="badge-mid">{slot_str}</span>' if slot_str else ""
 
 if pd.notna(rest_v) and rest_v > 0:
-    rest_badge = f'<span class="badge-elite">[REST: {home_tm} +{int(rest_v)}d]</span>'
+    rest_badge = f'<span class="badge-elite">{home_tm} +{int(rest_v)}d Rest</span>'
 elif pd.notna(rest_v) and rest_v < 0:
-    rest_badge = f'<span class="badge-elite">[REST: {away_tm} +{int(abs(rest_v))}d]</span>'
+    rest_badge = f'<span class="badge-elite">{away_tm} +{int(abs(rest_v))}d Rest</span>'
 else:
-    rest_badge = '<span class="badge-mid">[EVEN REST]</span>'
+    rest_badge = '<span class="badge-mid">Even Rest</span>'
 
 a_eff = eff_df.loc[away_tm] if away_tm in eff_df.index else None
 h_eff = eff_df.loc[home_tm] if home_tm in eff_df.index else None
@@ -6441,60 +6462,43 @@ kelly_mult = float(st.session_state["kelly_fraction_mult"])
 if not is_league_hub:
     render_nfl_horizontal_ticker(week_games, team_records_map)
 
-    a_ovr_badge = render_rank_badge(int(a_eff["off_epa_rank"]), f"{away_tm} Off") if a_eff is not None else ""
-    a_def_badge = render_rank_badge(int(a_eff["def_epa_rank"]), f"{away_tm} Def") if a_eff is not None else ""
-    h_ovr_badge = render_rank_badge(int(h_eff["off_epa_rank"]), f"{home_tm} Off") if h_eff is not None else ""
-    h_def_badge = render_rank_badge(int(h_eff["def_epa_rank"]), f"{home_tm} Def") if h_eff is not None else ""
-
     away_rec_str = team_records_map.get(away_tm, "0-0")
     home_rec_str = team_records_map.get(home_tm, "0-0")
 
-    div_matchup_badge = (
-        f'<span class="badge-amber">[DIVISION RIVALRY: {away_div_name.upper()}]</span>'
-        if away_div_name == home_div_name
-        else f'<span class="badge-mid">[{away_div_name} vs {home_div_name}]</span>'
-    )
-
-    fair_sp_badge = (
-        f'<span class="badge-elite">[MODEL FAIR LINE: {model_proj_dict["fair_spread_str"]} • '
-        f'PROJ: {away_tm} {model_proj_dict["away_proj_pts"]:.1f} - {home_tm} {model_proj_dict["home_proj_pts"]:.1f}]</span>'
+    proj_score_pill = (
+        f'<span class="badge-elite">Proj: {away_tm} {model_proj_dict["away_proj_pts"]:.1f}, {home_tm} {model_proj_dict["home_proj_pts"]:.1f}</span>'
         if model_proj_dict
         else ""
     )
+    game_state_pill = (
+        f'<span class="badge-amber">Final: {away_tm} {int(away_pts)} - {home_tm} {int(home_pts)}</span>'
+        if active_game_is_completed
+        else f'<span class="badge-sage">{spread_str} • {total_str}</span>'
+    )
+    weather_short = f"{roof_str} • {surface_str}"
+    if pd.notna(temp_val) and roof_str.lower() not in ["dome", "closed"]:
+        weather_short += f" • {int(temp_val)}°F"
 
     render_html(
         f"""
-        <div class="active-game-spotlight" style="border-left: 5px solid {away_color}; border-right: 5px solid {home_color}; background: linear-gradient(90deg, {hex_to_rgba(away_color, 0.14)} 0%, #121824 50%, {hex_to_rgba(home_color, 0.16)} 100%);">
-            <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:12px;">
-                <div>
-                    <div style="display:flex; align-items:center; flex-wrap:wrap; gap:8px;">
-                        {render_team_pill(away_tm, f"{away_rec_str} • Away", large=True, color_override=away_color)}
-                        <span style="font-size:1.1rem; font-weight:700; color:#94A3B8; font-family:monospace;">AT</span>
-                        {render_team_pill(home_tm, f"{home_rec_str} • Home", large=True, color_override=home_color)}
-                        <span class="metric-subtext" style="margin-left:6px;">{stadium_str} ({roof_str} • {surface_str})</span>
-                    </div>
-                    <div style="margin-top:8px;">
-                        {a_ovr_badge} {a_def_badge}
-                        <span style="color:#334155; margin:0 5px;">|</span>
-                        {h_ovr_badge} {h_def_badge}
-                        <span style="color:#334155; margin:0 5px;">|</span>
-                        {div_matchup_badge}
-                    </div>
+        <div class="active-game-spotlight" style="border-left: 4px solid {away_color}; border-right: 4px solid {home_color}; background: #141923;">
+            <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px;">
+                <div style="display:flex; align-items:center; flex-wrap:wrap; gap:8px;">
+                    {render_team_pill(away_tm, away_rec_str, large=True, color_override=away_color)}
+                    <span style="font-size:0.95rem; font-weight:700; color:#64748B;">@</span>
+                    {render_team_pill(home_tm, home_rec_str, large=True, color_override=home_color)}
+                    <span class="metric-subtext" style="margin-left:4px;">{stadium_str} ({weather_short})</span>
                 </div>
-                <div style="display:flex; flex-direction:column; align-items:flex-end; gap:6px;">
-                    <div>{slot_badge} {final_score_badge} {fair_sp_badge}</div>
-                    <div>
-                        <span class="badge-sage" style="border-left:3px solid {home_color};">[MARKET SPREAD: {spread_str}]</span>
-                        <span class="badge-sage">[MARKET TOTAL: {total_str}]</span>
-                        {rest_badge}
-                    </div>
+                <div style="display:flex; align-items:center; flex-wrap:wrap; gap:6px;">
+                    {game_state_pill}
+                    {proj_score_pill}
                 </div>
             </div>
         </div>
         """
     )
 
-    # UNIFORM CURRENT GAME TABS (Injuries promoted to dedicated top-level 'Injury Report' tab)
+    # CONCISE 1-2 WORD GAME TABS
     (
         game_tab_overview,
         game_tab_mismatches,
@@ -6503,16 +6507,16 @@ if not is_league_hub:
         game_tab_props_rosters,
     ) = st.tabs(
         [
-            f"Matchup Overview ({away_tm} @ {home_tm})",
-            "1-on-1 Mismatches",
-            "Injury Report",
-            "Unit EPA & Trenches",
-            "Matchup Props & Rosters",
+            "Overview",
+            "Matchups",
+            "Injuries",
+            "Team Stats",
+            "Props & Depth",
         ]
     )
 
     # -------------------------------------------------------------------------
-    # CURRENT GAME TAB 1: MATCHUP OVERVIEW
+    # CURRENT GAME TAB 1: OVERVIEW (FLAT MODERN, CONCISE TAGS, SCROLL-FIRST)
     # -------------------------------------------------------------------------
     with game_tab_overview:
         if a_eff is None or h_eff is None:
@@ -6526,14 +6530,13 @@ if not is_league_hub:
             net_away_score = (a_eff["off_epa"] - away_off_pen) - (h_eff["def_epa"] + home_def_pen)
             net_home_score = (h_eff["off_epa"] - home_off_pen) - (a_eff["def_epa"] + away_def_pen)
             model_lean_team = home_tm if net_home_score >= net_away_score else away_tm
-            model_edge_mag = abs(net_home_score - net_away_score)
 
             best_phase_val = max(
                 [
-                    (f"{away_tm} Pass Off vs {home_tm} Def", away_pass_edge, away_color),
-                    (f"{away_tm} Rush Off vs {home_tm} Def", away_rush_edge, away_color),
-                    (f"{home_tm} Pass Off vs {away_tm} Def", home_pass_edge, home_color),
-                    (f"{home_tm} Rush Off vs {away_tm} Def", home_rush_edge, home_color),
+                    (f"{away_tm} Pass Offense", away_pass_edge, away_color),
+                    (f"{away_tm} Rush Offense", away_rush_edge, away_color),
+                    (f"{home_tm} Pass Offense", home_pass_edge, home_color),
+                    (f"{home_tm} Rush Offense", home_rush_edge, home_color),
                 ],
                 key=lambda x: x[1],
             )
@@ -6549,115 +6552,56 @@ if not is_league_hub:
                 else 0
             )
 
-            if not h2h_5yr.empty:
-                h_wins = int((h2h_5yr["SU Winner"] == home_tm).sum())
-                a_wins = int((h2h_5yr["SU Winner"] == away_tm).sum())
-                h2h_val_str = f"{home_tm} {h_wins} - {away_tm} {a_wins}"
-                h2h_sub_str = f"Last: {h2h_5yr.iloc[0]['Matchup & Final']}"
-            else:
-                h2h_val_str = "0 Meetings"
-                h2h_sub_str = f"No games in {selected_season - 5}–{selected_season}"
-
             sp_edge_pts = model_proj_dict.get("spread_edge_pts", 0.0)
             backed_line_str = model_proj_dict.get("backed_spread_line_str", f"{model_lean_team} Edge")
             backed_tm_code = model_proj_dict.get("backed_spread_team", model_lean_team)
             backed_tm_color = home_color if backed_tm_code == home_tm else away_color
-            fair_line_str = model_proj_dict.get("fair_spread_str", "PK")
+            fair_home_sp = float(model_proj_dict.get("fair_home_spread", 0.0))
+            if fair_home_sp < 0:
+                proj_margin_plain = f"Model: {home_tm} by {abs(fair_home_sp):.1f}"
+            elif fair_home_sp > 0:
+                proj_margin_plain = f"Model: {away_tm} by {abs(fair_home_sp):.1f}"
+            else:
+                proj_margin_plain = "Model: Even"
+
+            open_fav_c = home_color if line_move_dict.get("open_fav_tm", home_tm) == home_tm else away_color
+            cur_fav_c = home_color if line_move_dict.get("cur_fav_tm", home_tm) == home_tm else away_color
             inj_pill_cls = "custom-kpi-pill-neg" if total_flagged_inj > 0 else "custom-kpi-pill-pos"
 
             render_html(
                 f"""
                 <div class="custom-kpi-grid">
-                    <div class="custom-kpi-card" style="border-top: 3px solid {backed_tm_color};" title="Compares the model's injury-adjusted EPA fair spread ({fair_line_str}) against the current sportsbook spread ({spread_str}).">
+                    <div class="custom-kpi-card" style="border-top: 3px solid {backed_tm_color};">
                         <div class="custom-kpi-top">
-                            <span class="custom-kpi-label">Model Lean & Fair Line</span>
-                            <span class="custom-kpi-help" title="Net EPA/Play differential converted to points (~63 plays/team + HFA + Rest).">[? INFO]</span>
+                            <span class="custom-kpi-label">Model Pick</span>
                         </div>
                         <div class="custom-kpi-val">{render_inline_logo(backed_tm_code, 20)}{backed_line_str}</div>
-                        <span class="custom-kpi-pill-pos">Fair: {fair_line_str} • +{sp_edge_pts:.1f} pt Edge (+{model_edge_mag:.3f} EPA)</span>
+                        <span class="custom-kpi-pill-pos">{proj_margin_plain} (+{sp_edge_pts:.1f} pt edge)</span>
                     </div>
-                    <div class="custom-kpi-card" style="border-top: 3px solid {best_phase_val[2]};" title="Largest single offensive unit vs opposing defensive unit EPA/play advantage in this game.">
+                    <div class="custom-kpi-card" style="border-top: 3px solid {home_color};">
                         <div class="custom-kpi-top">
-                            <span class="custom-kpi-label">Top Schematic Lever</span>
-                            <span class="custom-kpi-help" title="Unit Offense EPA/Play minus Opposing Unit Defense EPA/Play.">[? INFO]</span>
+                            <span class="custom-kpi-label">Win Probability</span>
+                        </div>
+                        <div class="custom-kpi-val">
+                            <span style="color:{away_color};">{away_tm} {model_proj_dict['away_win_prob']:.0f}%</span>
+                            <span style="color:#64748B; font-size:0.95rem;"> • </span>
+                            <span style="color:{home_color};">{home_tm} {model_proj_dict['home_win_prob']:.0f}%</span>
+                        </div>
+                        <span class="badge-mid">Open <b style="color:{open_fav_c};">{line_move_dict['open_sp_str']}</b> &rarr; Now <b style="color:{cur_fav_c};">{line_move_dict['cur_sp_str']}</b></span>
+                    </div>
+                    <div class="custom-kpi-card" style="border-top: 3px solid {best_phase_val[2]};">
+                        <div class="custom-kpi-top">
+                            <span class="custom-kpi-label">Key Advantage</span>
                         </div>
                         <div class="custom-kpi-val">{best_phase_val[0]}</div>
-                        <span class="custom-kpi-pill-pos">{best_phase_val[1]:+.3f} Net EPA/Play Delta</span>
+                        <span class="custom-kpi-pill-pos">{best_phase_val[1]:+.2f} EPA/Play Edge</span>
                     </div>
-                    <div class="custom-kpi-card {'custom-kpi-card-warn' if total_flagged_inj > 0 else 'custom-kpi-card-edge'}" title="Flagged players have active Out, Doubtful, Questionable, or mid-week DNP/LP designations. FP = Full Practice (0 EPA drag).">
+                    <div class="custom-kpi-card {'custom-kpi-card-warn' if total_flagged_inj > 0 else 'custom-kpi-card-edge'}">
                         <div class="custom-kpi-top">
-                            <span class="custom-kpi-label">Injury Report Status</span>
-                            <span class="custom-kpi-help" title="FP = Full Participation in practice (expected to play; 0 EPA penalty).">[? INFO]</span>
+                            <span class="custom-kpi-label">Injury Status</span>
                         </div>
-                        <div class="custom-kpi-val">{total_flagged_inj} Flagged • {cleared_count} FP</div>
-                        <span class="{inj_pill_cls}">EPA Drag: {away_tm} -{away_off_pen + away_def_pen:.2f} | {home_tm} -{home_off_pen + home_def_pen:.2f}</span>
-                    </div>
-                    <div class="custom-kpi-card" style="border-top: 3px solid {home_color};" title="Head-to-head straight-up series record over the last 5 seasons.">
-                        <div class="custom-kpi-top">
-                            <span class="custom-kpi-label">5-Yr H2H ({selected_season - 5}–{selected_season})</span>
-                            <span class="custom-kpi-help" title="Historical meetings from the master nflverse schedule.">[? INFO]</span>
-                        </div>
-                        <div class="custom-kpi-val">{h2h_val_str}</div>
-                        <span class="custom-kpi-pill-neutral">{h2h_sub_str}</span>
-                    </div>
-                </div>
-                """
-            )
-
-            # Promoted Environment, Line Movement & Headline Lineup Strip
-            # Both OPEN->NOW and WIN PROB badges use `.badge-mid` with consistent team colors
-            top_inj_row = None
-            if not inj_matchup.empty:
-                active_inj_rows = inj_matchup[~inj_matchup["is_cleared"]]
-                if not active_inj_rows.empty:
-                    top_inj_row = active_inj_rows.iloc[0]
-
-            weather_bits = [f"{stadium_str} ({roof_str} • {surface_str})"]
-            if pd.notna(temp_val):
-                weather_bits.append(f"{int(temp_val)}°F")
-            if pd.notna(wind_val):
-                weather_bits.append(f"Wind {int(wind_val)} mph")
-            weather_str = " • ".join(weather_bits)
-
-            if top_inj_row is not None:
-                inj_link_html = render_player_link(
-                    top_inj_row["player_display"],
-                    top_inj_row["team"],
-                    str(top_inj_row.get("position", "")),
-                )
-                inj_cell_html = (
-                    f'{render_inline_logo(top_inj_row["team"], 16)}{inj_link_html} '
-                    f'({top_inj_row.get("position", "POS")} • {top_inj_row.get("primary_injury", "")}) '
-                    f'{render_injury_badge(top_inj_row["report_status"])} '
-                    f'<span style="color:#F87171; font-family:monospace; font-weight:700;">-{top_inj_row["est_epa_penalty"]:.3f} EPA</span>'
-                )
-            else:
-                inj_cell_html = '<span class="badge-elite">[ALL STARTING ANCHORS FULL PRACTICE]</span>'
-
-            open_fav_c = home_color if line_move_dict.get("open_fav_tm", home_tm) == home_tm else away_color
-            cur_fav_c = home_color if line_move_dict.get("cur_fav_tm", home_tm) == home_tm else away_color
-
-            render_html(
-                f"""
-                <div class="promoted-context-strip">
-                    <div class="promoted-context-cell">
-                        <div class="context-cell-title">Environment & Rest Context</div>
-                        <div class="metric-subtext" style="color:#E2E8F0;">
-                            {rest_badge} <span>{weather_str}</span>
-                        </div>
-                    </div>
-                    <div class="promoted-context-cell">
-                        <div class="context-cell-title">Line Movement & Win Probability</div>
-                        <div class="metric-subtext" style="color:#E2E8F0;">
-                            <span class="badge-mid">[OPEN: <b style="color:{open_fav_c};">{line_move_dict['open_sp_str']}</b> &rarr; NOW: <b style="color:{cur_fav_c};">{line_move_dict['cur_sp_str']}</b>]</span>
-                            <span class="badge-mid">[WIN PROB: <b style="color:{away_color};">{away_tm} {model_proj_dict['away_win_prob']:.1f}%</b> | <b style="color:{home_color};">{home_tm} {model_proj_dict['home_win_prob']:.1f}%</b>]</span>
-                        </div>
-                    </div>
-                    <div class="promoted-context-cell">
-                        <div class="context-cell-title">Headline Lineup Impact</div>
-                        <div class="metric-subtext" style="color:#E2E8F0;">
-                            {inj_cell_html}
-                        </div>
+                        <div class="custom-kpi-val">{total_flagged_inj} Flagged • {cleared_count} Cleared</div>
+                        <span class="{inj_pill_cls}">{away_tm} -{away_off_pen + away_def_pen:.2f} EPA • {home_tm} -{home_off_pen + home_def_pen:.2f} EPA</span>
                     </div>
                 </div>
                 """
@@ -6763,238 +6707,213 @@ if not is_league_hub:
                 h_pdef_rk, h_rdef_rk = int(h_eff["def_pass_epa_rank"]), int(h_eff["def_rush_epa_rank"])
                 h_ovr_off_rk, h_ovr_def_rk = int(h_eff["off_epa_rank"]), int(h_eff["def_epa_rank"])
 
-                with st.container(border=True):
-                    mat_hdr_l, mat_hdr_r = st.columns([1.15, 1.15])
-                    with mat_hdr_l:
-                        render_html(
-                            f"<h4 style='margin:0; color:#F1F5F9;'>Unit Tier Matrix "
-                            f"<span style='font-size:0.75rem; font-family:monospace; color:#94A3B8;'>("
-                            f"<span style='color:{away_color};'>■ {away_tm}</span> vs "
-                            f"<span style='color:{home_color};'>■ {home_tm}</span>)</span></h4>"
+                mat_hdr_l, mat_hdr_r = st.columns([1.15, 1.05])
+                with mat_hdr_l:
+                    render_html(
+                        f"<h4 style='margin:0 0 6px 0; color:#F1F5F9;'>Team Rankings "
+                        f"<span style='font-size:0.78rem; color:#94A3B8; font-weight:600;'>("
+                        f"<span style='color:{away_color};'>■ {away_tm}</span> vs "
+                        f"<span style='color:{home_color};'>■ {home_tm}</span>)</span></h4>"
+                    )
+                with mat_hdr_r:
+                    matrix_layout_mode = st.radio(
+                        "View",
+                        options=["Head-to-Head", "By Team"],
+                        horizontal=True,
+                        label_visibility="collapsed",
+                        key="unit_matrix_layout_mode",
+                    )
+
+                if matrix_layout_mode == "Head-to-Head":
+                    def _build_team_colored_cross_unit_row(
+                        phase_title: str,
+                        away_unit_lbl: str,
+                        away_epa_val: float,
+                        away_rk: int,
+                        home_unit_lbl: str,
+                        home_epa_val: float,
+                        home_rk: int,
+                        away_is_offense: bool,
+                    ) -> str:
+                        if away_is_offense:
+                            away_net_edge = away_epa_val - (-home_epa_val)
+                            away_rk_advantage = home_rk - away_rk
+                        else:
+                            away_net_edge = (-away_epa_val) - home_epa_val
+                            away_rk_advantage = home_rk - away_rk
+
+                        away_pct_bar = int(np.clip(50 + away_net_edge * 140, 15, 85))
+                        home_pct_bar = 100 - away_pct_bar
+
+                        if away_rk_advantage >= 6 or away_net_edge >= 0.08:
+                            adv_tm = away_tm
+                            adv_c = away_color
+                            edge_pill = (
+                                f'<span style="background:{hex_to_rgba(adv_c, 0.22)}; color:#F8FAFC; border:1px solid {adv_c}; padding:2px 8px; border-radius:4px; font-size:0.70rem; font-weight:700;">'
+                                f'{adv_tm} Edge</span>'
+                            )
+                        elif away_rk_advantage <= -6 or away_net_edge <= -0.08:
+                            adv_tm = home_tm
+                            adv_c = home_color
+                            edge_pill = (
+                                f'<span style="background:{hex_to_rgba(adv_c, 0.22)}; color:#F8FAFC; border:1px solid {adv_c}; padding:2px 8px; border-radius:4px; font-size:0.70rem; font-weight:700;">'
+                                f'{adv_tm} Edge</span>'
+                            )
+                        else:
+                            edge_pill = '<span class="badge-mid">Even</span>'
+
+                        return f"""
+                        <div class="cross-unit-row" style="border-left: 3px solid {away_color}; border-right: 3px solid {home_color};">
+                            <div class="cross-unit-header">
+                                <span><b>{phase_title}</b></span>
+                                {edge_pill}
+                            </div>
+                            <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:6px;">
+                                <span>
+                                    {render_inline_logo(away_tm, 15)}<b style="color:#F8FAFC;">{away_tm} {away_unit_lbl}</b>
+                                    <span class="unit-epa-mini">({away_epa_val:+.2f})</span>
+                                    {render_rank_badge(away_rk, "")}
+                                </span>
+                                <span style="color:#64748B; font-size:0.72rem; font-weight:800;">VS</span>
+                                <span>
+                                    {render_rank_badge(home_rk, "")}
+                                    <span class="unit-epa-mini">({home_epa_val:+.2f})</span>
+                                    <b style="color:#F8FAFC;">{home_tm} {home_unit_lbl}</b> {render_inline_logo(home_tm, 15)}
+                                </span>
+                            </div>
+                            <div class="tug-bar-track">
+                                <div class="tug-bar-segment" style="width:{away_pct_bar}%; background:{away_color};"></div>
+                                <div class="tug-bar-segment" style="width:{home_pct_bar}%; background:{home_color};"></div>
+                            </div>
+                        </div>
+                        """
+
+                    cross_html = (
+                        f'<div class="unit-section-tag" style="margin-bottom:4px; color:#E2E8F0;">{away_tm} Offense (#{a_ovr_off_rk}) vs {home_tm} Defense (#{h_ovr_def_rk})</div>'
+                        + _build_team_colored_cross_unit_row(
+                            f"{away_tm} Pass vs {home_tm} Pass Def",
+                            "Pass",
+                            float(a_eff["off_pass_epa"]),
+                            a_pass_rk,
+                            "Pass Def",
+                            float(h_eff["def_pass_epa"]),
+                            h_pdef_rk,
+                            away_is_offense=True,
                         )
-                    with mat_hdr_r:
-                        matrix_layout_mode = st.radio(
-                            "Matrix Alignment",
-                            options=["Offense vs. Opposing Defense", "Team Pillars"],
-                            horizontal=True,
-                            label_visibility="collapsed",
-                            key="unit_matrix_layout_mode",
+                        + _build_team_colored_cross_unit_row(
+                            f"{away_tm} Rush vs {home_tm} Rush Def",
+                            "Rush",
+                            float(a_eff["off_rush_epa"]),
+                            a_rush_rk,
+                            "Rush Def",
+                            float(h_eff["def_rush_epa"]),
+                            h_rdef_rk,
+                            away_is_offense=True,
                         )
-
-                    if matrix_layout_mode == "Offense vs. Opposing Defense":
-                        def _build_team_colored_cross_unit_row(
-                            phase_title: str,
-                            away_unit_lbl: str,
-                            away_epa_val: float,
-                            away_rk: int,
-                            home_unit_lbl: str,
-                            home_epa_val: float,
-                            home_rk: int,
-                            away_is_offense: bool,
-                        ) -> str:
-                            if away_is_offense:
-                                away_net_edge = away_epa_val - (-home_epa_val)
-                                away_rk_advantage = home_rk - away_rk
-                            else:
-                                away_net_edge = (-away_epa_val) - home_epa_val
-                                away_rk_advantage = home_rk - away_rk
-
-                            away_pct_bar = int(np.clip(50 + away_net_edge * 140, 15, 85))
-                            home_pct_bar = 100 - away_pct_bar
-
-                            if away_rk_advantage >= 6 or away_net_edge >= 0.08:
-                                adv_tm = away_tm
-                                adv_c = away_color
-                                edge_pill = (
-                                    f'<span style="background:{hex_to_rgba(adv_c, 0.20)}; color:#F8FAFC; border:1px solid {adv_c}; border-left:3px solid {adv_c}; padding:2px 7px; border-radius:4px; font-size:0.71rem; font-weight:700; font-family:monospace;">'
-                                    f'[{adv_tm} {away_unit_lbl.upper()} EDGE ({abs(away_net_edge):+.2f} EPA • +{abs(away_rk_advantage)} RK)]</span>'
-                                )
-                            elif away_rk_advantage <= -6 or away_net_edge <= -0.08:
-                                adv_tm = home_tm
-                                adv_c = home_color
-                                edge_pill = (
-                                    f'<span style="background:{hex_to_rgba(adv_c, 0.20)}; color:#F8FAFC; border:1px solid {adv_c}; border-left:3px solid {adv_c}; padding:2px 7px; border-radius:4px; font-size:0.71rem; font-weight:700; font-family:monospace;">'
-                                    f'[{adv_tm} {home_unit_lbl.upper()} EDGE ({abs(away_net_edge):+.2f} EPA • +{abs(away_rk_advantage)} RK)]</span>'
-                                )
-                            else:
-                                edge_pill = f'<span class="badge-mid">[EVEN TRENCH ({away_net_edge:+.2f} EPA)]</span>'
-
-                            return f"""
-                            <div class="cross-unit-row" style="border-left: 3px solid {away_color}; border-right: 3px solid {home_color};">
-                                <div class="cross-unit-header">
-                                    <span><b>{phase_title}</b></span>
-                                    {edge_pill}
+                        + f'<div class="unit-section-tag" style="margin:10px 0 4px 0; color:#E2E8F0;">{home_tm} Offense (#{h_ovr_off_rk}) vs {away_tm} Defense (#{a_ovr_def_rk})</div>'
+                        + _build_team_colored_cross_unit_row(
+                            f"{away_tm} Pass Def vs {home_tm} Pass",
+                            "Pass Def",
+                            float(a_eff["def_pass_epa"]),
+                            a_pdef_rk,
+                            "Pass",
+                            float(h_eff["off_pass_epa"]),
+                            h_pass_rk,
+                            away_is_offense=False,
+                        )
+                        + _build_team_colored_cross_unit_row(
+                            f"{away_tm} Rush Def vs {home_tm} Rush",
+                            "Rush Def",
+                            float(a_eff["def_rush_epa"]),
+                            a_rdef_rk,
+                            "Rush",
+                            float(h_eff["off_rush_epa"]),
+                            h_rush_rk,
+                            away_is_offense=False,
+                        )
+                    )
+                    render_html(cross_html)
+                else:
+                    render_html(
+                        f"""
+                        <div class="brief-grid" style="margin-top:6px;">
+                            <div class="unit-pillar" style="border-top: 3px solid {away_color}; background: #141923;">
+                                <div class="unit-pillar-header">
+                                    <span>{render_inline_logo(away_tm, 18)}{away_tm} ({away_rec_str})</span>
+                                    <span class="metric-subtext">Off #{a_ovr_off_rk} • Def #{a_ovr_def_rk}</span>
                                 </div>
-                                <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:6px;">
-                                    <span>
-                                        <span style="display:inline-block; width:8px; height:8px; border-radius:2px; background:{away_color}; margin-right:4px;"></span>
-                                        {render_inline_logo(away_tm, 15)}<b style="color:#F8FAFC;">{away_tm} {away_unit_lbl}</b>
-                                        <span class="unit-epa-mini">({away_epa_val:+.2f})</span>
-                                        {render_rank_badge(away_rk, "")}
-                                    </span>
-                                    <span style="color:#64748B; font-family:monospace; font-size:0.72rem; font-weight:800;">VS</span>
-                                    <span>
-                                        {render_rank_badge(home_rk, "")}
-                                        <span class="unit-epa-mini">({home_epa_val:+.2f})</span>
-                                        <b style="color:#F8FAFC;">{home_tm} {home_unit_lbl}</b> {render_inline_logo(home_tm, 15)}
-                                        <span style="display:inline-block; width:8px; height:8px; border-radius:2px; background:{home_color}; margin-left:4px;"></span>
+                                <div class="unit-section-tag" style="color:{away_color};">Offense</div>
+                                <div class="unit-tier-row">
+                                    <span class="unit-tier-label">Pass Offense</span>
+                                    <span class="unit-tier-right">
+                                        <span class="unit-epa-mini">{a_eff["off_pass_epa"]:+.2f}</span>
+                                        {render_rank_badge(a_pass_rk, "")}
                                     </span>
                                 </div>
-                                <div class="tug-bar-track">
-                                    <div class="tug-bar-segment" style="width:{away_pct_bar}%; background:{away_color};" title="{away_tm} {away_unit_lbl}: {away_pct_bar}% Share"></div>
-                                    <div class="tug-bar-segment" style="width:{home_pct_bar}%; background:{home_color};" title="{home_tm} {home_unit_lbl}: {home_pct_bar}% Share"></div>
+                                <div class="unit-tier-row">
+                                    <span class="unit-tier-label">Rush Offense</span>
+                                    <span class="unit-tier-right">
+                                        <span class="unit-epa-mini">{a_eff["off_rush_epa"]:+.2f}</span>
+                                        {render_rank_badge(a_rush_rk, "")}
+                                    </span>
+                                </div>
+                                <div class="unit-section-tag" style="margin-top:8px; color:{away_color};">Defense</div>
+                                <div class="unit-tier-row">
+                                    <span class="unit-tier-label">Pass Defense</span>
+                                    <span class="unit-tier-right">
+                                        <span class="unit-epa-mini">{a_eff["def_pass_epa"]:+.2f}</span>
+                                        {render_rank_badge(a_pdef_rk, "")}
+                                    </span>
+                                </div>
+                                <div class="unit-tier-row">
+                                    <span class="unit-tier-label">Rush Defense</span>
+                                    <span class="unit-tier-right">
+                                        <span class="unit-epa-mini">{a_eff["def_rush_epa"]:+.2f}</span>
+                                        {render_rank_badge(a_rdef_rk, "")}
+                                    </span>
                                 </div>
                             </div>
-                            """
-
-                        cross_html = (
-                            f'<div class="unit-section-tag" style="margin-bottom:4px; color:#E2E8F0;">When {away_tm} Has The Ball ({away_tm} Off #{a_ovr_off_rk} vs {home_tm} Def #{h_ovr_def_rk})</div>'
-                            + _build_team_colored_cross_unit_row(
-                                f"{away_tm} Air Off vs {home_tm} Pass Def",
-                                "Pass Off",
-                                float(a_eff["off_pass_epa"]),
-                                a_pass_rk,
-                                "Pass Def",
-                                float(h_eff["def_pass_epa"]),
-                                h_pdef_rk,
-                                away_is_offense=True,
-                            )
-                            + _build_team_colored_cross_unit_row(
-                                f"{away_tm} Ground Off vs {home_tm} Rush Def",
-                                "Rush Off",
-                                float(a_eff["off_rush_epa"]),
-                                a_rush_rk,
-                                "Rush Def",
-                                float(h_eff["def_rush_epa"]),
-                                h_rdef_rk,
-                                away_is_offense=True,
-                            )
-                            + f'<div class="unit-section-tag" style="margin:10px 0 4px 0; color:#E2E8F0;">When {home_tm} Has The Ball ({away_tm} Def #{a_ovr_def_rk} vs {home_tm} Off #{h_ovr_off_rk})</div>'
-                            + _build_team_colored_cross_unit_row(
-                                f"{away_tm} Pass Def vs {home_tm} Air Off",
-                                "Pass Def",
-                                float(a_eff["def_pass_epa"]),
-                                a_pdef_rk,
-                                "Pass Off",
-                                float(h_eff["off_pass_epa"]),
-                                h_pass_rk,
-                                away_is_offense=False,
-                            )
-                            + _build_team_colored_cross_unit_row(
-                                f"{away_tm} Rush Def vs {home_tm} Ground Off",
-                                "Rush Def",
-                                float(a_eff["def_rush_epa"]),
-                                a_rdef_rk,
-                                "Rush Off",
-                                float(h_eff["off_rush_epa"]),
-                                h_rush_rk,
-                                away_is_offense=False,
-                            )
-                        )
-                        render_html(cross_html)
-                    else:
-                        away_air_gap = h_pdef_rk - a_pass_rk
-                        away_grd_gap = h_rdef_rk - a_rush_rk
-                        away_lever_tag = (
-                            f'<span class="badge-elite">[PASS EDGE: {away_air_gap:+d} RK]</span>'
-                            if away_air_gap >= away_grd_gap and away_air_gap >= 6
-                            else f'<span class="badge-sage" style="border-left:3px solid {away_color};">[TOP UNIT: #{min(a_pass_rk, a_rush_rk)} OFF]</span>'
-                        )
-                        home_air_gap = a_pdef_rk - h_pass_rk
-                        home_grd_gap = a_rdef_rk - h_rush_rk
-                        home_lever_tag = (
-                            f'<span class="badge-elite">[PASS EDGE: {home_air_gap:+d} RK]</span>'
-                            if home_air_gap >= home_grd_gap and home_air_gap >= 6
-                            else f'<span class="badge-sage" style="border-left:3px solid {home_color};">[TOP UNIT: #{min(h_pass_rk, h_rush_rk)} OFF]</span>'
-                        )
-                        render_html(
-                            f"""
-                            <div class="brief-grid" style="margin-top:6px;">
-                                <div class="unit-pillar" style="border-top: 4px solid {away_color}; background: linear-gradient(180deg, {hex_to_rgba(away_color, 0.12)} 0%, #151B26 35%);">
-                                    <div class="unit-pillar-header" style="border-bottom-color:{hex_to_rgba(away_color, 0.45)};">
-                                        <span>{render_inline_logo(away_tm, 18)}{away_tm} ({away_rec_str} • Away)</span>
-                                        <span class="metric-subtext">Off #{a_ovr_off_rk} • Def #{a_ovr_def_rk}</span>
-                                    </div>
-                                    <div class="unit-section-tag" style="color:{away_color};">{away_tm} Offense</div>
-                                    <div class="unit-tier-row">
-                                        <span class="unit-tier-label">AIR OFF</span>
-                                        <span class="unit-tier-right">
-                                            <span class="unit-epa-mini">{a_eff["off_pass_epa"]:+.2f} EPA</span>
-                                            {render_rank_badge(a_pass_rk, f"{away_tm} Off")}
-                                        </span>
-                                    </div>
-                                    <div class="unit-tier-row">
-                                        <span class="unit-tier-label">GROUND OFF</span>
-                                        <span class="unit-tier-right">
-                                            <span class="unit-epa-mini">{a_eff["off_rush_epa"]:+.2f} EPA</span>
-                                            {render_rank_badge(a_rush_rk, f"{away_tm} Off")}
-                                        </span>
-                                    </div>
-                                    <div class="unit-section-tag" style="margin-top:8px; color:{away_color};">{away_tm} Defense</div>
-                                    <div class="unit-tier-row">
-                                        <span class="unit-tier-label">AIR DEF</span>
-                                        <span class="unit-tier-right">
-                                            <span class="unit-epa-mini">{a_eff["def_pass_epa"]:+.2f} EPA</span>
-                                            {render_rank_badge(a_pdef_rk, f"{away_tm} Def")}
-                                        </span>
-                                    </div>
-                                    <div class="unit-tier-row">
-                                        <span class="unit-tier-label">GROUND DEF</span>
-                                        <span class="unit-tier-right">
-                                            <span class="unit-epa-mini">{a_eff["def_rush_epa"]:+.2f} EPA</span>
-                                            {render_rank_badge(a_rdef_rk, f"{away_tm} Def")}
-                                        </span>
-                                    </div>
-                                    <div class="unit-lever-footer">
-                                        <span class="metric-subtext">{away_tm} Lever</span>
-                                        {away_lever_tag}
-                                    </div>
+                            <div class="unit-pillar" style="border-top: 3px solid {home_color}; background: #141923;">
+                                <div class="unit-pillar-header">
+                                    <span>{render_inline_logo(home_tm, 18)}{home_tm} ({home_rec_str})</span>
+                                    <span class="metric-subtext">Off #{h_ovr_off_rk} • Def #{h_ovr_def_rk}</span>
                                 </div>
-                                <div class="unit-pillar" style="border-top: 4px solid {home_color}; background: linear-gradient(180deg, {hex_to_rgba(home_color, 0.12)} 0%, #151B26 35%);">
-                                    <div class="unit-pillar-header" style="border-bottom-color:{hex_to_rgba(home_color, 0.45)};">
-                                        <span>{render_inline_logo(home_tm, 18)}{home_tm} ({home_rec_str} • Home)</span>
-                                        <span class="metric-subtext">Off #{h_ovr_off_rk} • Def #{h_ovr_def_rk}</span>
-                                    </div>
-                                    <div class="unit-section-tag" style="color:{home_color};">{home_tm} Offense</div>
-                                    <div class="unit-tier-row">
-                                        <span class="unit-tier-label">AIR OFF</span>
-                                        <span class="unit-tier-right">
-                                            <span class="unit-epa-mini">{h_eff["off_pass_epa"]:+.2f} EPA</span>
-                                            {render_rank_badge(h_pass_rk, f"{home_tm} Off")}
-                                        </span>
-                                    </div>
-                                    <div class="unit-tier-row">
-                                        <span class="unit-tier-label">GROUND OFF</span>
-                                        <span class="unit-tier-right">
-                                            <span class="unit-epa-mini">{h_eff["off_rush_epa"]:+.2f} EPA</span>
-                                            {render_rank_badge(h_rush_rk, f"{home_tm} Off")}
-                                        </span>
-                                    </div>
-                                    <div class="unit-section-tag" style="margin-top:8px; color:{home_color};">{home_tm} Defense</div>
-                                    <div class="unit-tier-row">
-                                        <span class="unit-tier-label">AIR DEF</span>
-                                        <span class="unit-tier-right">
-                                            <span class="unit-epa-mini">{h_eff["def_pass_epa"]:+.2f} EPA</span>
-                                            {render_rank_badge(h_pdef_rk, f"{home_tm} Def")}
-                                        </span>
-                                    </div>
-                                    <div class="unit-tier-row">
-                                        <span class="unit-tier-label">GROUND DEF</span>
-                                        <span class="unit-tier-right">
-                                            <span class="unit-epa-mini">{h_eff["def_rush_epa"]:+.2f} EPA</span>
-                                            {render_rank_badge(h_rdef_rk, f"{home_tm} Def")}
-                                        </span>
-                                    </div>
-                                    <div class="unit-lever-footer">
-                                        <span class="metric-subtext">{home_tm} Lever</span>
-                                        {home_lever_tag}
-                                    </div>
+                                <div class="unit-section-tag" style="color:{home_color};">Offense</div>
+                                <div class="unit-tier-row">
+                                    <span class="unit-tier-label">Pass Offense</span>
+                                    <span class="unit-tier-right">
+                                        <span class="unit-epa-mini">{h_eff["off_pass_epa"]:+.2f}</span>
+                                        {render_rank_badge(h_pass_rk, "")}
+                                    </span>
+                                </div>
+                                <div class="unit-tier-row">
+                                    <span class="unit-tier-label">Rush Offense</span>
+                                    <span class="unit-tier-right">
+                                        <span class="unit-epa-mini">{h_eff["off_rush_epa"]:+.2f}</span>
+                                        {render_rank_badge(h_rush_rk, "")}
+                                    </span>
+                                </div>
+                                <div class="unit-section-tag" style="margin-top:8px; color:{home_color};">Defense</div>
+                                <div class="unit-tier-row">
+                                    <span class="unit-tier-label">Pass Defense</span>
+                                    <span class="unit-tier-right">
+                                        <span class="unit-epa-mini">{h_eff["def_pass_epa"]:+.2f}</span>
+                                        {render_rank_badge(h_pdef_rk, "")}
+                                    </span>
+                                </div>
+                                <div class="unit-tier-row">
+                                    <span class="unit-tier-label">Rush Defense</span>
+                                    <span class="unit-tier-right">
+                                        <span class="unit-epa-mini">{h_eff["def_rush_epa"]:+.2f}</span>
+                                        {render_rank_badge(h_rdef_rk, "")}
+                                    </span>
                                 </div>
                             </div>
-                            """
-                        )
+                        </div>
+                        """
+                    )
 
-            # 4. TOP 3 MATCHUP PLAYER PICKS WITH CLEAN LINE BUTTONS & CENTERED GRADIENT HEADSHOTS
+            # 4. TOP PLAYER PICKS (FULL-BLEED FLAT CARDS WITHOUT DOUBLE CONTAINER BORDERS)
             with col_brief_right:
                 top_3_picks = build_top_player_picks(
                     usage_matchup,
@@ -7008,75 +6927,78 @@ if not is_league_hub:
                     top_n=3,
                 )
 
-                with st.container(border=True):
-                    render_html(
-                        f"""
-                        <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:6px; margin-bottom:6px;">
-                            <h4 style="margin:0; color:#F1F5F9;">Top 3 Matchup Player Picks</h4>
-                            <span class="metric-subtext">Click Player Name for Dossier • Click Line for Picks Hub</span>
-                        </div>
-                        """
-                    )
-                    if not top_3_picks:
-                        st.info("Insufficient player usage data to rank top player picks.")
-                    else:
-                        for p_idx, pick in enumerate(top_3_picks):
-                            p_tm_c = resolve_team_display_color(pick["team"])
-                            p_pic_html = render_mismatch_headshot_html(
-                                pick["player_name"], pick["team"], headshot_lookup
-                            )
-                            spark_html = render_l5_sparkbars_html(pick["l5_values"], pick["line_val"])
+                render_html(
+                    """
+                    <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:6px; margin-bottom:6px;">
+                        <h4 style="margin:0; color:#F1F5F9;">Top Player Picks</h4>
+                        <span class="metric-subtext">Tap Player for Stats • Tap Line for Props</span>
+                    </div>
+                    """
+                )
+                if not top_3_picks:
+                    st.info("Insufficient player usage data to rank top player picks.")
+                else:
+                    for p_idx, pick in enumerate(top_3_picks):
+                        p_tm_c = resolve_team_display_color(pick["team"])
+                        p_pic_html = render_mismatch_headshot_html(
+                            pick["player_name"], pick["team"], headshot_lookup
+                        )
+                        spark_html = render_l5_sparkbars_html(pick["l5_values"], pick["line_val"])
 
-                            with st.container(border=True):
-                                pk_top_l, pk_top_r = st.columns([1.25, 1.15])
-                                with pk_top_l:
-                                    render_inline_player_trigger(
-                                        pick["player_name"],
-                                        pick["team"],
-                                        pick["position"],
-                                        f"top3_pick_{p_idx}",
-                                        f"[PICK #{p_idx + 1} • {pick['team']} {pick['position']}]",
-                                    )
-                                with pk_top_r:
-                                    render_compact_bet_action_row(
-                                        key_prefix=f"top3_{p_idx}_{active_game['game_id']}",
-                                        season=selected_season,
-                                        week=selected_week,
-                                        matchup=f"{away_tm} @ {home_tm}",
-                                        category=f"Player Prop ({pick['position']})",
-                                        selection=f"{pick['player_name']} {pick['play_label']}",
-                                        market_line=f"{pick['line_val']} {pick['mkt_label']}",
-                                        model_proj=f"PROJ {pick['model_proj']:.1f}",
-                                        american_odds=default_odds,
-                                        edge_score=pick["edge_score"],
-                                        ev_pct=pick["ev_pct"],
-                                        kelly_units=pick["kelly_units"],
-                                        team_abbr=pick["team"],
-                                        team_color_override=p_tm_c,
-                                        open_matchup_modal_on_click=True,
-                                        focus_player=pick["player_name"],
-                                        button_text_override=pick["play_label"],
-                                    )
+                        with st.container(border=True):
+                            pk_top_l, pk_top_r = st.columns([1.25, 1.15])
+                            with pk_top_l:
+                                render_inline_player_trigger(
+                                    pick["player_name"],
+                                    pick["team"],
+                                    pick["position"],
+                                    f"top3_pick_{p_idx}",
+                                    f"{pick['team']} {pick['position']}",
+                                )
+                            with pk_top_r:
+                                render_compact_bet_action_row(
+                                    key_prefix=f"top3_{p_idx}_{active_game['game_id']}",
+                                    season=selected_season,
+                                    week=selected_week,
+                                    matchup=f"{away_tm} @ {home_tm}",
+                                    category=f"Player Prop ({pick['position']})",
+                                    selection=f"{pick['player_name']} {pick['play_label']}",
+                                    market_line=f"{pick['line_val']} {pick['mkt_label']}",
+                                    model_proj=f"Proj {pick['model_proj']:.1f}",
+                                    american_odds=default_odds,
+                                    edge_score=pick["edge_score"],
+                                    ev_pct=pick["ev_pct"],
+                                    kelly_units=pick["kelly_units"],
+                                    team_abbr=pick["team"],
+                                    team_color_override=p_tm_c,
+                                    open_matchup_modal_on_click=True,
+                                    focus_player=pick["player_name"],
+                                    button_text_override=pick["play_label"],
+                                )
 
-                                render_html(
-                                    f"""
-                                    <div style="display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:10px; margin-top:4px; border-left:3px solid {p_tm_c}; padding-left:8px;">
-                                        <div style="display:flex; align-items:center; gap:10px; flex:1; min-width:220px;">
-                                            {p_pic_html}
-                                            <div class="metric-subtext" style="line-height:1.38;">
-                                                {pick["usage_tag"]} {pick["matchup_tag"]}
-                                                <span class="badge-elite">[PROJ {pick["model_proj"]:.1f} • {pick["ev_pct"]:+.1f}% EV]</span>
-                                                <span class="badge-mid">[HIT: {pick["hit_record"]}]</span><br>
-                                                <span style="color:#CBD5E1;">{pick["rationale"]}</span>
+                            render_html(
+                                f"""
+                                <div style="display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:10px; margin-top:4px; border-left:3px solid {p_tm_c}; padding-left:8px;">
+                                    <div style="display:flex; align-items:center; gap:10px; flex:1; min-width:190px;">
+                                        {p_pic_html}
+                                        <div>
+                                            <div style="display:flex; align-items:center; gap:5px; flex-wrap:wrap;">
+                                                <span class="badge-elite">Proj {pick["model_proj"]:.1f}</span>
+                                                <span class="badge-mid">Hit {pick["hit_record"]}</span>
+                                                <span class="badge-sage">{pick["matchup_tag"]}</span>
+                                            </div>
+                                            <div class="metric-subtext" style="margin-top:3px;">
+                                                {pick["usage_tag"]} • {pick["ev_pct"]:+.1f}% EV
                                             </div>
                                         </div>
-                                        <div style="display:flex; flex-direction:column; align-items:flex-end; gap:3px;">
-                                            <span class="metric-subtext" style="font-size:0.62rem;">L5 VS LINE ({pick['line_val']})</span>
-                                            {spark_html}
-                                        </div>
                                     </div>
-                                    """
-                                )
+                                    <div style="display:flex; flex-direction:column; align-items:flex-end; gap:2px;">
+                                        <span class="metric-subtext" style="font-size:0.62rem;">L5 ({pick['line_val']})</span>
+                                        {spark_html}
+                                    </div>
+                                </div>
+                                """
+                            )
 
             # 5. IN-GAME WIN PROBABILITY SIMULATOR
             with st.expander("Live / In-Game Win Probability & Line Movement Tracker", expanded=False):
@@ -7125,7 +7047,7 @@ if not is_league_hub:
             render_html(
                 f"<h4 style='margin:14px 0 8px 0;'>"
                 f"{render_inline_logo(away_tm, 20)}{away_tm} & {render_inline_logo(home_tm, 20)}{home_tm} — "
-                f"Matchup Divisional Standings ({selected_season} Through Week {selected_week})</h4>"
+                f"Divisional Standings</h4>"
             )
             active_highlight_set = {away_norm, home_norm}
             if away_div_name == home_div_name:
@@ -7174,8 +7096,8 @@ if not is_league_hub:
     with game_tab_mismatches:
         pm_subtab_cbwr, pm_subtab_volume = st.tabs(
             [
-                "CB vs. WR 1-on-1 Battles",
-                "Skill Weapon Volume",
+                "WR vs CB",
+                "Touch Share",
             ]
         )
 
@@ -7210,10 +7132,10 @@ if not is_league_hub:
                     f"""
                     <div class="terminal-card" style="padding:9px 14px; margin-bottom:10px;">
                         <div class="metric-subtext">
-                            <span class="badge-bad">[REMOVED FROM CB vs WR (OUT / DOUBTFUL / UNCONFIRMED DNP-LP)]</span>
+                            <span class="badge-bad">Inactive / DNP</span>
                             <span style="color:#E2E8F0;">{removed_str}</span>
                             <span style="color:#475569; margin:0 6px;">|</span>
-                            <span class="badge-elite">[RETAINED (UNCONFIRMED • FULL PRACTICE)]</span>
+                            <span class="badge-elite">Full Practice</span>
                             <span style="color:#E2E8F0;">{retained_str}</span>
                         </div>
                     </div>
@@ -7289,7 +7211,7 @@ if not is_league_hub:
                                         b["off_tm"],
                                         "WR",
                                         f"cbwr_w_{off_tm_i}_{b_idx}",
-                                        f"[{b['off_tm']} WR]",
+                                        f"{b['off_tm']} WR",
                                     )
                                     render_html(
                                         f"""
@@ -7310,7 +7232,7 @@ if not is_league_hub:
                                         b["def_tm"],
                                         b["cb_pos"],
                                         f"cbwr_c_{def_tm_i}_{b_idx}",
-                                        f"[{b['def_tm']} {b['cb_pos']}]",
+                                        f"{b['def_tm']} {b['cb_pos']}",
                                     )
                                     render_html(
                                         f"""
@@ -7436,7 +7358,7 @@ if not is_league_hub:
                                         off_tm_i,
                                         pos_badge,
                                         f"vol_{off_tm_i}_{w_idx}",
-                                        f"[{off_tm_i} {pos_badge}]",
+                                        f"{off_tm_i} {pos_badge}",
                                     )
                                 with top_c2:
                                     render_html(f'<div style="text-align:right;">{opp_unit_badge}</div>')
@@ -7508,8 +7430,8 @@ if not is_league_hub:
                                 </a>
                             </div>
                             <div>
-                                <span class="{badge_cls}">[{flagged_tm_count} FLAGGED]</span>
-                                <span class="badge-elite">[{cleared_tm_count} FP / CLEARED]</span>
+                                <span class="{badge_cls}">{flagged_tm_count} Flagged</span>
+                                <span class="badge-elite">{cleared_tm_count} Cleared</span>
                             </div>
                         </div>
                         <p style="margin:6px 0 0 0;" class="metric-subtext">
@@ -7543,7 +7465,7 @@ if not is_league_hub:
                                     tm,
                                     pos_str,
                                     f"inj_{tm}_{i_idx}",
-                                    f"[{tm} {pos_str}]",
+                                    f"{tm} {pos_str}",
                                 )
                             with ic2:
                                 render_html(f'<div style="text-align:right;">{badge_html} {prac_html}</div>')
@@ -7590,7 +7512,7 @@ if not is_league_hub:
                         render_html(
                             f"""
                             <div>
-                                <b>{render_inline_logo(off_tm, 16)}AIR ({off_tm} Pass vs {def_tm} Pass Def)</b>
+                                <b>{render_inline_logo(off_tm, 16)}Pass Offense vs Pass Defense</b>
                                 <div class="epa-stat-grid">
                                     <div class="epa-stat-box" style="border-top:3px solid {off_c};">
                                         <div class="epa-stat-label">{off_tm} Pass EPA</div>
@@ -7617,7 +7539,7 @@ if not is_league_hub:
                         render_html(
                             f"""
                             <div>
-                                <b>{render_inline_logo(off_tm, 16)}GROUND ({off_tm} Rush vs {def_tm} Rush Def)</b>
+                                <b>{render_inline_logo(off_tm, 16)}Rush Offense vs Rush Defense</b>
                                 <div class="epa-stat-grid">
                                     <div class="epa-stat-box" style="border-top:3px solid {off_c};">
                                         <div class="epa-stat-label">{off_tm} Rush EPA</div>
@@ -7644,19 +7566,19 @@ if not is_league_hub:
                         o_ovr_rk = int(o_row["off_epa_rank"])
                         d_ovr_rk = int(d_row["def_epa_rank"])
                         off_drag_badge = (
-                            f'<span class="badge-bad">[-{off_pen:.3f} INJ DRAG]</span>'
+                            f'<span class="badge-bad">-{off_pen:.2f} Inj</span>'
                             if off_pen > 0
-                            else '<span class="badge-elite">[FULL STRENGTH]</span>'
+                            else '<span class="badge-elite">Full Strength</span>'
                         )
                         def_drag_badge = (
-                            f'<span class="badge-bad">[+{def_pen:.3f} INJ DRAG]</span>'
+                            f'<span class="badge-bad">+{def_pen:.2f} Inj</span>'
                             if def_pen > 0
-                            else '<span class="badge-elite">[FULL STRENGTH]</span>'
+                            else '<span class="badge-elite">Full Strength</span>'
                         )
                         render_html(
                             f"""
                             <div>
-                                <b>{render_inline_logo(off_tm, 16)}OVERALL & INJURY-ADJUSTED EPA</b>
+                                <b>{render_inline_logo(off_tm, 16)}Overall & Injury-Adjusted EPA</b>
                                 <div style="margin-top:4px;">
                                     {render_rank_badge(o_ovr_rk, f"{off_tm} Ovr")} {render_rank_badge(d_ovr_rk, f"{def_tm} Ovr")}
                                 </div>
@@ -7688,8 +7610,8 @@ if not is_league_hub:
     with game_tab_props_rosters:
         sub_m_props, sub_m_rosters = st.tabs(
             [
-                f"Matchup Prop Explorer ({away_tm} & {home_tm})",
-                f"Active Game Rosters & Snap Share ({away_tm} & {home_tm})",
+                "Player Props",
+                "Rosters",
             ]
         )
 
@@ -7888,9 +7810,9 @@ if not is_league_hub:
 
                 opp_badge_html = render_rank_badge(opp_def_rk, f"{opp_def_tm} {def_type_str}")
                 hit_badge_html = (
-                    f'<span class="badge-elite">[{hits_count}/{sample_n} OVER ({hit_rate_pct:.0f}%)]</span>'
+                    f'<span class="badge-elite">{hits_count}/{sample_n} Over ({hit_rate_pct:.0f}%)</span>'
                     if hit_rate_pct >= 55
-                    else f'<span class="badge-mid">[{hits_count}/{sample_n} OVER ({hit_rate_pct:.0f}%)]</span>'
+                    else f'<span class="badge-mid">{hits_count}/{sample_n} Over ({hit_rate_pct:.0f}%)</span>'
                 )
 
                 with st.container(border=True):
@@ -8170,10 +8092,10 @@ else:
         league_tab_divisions,
     ) = st.tabs(
         [
-            f"Week {selected_week} Best League Picks",
-            "League-Wide Props Explorer",
-            f"Historical Backtest ({selected_season})",
-            "NFL Divisional Standings",
+            "Best Picks",
+            "Prop Finder",
+            "Model Record",
+            "Standings",
         ]
     )
 
@@ -8203,8 +8125,8 @@ else:
                         <span class="metric-subtext">Scans all {len(week_games)} NFL matchups on the Week {selected_week} slate. Click any hyperlinked pick box to toggle in your Bet Slip.</span>
                     </div>
                     <div>
-                        <span class="badge-elite">[ODDS BASIS: {default_odds:+d}]</span>
-                        <span class="badge-sage">[KELLY FRACTION: {kelly_mult:.2f}x]</span>
+                        <span class="badge-elite">Odds {default_odds:+d}</span>
+                        <span class="badge-sage">Kelly {kelly_mult:.2f}x</span>
                     </div>
                 </div>
             </div>
@@ -8219,24 +8141,24 @@ else:
 
             sb1, sb2, sb3, sb4 = st.columns(4)
             sb1.metric(
-                "#1 Slate Spread Edge",
+                "Top Spread Pick",
                 f"{top_sp_row['Best Bet']} ({top_sp_row['Matchup']})",
-                delta=f"Fair: {top_sp_row['Model Fair Line']} (+{top_sp_row['Value Edge (Pts)']:.1f} pts)",
+                delta=f"Proj {top_sp_row['Implied Score']} (+{top_sp_row['Value Edge (Pts)']:.1f} pt edge)",
             )
             sb2.metric(
-                "#1 Slate Total Edge",
+                "Top Total Pick",
                 f"{top_tot_row['Best Bet']} ({top_tot_row['Matchup']})",
-                delta=f"{top_tot_row['Model Fair Line']} (+{top_tot_row['Value Edge (Pts)']:.1f} pts)",
+                delta=f"{top_tot_row['Model Fair Line']} (+{top_tot_row['Value Edge (Pts)']:.1f} pt edge)",
             )
             sb3.metric(
-                "#1 Slate Player Prop",
+                "Top Player Prop",
                 f"{top_pr_row['Player']} ({top_pr_row['Team']})",
-                delta=f"{top_pr_row['Prop Play']} • Edge {top_pr_row['Edge Score']:.0f}/100",
+                delta=f"{top_pr_row['Prop Play']} • Proj {top_pr_row['Model Projection']}",
             )
             sb4.metric(
-                "+EV Plays Across Slate",
+                "+EV Slate Plays",
                 f"{int((slate_games_df['EV %'] > 0).sum() + (slate_props_df['EV %'] > 0).sum())} Plays",
-                delta=f"At {default_odds:+d} Market Pricing",
+                delta=f"At {default_odds:+d} Odds",
             )
 
         sl_col1, sl_col2 = st.columns([1.05, 1.15])
@@ -8667,7 +8589,7 @@ fab_badge_css = (
         right: -4px;
         background: #34D399;
         color: #0B0F17;
-        font-family: monospace;
+        font-family: Inter, -apple-system, BlinkMacSystemFont, sans-serif; font-variant-numeric: tabular-nums;
         font-size: 0.72rem;
         font-weight: 900;
         width: 22px;
