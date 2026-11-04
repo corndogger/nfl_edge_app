@@ -119,9 +119,26 @@ def resolve_team_display_color(team_abbr: str) -> str:
 st.markdown(
     """
 <style>
-/* Global Overflow & Box-Sizing Guardrails */
+/* Global Overflow & Box-Sizing Guardrails — NFL.com Flat & Sharp Broadcast Theme */
 *, *::before, *::after {
     box-sizing: border-box;
+}
+.stApp, .main {
+    background-color: #0B0B0E !important;
+    color: #FFFFFF !important;
+    font-family: Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif !important;
+}
+section[data-testid="stSidebar"] {
+    background-color: #111116 !important;
+    border-right: 1px solid #262630 !important;
+}
+div[data-testid="stMetric"] {
+    background-color: #15151B !important;
+    border: 1px solid #282832 !important;
+    border-top: 3px solid #013369 !important;
+    border-radius: 2px !important;
+    padding: 12px 14px !important;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.50), 0 1px 2px rgba(0, 0, 0, 0.35) !important;
 }
 
 /* Global st.metric Anti-Truncation Override (Prevents '...' Ellipsis Clipping) */
@@ -164,21 +181,22 @@ div[data-testid="stMetricDelta"] > div {
     margin-bottom: 12px;
 }
 .custom-kpi-card {
-    background-color: #141923;
-    border: 1px solid rgba(255, 255, 255, 0.07);
-    border-top: 3px solid #475569;
-    border-radius: 10px;
-    padding: 12px 14px;
+    background-color: #15151B;
+    border: 1px solid #282832;
+    border-top: 4px solid #013369;
+    border-radius: 2px;
+    padding: 13px 15px;
     min-width: 0;
     display: flex;
     flex-direction: column;
     justify-content: space-between;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.50), 0 1px 2px rgba(0, 0, 0, 0.35);
 }
 .custom-kpi-card-edge {
-    border-top: 2px solid #34D399;
+    border-top: 4px solid #16A34A;
 }
 .custom-kpi-card-warn {
-    border-top: 2px solid #F87171;
+    border-top: 4px solid #DC2626;
 }
 .custom-kpi-top {
     display: flex;
@@ -200,7 +218,7 @@ div[data-testid="stMetricDelta"] > div {
     font-family: Inter, -apple-system, BlinkMacSystemFont, sans-serif; font-variant-numeric: tabular-nums;
     color: #64748B;
     border: 1px solid #2A364B;
-    border-radius: 4px;
+    border-radius: 2px;
     padding: 0px 5px;
     cursor: help;
 }
@@ -214,11 +232,11 @@ div[data-testid="stMetricDelta"] > div {
     overflow-wrap: break-word;
 }
 .custom-kpi-pill-pos {
-    background-color: rgba(52, 211, 153, 0.12);
-    color: #34D399;
-    border: 1px solid rgba(52, 211, 153, 0.35);
+    background-color: #15803D;
+    color: #FFFFFF;
+    border: 1px solid #16A34A;
     padding: 2px 8px;
-    border-radius: 4px;
+    border-radius: 2px;
     font-size: 0.72rem;
     font-family: Inter, -apple-system, BlinkMacSystemFont, sans-serif; font-variant-numeric: tabular-nums;
     font-weight: 700;
@@ -226,11 +244,11 @@ div[data-testid="stMetricDelta"] > div {
     width: fit-content;
 }
 .custom-kpi-pill-neg {
-    background-color: rgba(248, 113, 113, 0.12);
-    color: #F87171;
-    border: 1px solid rgba(248, 113, 113, 0.35);
+    background-color: #B91C1C;
+    color: #FFFFFF;
+    border: 1px solid #DC2626;
     padding: 2px 8px;
-    border-radius: 4px;
+    border-radius: 2px;
     font-size: 0.72rem;
     font-family: Inter, -apple-system, BlinkMacSystemFont, sans-serif; font-variant-numeric: tabular-nums;
     font-weight: 700;
@@ -238,54 +256,57 @@ div[data-testid="stMetricDelta"] > div {
     width: fit-content;
 }
 .custom-kpi-pill-neutral {
-    background-color: rgba(148, 163, 184, 0.10);
-    color: #CBD5E1;
-    border: 1px solid #334155;
+    background-color: #23232C;
+    color: #FFFFFF;
+    border: 1px solid #343442;
     padding: 2px 8px;
-    border-radius: 4px;
+    border-radius: 2px;
     font-size: 0.72rem;
     font-family: Inter, -apple-system, BlinkMacSystemFont, sans-serif; font-variant-numeric: tabular-nums;
-    font-weight: 600;
+    font-weight: 700;
     display: inline-block;
     width: fit-content;
 }
 
-/* Clean, Toned-Down Sports Analytics Terminal Cards */
+/* NFL.com Flat & Sharp Content Cards with Clean Drop Shadows */
 .terminal-card {
-    background-color: #121722;
-    border: 1px solid #222B3A;
-    border-left: 3px solid #64748B;
-    border-radius: 8px;
+    background-color: #15151B;
+    border: 1px solid #282832;
+    border-left: 4px solid #013369;
+    border-radius: 2px;
     padding: 14px 16px;
     margin-bottom: 10px;
-    color: #E2E8F0;
+    color: #FFFFFF;
     max-width: 100%;
     overflow-wrap: break-word;
     word-wrap: break-word;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.50), 0 1px 2px rgba(0, 0, 0, 0.35);
 }
 .terminal-card-elite {
-    background-color: #111A1E;
-    border: 1px solid #1E3532;
-    border-left: 3px solid #34D399;
-    border-radius: 8px;
+    background-color: #15151B;
+    border: 1px solid #282832;
+    border-left: 4px solid #16A34A;
+    border-radius: 2px;
     padding: 14px 16px;
     margin-bottom: 10px;
-    color: #E2E8F0;
+    color: #FFFFFF;
     max-width: 100%;
     overflow-wrap: break-word;
     word-wrap: break-word;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.50), 0 1px 2px rgba(0, 0, 0, 0.35);
 }
 .terminal-card-vuln {
-    background-color: #1B1519;
-    border: 1px solid #3B2329;
-    border-left: 3px solid #F87171;
-    border-radius: 8px;
+    background-color: #15151B;
+    border: 1px solid #282832;
+    border-left: 4px solid #DC2626;
+    border-radius: 2px;
     padding: 14px 16px;
     margin-bottom: 10px;
-    color: #E2E8F0;
+    color: #FFFFFF;
     max-width: 100%;
     overflow-wrap: break-word;
     word-wrap: break-word;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.50), 0 1px 2px rgba(0, 0, 0, 0.35);
 }
 
 /* Inline Hyperlinked Player Names (HTML <a> and Streamlit Tertiary Buttons) */
@@ -356,14 +377,16 @@ button[kind="tertiary"] p {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    background: #0B0F17;
-    border: 1px solid #1E2736;
+    background: #111116;
+    border: 1px solid #262630;
     border-bottom: none;
-    border-radius: 8px 8px 0 0;
-    padding: 4px 12px;
+    border-radius: 2px 2px 0 0;
+    padding: 6px 12px;
     font-family: Inter, -apple-system, BlinkMacSystemFont, sans-serif; font-variant-numeric: tabular-nums;
-    font-size: 0.68rem;
-    color: #94A3B8;
+    font-size: 0.70rem;
+    font-weight: 800;
+    letter-spacing: 0.04em;
+    color: #A1A1AA;
 }
 div[data-testid="stHorizontalBlock"]:has(.nfl-ticker-marker) {
     display: flex !important;
@@ -374,13 +397,14 @@ div[data-testid="stHorizontalBlock"]:has(.nfl-ticker-marker) {
     white-space: nowrap !important;
     gap: 10px !important;
     padding: 10px 12px 14px 12px !important;
-    margin-bottom: 10px !important;
+    margin-bottom: 12px !important;
     max-width: 100% !important;
-    background: linear-gradient(90deg, #0D1118 0%, #0D1118 96%, #162030 100%) !important;
-    border: 1px solid #1E2736 !important;
-    border-radius: 0 0 8px 8px !important;
+    background: #111116 !important;
+    border: 1px solid #262630 !important;
+    border-radius: 0 0 2px 2px !important;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.50) !important;
     scrollbar-width: thin;
-    scrollbar-color: #475569 #0D1118;
+    scrollbar-color: #3F3F46 #111116;
     -webkit-overflow-scrolling: touch;
 }
 div[data-testid="stHorizontalBlock"]:has(.nfl-ticker-marker)::-webkit-scrollbar {
@@ -388,11 +412,11 @@ div[data-testid="stHorizontalBlock"]:has(.nfl-ticker-marker)::-webkit-scrollbar 
 }
 div[data-testid="stHorizontalBlock"]:has(.nfl-ticker-marker)::-webkit-scrollbar-track {
     background: #0D1118;
-    border-radius: 4px;
+    border-radius: 2px;
 }
 div[data-testid="stHorizontalBlock"]:has(.nfl-ticker-marker)::-webkit-scrollbar-thumb {
     background-color: #334155;
-    border-radius: 4px;
+    border-radius: 2px;
     border: 1px solid #1E293B;
 }
 div[data-testid="stHorizontalBlock"]:has(.nfl-ticker-marker)::-webkit-scrollbar-thumb:hover {
@@ -415,34 +439,35 @@ div[data-testid="stHorizontalBlock"]:has(.nfl-ticker-marker) div[data-testid="st
     gap: 0px !important;
 }
 
-/* Individual Ticker Card Visuals (Full-Card Clickable Target) */
+/* Individual Ticker Card Visuals (NFL.com Sharp Scoreboard Blocks) */
 .ticker-card {
-    background-color: #131823;
-    border: 1px solid #242E3E;
-    border-top: 2px solid #334155;
-    border-radius: 6px;
-    padding: 8px 10px;
+    background-color: #16161D;
+    border: 1px solid #2A2A35;
+    border-top: 3px solid #3F3F46;
+    border-radius: 2px;
+    padding: 9px 11px;
     margin-bottom: 0px;
     white-space: nowrap;
     cursor: pointer;
+    box-shadow: 0 3px 8px rgba(0, 0, 0, 0.45);
     transition: all 0.14s ease-in-out;
 }
 .ticker-card-active {
-    background-color: #161E2E;
-    border: 1.5px solid #64748B;
-    border-radius: 6px;
-    padding: 8px 10px;
+    background-color: #1E1E28;
+    border: 1.5px solid #FFFFFF;
+    border-radius: 2px;
+    padding: 9px 11px;
     margin-bottom: 0px;
     white-space: nowrap;
     cursor: pointer;
-    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.45);
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.65);
 }
 div[data-testid="stHorizontalBlock"]:has(.nfl-ticker-marker) > div[data-testid="stColumn"]:hover .ticker-card,
 div[data-testid="stHorizontalBlock"]:has(.nfl-ticker-marker) > div[data-testid="column"]:hover .ticker-card {
-    background-color: #182030;
-    border-color: #64748B;
+    background-color: #1E1E28;
+    border-color: #A1A1AA;
     transform: translateY(-1px);
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.42);
+    box-shadow: 0 6px 14px rgba(0, 0, 0, 0.58);
 }
 .ticker-top-bar {
     display: flex;
@@ -556,27 +581,29 @@ div[data-testid="stHorizontalBlock"]:has(.nfl-ticker-marker) div[data-testid="st
 
 /* Streamlined Active Game Selection Banner (Team-Colored) */
 .active-game-spotlight {
-    background-color: #121824;
-    border: 1px solid #2A364B;
-    border-radius: 10px;
+    background-color: #15151B;
+    border: 1px solid #282832;
+    border-radius: 2px;
     padding: 14px 18px;
-    margin: 4px 0 10px 0;
-    color: #F8FAFC;
+    margin: 4px 0 12px 0;
+    color: #FFFFFF;
     max-width: 100%;
     overflow-wrap: break-word;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.52), 0 1px 2px rgba(0, 0, 0, 0.35);
 }
 .active-lock-pill {
-    background-color: rgba(148, 163, 184, 0.14);
-    color: #F8FAFC;
-    border: 1px solid #475569;
-    padding: 3px 10px;
-    border-radius: 5px;
+    background-color: #013369;
+    color: #FFFFFF;
+    border: 1px solid #1D4ED8;
+    padding: 4px 10px;
+    border-radius: 2px;
     font-size: 0.72rem;
-    font-weight: 700;
+    font-weight: 800;
     letter-spacing: 0.04em;
     font-family: Inter, -apple-system, BlinkMacSystemFont, sans-serif; font-variant-numeric: tabular-nums;
     display: inline-block;
     text-transform: uppercase;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.40);
 }
 
 /* Promoted Above-the-Fold Environment, Line Movement & Lineup Status Strip */
@@ -584,14 +611,15 @@ div[data-testid="stHorizontalBlock"]:has(.nfl-ticker-marker) div[data-testid="st
     display: grid;
     grid-template-columns: 1.15fr 1.25fr 1.25fr;
     gap: 10px;
-    background-color: #131926;
-    border: 1px solid #232E42;
-    border-radius: 8px;
+    background-color: #15151B;
+    border: 1px solid #282832;
+    border-radius: 2px;
     padding: 10px 14px;
     margin-bottom: 12px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.48);
 }
 .promoted-context-cell {
-    border-right: 1px solid #1E293B;
+    border-right: 1px solid #282832;
     padding-right: 10px;
     min-width: 0;
 }
@@ -600,12 +628,12 @@ div[data-testid="stHorizontalBlock"]:has(.nfl-ticker-marker) div[data-testid="st
     padding-right: 0;
 }
 .context-cell-title {
-    font-size: 0.69rem;
+    font-size: 0.70rem;
     font-family: Inter, -apple-system, BlinkMacSystemFont, sans-serif; font-variant-numeric: tabular-nums;
-    color: #94A3B8;
-    font-weight: 700;
+    color: #A1A1AA;
+    font-weight: 800;
     text-transform: uppercase;
-    letter-spacing: 0.04em;
+    letter-spacing: 0.05em;
     margin-bottom: 4px;
 }
 
@@ -613,11 +641,12 @@ div[data-testid="stHorizontalBlock"]:has(.nfl-ticker-marker) div[data-testid="st
    OFFENSE VS OPPOSING DEFENSE CROSS-UNIT MATCHUP MATRIX & TEAM TUG-OF-WAR BARS
    ============================================================================ */
 .cross-unit-row {
-    background-color: #151B26;
-    border: 1px solid #232C3D;
-    border-radius: 7px;
-    padding: 9px 12px;
+    background-color: #15151B;
+    border: 1px solid #282832;
+    border-radius: 2px;
+    padding: 10px 13px;
     margin-bottom: 8px;
+    box-shadow: 0 3px 9px rgba(0, 0, 0, 0.45);
 }
 .cross-unit-header {
     display: flex;
@@ -625,19 +654,19 @@ div[data-testid="stHorizontalBlock"]:has(.nfl-ticker-marker) div[data-testid="st
     align-items: center;
     flex-wrap: wrap;
     gap: 6px;
-    margin-bottom: 5px;
+    margin-bottom: 6px;
     font-family: Inter, -apple-system, BlinkMacSystemFont, sans-serif; font-variant-numeric: tabular-nums;
-    font-size: 0.78rem;
+    font-size: 0.80rem;
 }
 .tug-bar-track {
     width: 100%;
     height: 8px;
-    background-color: #1E293B;
-    border-radius: 4px;
+    background-color: #262630;
+    border-radius: 0px;
     overflow: hidden;
     display: flex;
     gap: 2px;
-    margin: 5px 0;
+    margin: 6px 0;
 }
 .tug-bar-segment {
     height: 100%;
@@ -655,7 +684,7 @@ div[data-testid="stHorizontalBlock"]:has(.nfl-ticker-marker) div[data-testid="st
     gap: 6px;
     background-color: #141B28;
     border: 1px solid #263246;
-    border-radius: 6px;
+    border-radius: 2px;
     padding: 6px 10px;
     font-family: Inter, -apple-system, BlinkMacSystemFont, sans-serif; font-variant-numeric: tabular-nums;
     font-size: 0.76rem;
@@ -687,16 +716,16 @@ div.element-container:has(.floating-plus-fab-marker) + div.element-container div
     min-height: 64px !important;
     max-width: 64px !important;
     border-radius: 50% !important;
-    background: radial-gradient(circle at 30% 30%, #1E293B 0%, #0F172A 100%) !important;
-    border: 2.5px solid #38BDF8 !important;
-    color: #F8FAFC !important;
+    background: #013369 !important;
+    border: 2px solid #FFFFFF !important;
+    color: #FFFFFF !important;
     padding: 0 !important;
     margin: 0 !important;
     display: flex !important;
     align-items: center !important;
     justify-content: center !important;
-    box-shadow: 0 10px 28px rgba(0, 0, 0, 0.72), 0 0 16px rgba(56, 189, 248, 0.35) !important;
-    transition: transform 0.16s ease, box-shadow 0.16s ease, border-color 0.16s ease !important;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.78), 0 2px 6px rgba(0, 0, 0, 0.50) !important;
+    transition: transform 0.15s ease, background-color 0.15s ease, box-shadow 0.15s ease !important;
     position: relative !important;
 }
 div[data-testid="stElementContainer"]:has(.floating-plus-fab-marker) + div[data-testid="stElementContainer"] div[data-testid="stButton"] button p,
@@ -712,9 +741,10 @@ div.element-container:has(.floating-plus-fab-marker) + div.element-container div
 }
 div[data-testid="stElementContainer"]:has(.floating-plus-fab-marker) + div[data-testid="stElementContainer"] div[data-testid="stButton"] button:hover,
 div.element-container:has(.floating-plus-fab-marker) + div.element-container div[data-testid="stButton"] button:hover {
-    transform: scale(1.07) translateY(-2px) !important;
-    border-color: #34D399 !important;
-    box-shadow: 0 12px 32px rgba(0, 0, 0, 0.82), 0 0 22px rgba(52, 211, 153, 0.48) !important;
+    transform: scale(1.06) translateY(-2px) !important;
+    background: #16A34A !important;
+    border-color: #FFFFFF !important;
+    box-shadow: 0 12px 28px rgba(0, 0, 0, 0.85) !important;
 }
 
 /* ============================================================================
@@ -728,7 +758,7 @@ div.element-container:has(.floating-plus-fab-marker) + div.element-container div
     padding: 2px 6px;
     background: #141B28;
     border: 1px solid #243044;
-    border-radius: 5px;
+    border-radius: 2px;
     vertical-align: middle;
 }
 .l5-bar-col {
@@ -759,9 +789,10 @@ div.element-container:has(.floating-plus-fab-marker) + div.element-container div
     height: 52px !important;
     min-width: 52px !important;
     max-width: 52px !important;
-    border-radius: 8px;
-    background-color: #141B26;
-    border: 1px solid #263144;
+    border-radius: 2px;
+    background-color: #1B1B22;
+    border: 1px solid #2E2E3A;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.45);
     display: flex !important;
     align-items: center !important;
     justify-content: center !important;
@@ -824,7 +855,7 @@ div.element-container:has(.floating-plus-fab-marker) + div.element-container div
 .player-modal-banner {
     background-color: #121824;
     border: 1px solid #263246;
-    border-radius: 8px;
+    border-radius: 2px;
     padding: 12px 20px 0 18px;
     margin-bottom: 12px;
     display: flex;
@@ -871,7 +902,7 @@ div.element-container:has(.floating-plus-fab-marker) + div.element-container div
     width: 108px;
     height: 96px;
     background: #1A2232;
-    border-radius: 6px 6px 0 0;
+    border-radius: 2px 6px 0 0;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -886,43 +917,32 @@ div.element-container:has(.floating-plus-fab-marker) + div.element-container div
     overflow-wrap: break-word;
 }
 
-/* Evaluative Unit Ranking & Status Badges (Strictly Reserved for Good/Bad/Neutral) */
-.badge-elite {
-    background-color: rgba(52, 211, 153, 0.10);
-    color: #34D399;
-    border: 1px solid rgba(52, 211, 153, 0.35);
-    padding: 2px 7px;
-    border-radius: 4px;
+/* NFL.com Flat Solid Basic Color Badges & Sharp Corners */
+.badge-elite,
+.badge-cleared,
+.badge-hot {
+    background-color: #15803D;
+    color: #FFFFFF;
+    border: 1px solid #16A34A;
+    padding: 2px 8px;
+    border-radius: 2px;
     font-size: 0.72rem;
-    font-weight: 700;
+    font-weight: 800;
     font-family: Inter, -apple-system, BlinkMacSystemFont, sans-serif; font-variant-numeric: tabular-nums;
     display: inline-block;
     margin: 1px 2px;
     max-width: 100%;
     overflow-wrap: anywhere;
 }
-.badge-cleared {
-    background-color: rgba(52, 211, 153, 0.10);
-    color: #34D399;
-    border: 1px solid rgba(52, 211, 153, 0.35);
-    padding: 2px 7px;
-    border-radius: 4px;
+.badge-mid,
+.badge-cold {
+    background-color: #23232C;
+    color: #E4E4E7;
+    border: 1px solid #343442;
+    padding: 2px 8px;
+    border-radius: 2px;
     font-size: 0.72rem;
     font-weight: 700;
-    font-family: Inter, -apple-system, BlinkMacSystemFont, sans-serif; font-variant-numeric: tabular-nums;
-    display: inline-block;
-    margin: 1px 2px;
-    max-width: 100%;
-    overflow-wrap: anywhere;
-}
-.badge-mid {
-    background-color: rgba(148, 163, 184, 0.08);
-    color: #94A3B8;
-    border: 1px solid #334155;
-    padding: 2px 7px;
-    border-radius: 4px;
-    font-size: 0.72rem;
-    font-weight: 600;
     font-family: Inter, -apple-system, BlinkMacSystemFont, sans-serif; font-variant-numeric: tabular-nums;
     display: inline-block;
     margin: 1px 2px;
@@ -930,13 +950,13 @@ div.element-container:has(.floating-plus-fab-marker) + div.element-container div
     overflow-wrap: anywhere;
 }
 .badge-bad {
-    background-color: rgba(248, 113, 113, 0.10);
-    color: #F87171;
-    border: 1px solid rgba(248, 113, 113, 0.35);
-    padding: 2px 7px;
-    border-radius: 4px;
+    background-color: #B91C1C;
+    color: #FFFFFF;
+    border: 1px solid #DC2626;
+    padding: 2px 8px;
+    border-radius: 2px;
     font-size: 0.72rem;
-    font-weight: 700;
+    font-weight: 800;
     font-family: Inter, -apple-system, BlinkMacSystemFont, sans-serif; font-variant-numeric: tabular-nums;
     display: inline-block;
     margin: 1px 2px;
@@ -944,13 +964,13 @@ div.element-container:has(.floating-plus-fab-marker) + div.element-container div
     overflow-wrap: anywhere;
 }
 .badge-amber {
-    background-color: rgba(251, 191, 36, 0.10);
-    color: #FBBF24;
-    border: 1px solid rgba(251, 191, 36, 0.35);
-    padding: 2px 7px;
-    border-radius: 4px;
+    background-color: #B45309;
+    color: #FFFFFF;
+    border: 1px solid #D97706;
+    padding: 2px 8px;
+    border-radius: 2px;
     font-size: 0.72rem;
-    font-weight: 700;
+    font-weight: 800;
     font-family: Inter, -apple-system, BlinkMacSystemFont, sans-serif; font-variant-numeric: tabular-nums;
     display: inline-block;
     margin: 1px 2px;
@@ -958,41 +978,13 @@ div.element-container:has(.floating-plus-fab-marker) + div.element-container div
     overflow-wrap: anywhere;
 }
 .badge-sage {
-    background-color: rgba(148, 163, 184, 0.12);
-    color: #E2E8F0;
-    border: 1px solid #475569;
-    padding: 2px 7px;
-    border-radius: 4px;
-    font-size: 0.72rem;
-    font-weight: 600;
-    font-family: Inter, -apple-system, BlinkMacSystemFont, sans-serif; font-variant-numeric: tabular-nums;
-    display: inline-block;
-    margin: 1px 2px;
-    max-width: 100%;
-    overflow-wrap: anywhere;
-}
-.badge-hot {
-    background-color: rgba(52, 211, 153, 0.12);
-    color: #34D399;
-    border: 1px solid rgba(52, 211, 153, 0.40);
-    padding: 2px 7px;
-    border-radius: 4px;
+    background-color: #1D1D26;
+    color: #FFFFFF;
+    border: 1px solid #343442;
+    padding: 2px 8px;
+    border-radius: 2px;
     font-size: 0.72rem;
     font-weight: 700;
-    font-family: Inter, -apple-system, BlinkMacSystemFont, sans-serif; font-variant-numeric: tabular-nums;
-    display: inline-block;
-    margin: 1px 2px;
-    max-width: 100%;
-    overflow-wrap: anywhere;
-}
-.badge-cold {
-    background-color: rgba(148, 163, 184, 0.10);
-    color: #94A3B8;
-    border: 1px solid #475569;
-    padding: 2px 7px;
-    border-radius: 4px;
-    font-size: 0.72rem;
-    font-weight: 600;
     font-family: Inter, -apple-system, BlinkMacSystemFont, sans-serif; font-variant-numeric: tabular-nums;
     display: inline-block;
     margin: 1px 2px;
@@ -1000,32 +992,34 @@ div.element-container:has(.floating-plus-fab-marker) + div.element-container div
     overflow-wrap: anywhere;
 }
 .team-pill {
-    background-color: #18202F;
-    color: #F1F5F9;
-    border: 1px solid #2E3A4F;
-    padding: 2px 9px;
-    border-radius: 6px;
+    background-color: #1B1B22;
+    color: #FFFFFF;
+    border: 1px solid #2E2E3A;
+    padding: 3px 10px;
+    border-radius: 2px;
     font-size: 0.82rem;
-    font-weight: 700;
+    font-weight: 800;
     font-family: Inter, -apple-system, BlinkMacSystemFont, sans-serif; font-variant-numeric: tabular-nums;
     display: inline-flex;
     align-items: center;
     gap: 6px;
     margin: 0 3px;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.40);
 }
 .team-pill-lg {
-    background-color: #161F2E;
-    color: #F8FAFC;
-    border: 1px solid #2E3D52;
-    padding: 5px 12px;
-    border-radius: 8px;
+    background-color: #1B1B22;
+    color: #FFFFFF;
+    border: 1px solid #2E2E3A;
+    padding: 6px 14px;
+    border-radius: 2px;
     font-size: 1.18rem;
-    font-weight: 800;
+    font-weight: 900;
     font-family: Inter, -apple-system, BlinkMacSystemFont, sans-serif; font-variant-numeric: tabular-nums;
     display: inline-flex;
     align-items: center;
     gap: 8px;
     margin: 0 4px;
+    box-shadow: 0 3px 8px rgba(0, 0, 0, 0.48);
 }
 .metric-subtext {
     font-size: 0.79rem;
@@ -1043,11 +1037,12 @@ div.element-container:has(.floating-plus-fab-marker) + div.element-container div
     margin-bottom: 10px;
 }
 .unit-pillar {
-    background-color: #151B26;
-    border: 1px solid #232C3D;
-    border-radius: 7px;
-    padding: 10px 12px;
+    background-color: #15151B;
+    border: 1px solid #282832;
+    border-radius: 2px;
+    padding: 12px 14px;
     min-width: 0;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.50);
 }
 .unit-pillar-header {
     display: flex;
@@ -1118,11 +1113,12 @@ div.element-container:has(.floating-plus-fab-marker) + div.element-container div
     margin: 8px 0 6px 0;
 }
 .epa-stat-box {
-    background-color: #151C28;
-    border: 1px solid #232D3F;
-    border-radius: 6px;
-    padding: 8px 10px;
+    background-color: #1B1B22;
+    border: 1px solid #2E2E3A;
+    border-radius: 2px;
+    padding: 10px 12px;
     min-width: 0;
+    box-shadow: 0 3px 8px rgba(0, 0, 0, 0.42);
 }
 .epa-stat-label {
     font-size: 0.73rem;
@@ -1161,15 +1157,16 @@ a.depth-chart-link-btn:visited {
     align-items: center;
     gap: 4px;
     font-family: Inter, -apple-system, BlinkMacSystemFont, sans-serif; font-variant-numeric: tabular-nums;
-    font-size: 0.69rem;
+    font-size: 0.70rem;
     font-weight: 800;
-    letter-spacing: 0.03em;
-    padding: 2px 8px;
-    border-radius: 4px;
-    border: 1px solid #475569;
-    background-color: rgba(148, 163, 184, 0.14);
-    color: #F8FAFC !important;
+    letter-spacing: 0.04em;
+    padding: 3px 9px;
+    border-radius: 2px;
+    border: 1px solid #FFFFFF;
+    background-color: #013369;
+    color: #FFFFFF !important;
     text-decoration: none !important;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.45);
     transition: all 0.14s ease-in-out;
 }
 a.depth-chart-link-btn:hover {
@@ -1202,11 +1199,12 @@ a.depth-chart-link-btn:hover {
     display: flex;
     flex-direction: column;
     gap: 5px;
-    padding: 9px 11px;
-    margin-bottom: 7px;
-    border-radius: 7px;
-    background-color: #151C28;
-    border: 1px solid #232D3F;
+    padding: 10px 12px;
+    margin-bottom: 8px;
+    border-radius: 2px;
+    background-color: #15151B;
+    border: 1px solid #282832;
+    box-shadow: 0 3px 9px rgba(0, 0, 0, 0.45);
     font-family: Inter, -apple-system, BlinkMacSystemFont, sans-serif; font-variant-numeric: tabular-nums;
 }
 .div-team-strip-top {
@@ -1223,7 +1221,7 @@ a.depth-chart-link-btn:hover {
     flex-wrap: wrap;
     gap: 8px;
     font-size: 0.73rem;
-    color: #CBD5E1;
+    color: #D4D4D8;
 }
 .nfl-rank-pill {
     display: inline-flex;
@@ -1231,29 +1229,32 @@ a.depth-chart-link-btn:hover {
     justify-content: center;
     width: 24px;
     height: 21px;
-    border-radius: 4px;
+    border-radius: 2px;
     font-size: 0.72rem;
-    font-weight: 800;
-    background-color: #1A2333;
-    color: #94A3B8;
-    border: 1px solid #2B384E;
+    font-weight: 900;
+    background-color: #23232C;
+    color: #E4E4E7;
+    border: 1px solid #343442;
 }
 .nfl-rank-pill-1 {
-    background-color: rgba(52, 211, 153, 0.14);
-    color: #34D399;
-    border: 1px solid rgba(52, 211, 153, 0.40);
+    background-color: #15803D;
+    color: #FFFFFF;
+    border: 1px solid #16A34A;
 }
 .h2h-game-card {
-    border-radius: 8px;
-    padding: 10px 14px;
+    border-radius: 2px;
+    padding: 11px 14px;
     margin-bottom: 8px;
+    background-color: #15151B;
+    border: 1px solid #282832;
+    box-shadow: 0 3px 9px rgba(0, 0, 0, 0.45);
     font-family: Inter, -apple-system, BlinkMacSystemFont, sans-serif; font-variant-numeric: tabular-nums;
     display: flex;
     flex-direction: column;
     gap: 6px;
 }
 
-/* Uniform Top-Level & Sub-Level Tabs Styling */
+/* NFL.com Sharp Broadcast Tabs & Containers */
 div[data-testid="stDataFrame"],
 div[data-testid="stTable"],
 .stPlotlyChart {
@@ -1268,31 +1269,39 @@ div[data-baseweb="tab-list"] {
     white-space: nowrap !important;
     scrollbar-width: thin;
     -webkit-overflow-scrolling: touch;
-    gap: 6px !important;
-    background-color: #0E131D !important;
-    padding: 6px 8px !important;
-    border-radius: 8px !important;
-    border: 1px solid #1E293B !important;
+    gap: 4px !important;
+    background-color: #111116 !important;
+    padding: 5px 6px !important;
+    border-radius: 2px !important;
+    border: 1px solid #262630 !important;
+    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.45) !important;
 }
 button[data-baseweb="tab"] {
     flex-shrink: 0 !important;
     white-space: nowrap !important;
     font-family: Inter, -apple-system, BlinkMacSystemFont, sans-serif !important; font-variant-numeric: tabular-nums !important;
-    font-weight: 700 !important;
+    font-weight: 800 !important;
     font-size: 0.84rem !important;
+    text-transform: uppercase !important;
+    letter-spacing: 0.03em !important;
     padding: 8px 16px !important;
-    border-radius: 6px !important;
+    border-radius: 2px !important;
+}
+button[data-baseweb="tab"][aria-selected="true"] {
+    background-color: #013369 !important;
+    color: #FFFFFF !important;
 }
 
 /* ============================================================================
    MOBILE & TABLET RESPONSIVE MEDIA QUERIES (MAX-WIDTH: 768PX & 480PX)
    ============================================================================ */
-/* Flat Modern Card Containers */
+/* Flat Modern Sharp Card Containers with Clean Drop Shadows */
 div[data-testid="stVerticalBlockBorderWrapper"] {
-    background-color: #141923 !important;
-    border: 1px solid rgba(255, 255, 255, 0.08) !important;
-    border-radius: 10px !important;
-    padding: 12px 14px !important;
+    background-color: #15151B !important;
+    border: 1px solid #282832 !important;
+    border-radius: 2px !important;
+    padding: 13px 15px !important;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.50), 0 1px 2px rgba(0, 0, 0, 0.35) !important;
 }
 
 @media (max-width: 768px) {
@@ -1340,7 +1349,7 @@ div[data-testid="stVerticalBlockBorderWrapper"] {
         min-width: 0 !important;
         height: 54px !important;
         padding: 4px 2px !important;
-        border-radius: 12px !important;
+        border-radius: 2px !important;
         font-size: 0.68rem !important;
         font-weight: 800 !important;
         letter-spacing: 0.01em !important;
@@ -1398,7 +1407,7 @@ div[data-testid="stVerticalBlockBorderWrapper"] {
         margin-bottom: 10px !important;
         background: #0E131D !important;
         border: 1px solid rgba(255, 255, 255, 0.09) !important;
-        border-radius: 14px !important;
+        border-radius: 2px !important;
         box-shadow: none !important;
         z-index: 1 !important;
         gap: 6px !important;
@@ -1409,7 +1418,7 @@ div[data-testid="stVerticalBlockBorderWrapper"] {
         height: 42px !important;
         font-size: 0.88rem !important;
         padding: 8px 14px !important;
-        border-radius: 10px !important;
+        border-radius: 2px !important;
     }
     div[data-baseweb="tab-panel"] div[data-baseweb="tab-list"] > button[data-baseweb="tab"]::before,
     div[role="dialog"] div[data-baseweb="tab-list"] > button[data-baseweb="tab"]::before {
@@ -1443,7 +1452,7 @@ div[data-testid="stVerticalBlockBorderWrapper"] {
         padding: 10px 8px 12px 8px !important;
         margin-left: -4px !important;
         margin-right: -4px !important;
-        border-radius: 0 0 14px 14px !important;
+        border-radius: 0 0 2px 2px !important;
     }
     div[data-testid="stHorizontalBlock"]:has(.nfl-ticker-marker) > div[data-testid="stColumn"],
     div[data-testid="stHorizontalBlock"]:has(.nfl-ticker-marker) > div[data-testid="column"] {
@@ -1456,7 +1465,7 @@ div[data-testid="stVerticalBlockBorderWrapper"] {
     .ticker-card,
     .ticker-card-active {
         padding: 11px 13px !important;
-        border-radius: 14px !important;
+        border-radius: 2px !important;
     }
     .ticker-top-bar {
         font-size: 0.74rem !important;
@@ -1495,7 +1504,7 @@ div[data-testid="stVerticalBlockBorderWrapper"] {
     }
     .custom-kpi-card {
         padding: 12px 12px !important;
-        border-radius: 14px !important;
+        border-radius: 2px !important;
         min-height: 98px !important;
         width: 100% !important;
     }
@@ -1513,7 +1522,7 @@ div[data-testid="stVerticalBlockBorderWrapper"] {
     }
     div[data-testid="stVerticalBlockBorderWrapper"] {
         padding: 12px 13px !important;
-        border-radius: 16px !important;
+        border-radius: 2px !important;
         margin-bottom: 8px !important;
         width: 100% !important;
     }
@@ -1525,12 +1534,12 @@ div[data-testid="stVerticalBlockBorderWrapper"] {
     .terminal-card-vuln {
         width: 100% !important;
         padding: 13px 14px !important;
-        border-radius: 15px !important;
+        border-radius: 2px !important;
         margin-bottom: 9px !important;
     }
     .active-game-spotlight {
         padding: 14px 14px !important;
-        border-radius: 16px !important;
+        border-radius: 2px !important;
         margin-bottom: 10px !important;
     }
 
@@ -1552,7 +1561,7 @@ div[data-testid="stVerticalBlockBorderWrapper"] {
     div.element-container:has([class^="pick-link-"]) + div.element-container div[data-testid="stButton"] button {
         min-height: 54px !important;
         padding: 12px 16px !important;
-        border-radius: 14px !important;
+        border-radius: 2px !important;
         transition: transform 0.1s ease, background-color 0.14s ease !important;
     }
     div[data-testid="stElementContainer"]:has([class^="pick-link-"]) + div[data-testid="stElementContainer"] div[data-testid="stButton"] button p,
@@ -1568,7 +1577,7 @@ div[data-testid="stVerticalBlockBorderWrapper"] {
     div.element-container:has([class^="plr-trig-"]) + div.element-container div[data-testid="stButton"] button {
         min-height: 44px !important;
         padding: 8px 14px !important;
-        border-radius: 12px !important;
+        border-radius: 2px !important;
         width: 100% !important;
         justify-content: flex-start !important;
     }
@@ -1579,7 +1588,7 @@ div[data-testid="stVerticalBlockBorderWrapper"] {
     }
     div[data-testid="stButton"] > button {
         min-height: 46px !important;
-        border-radius: 12px !important;
+        border-radius: 2px !important;
     }
 
     /* 7. SUPERSIZED 68x68 PLAYER CUTOUTS & TEAM LOGOS ON MOBILE */
@@ -1588,7 +1597,7 @@ div[data-testid="stVerticalBlockBorderWrapper"] {
         height: 68px !important;
         min-width: 68px !important;
         max-width: 68px !important;
-        border-radius: 12px !important;
+        border-radius: 2px !important;
     }
     .mismatch-headshot-img {
         width: 68px !important;
@@ -1599,7 +1608,7 @@ div[data-testid="stVerticalBlockBorderWrapper"] {
     .team-pill-lg {
         font-size: 1.06rem !important;
         padding: 6px 12px !important;
-        border-radius: 12px !important;
+        border-radius: 2px !important;
         margin: 2px 2px !important;
     }
     .team-pill-lg img {
@@ -1609,7 +1618,7 @@ div[data-testid="stVerticalBlockBorderWrapper"] {
     .team-pill {
         font-size: 0.86rem !important;
         padding: 4px 10px !important;
-        border-radius: 10px !important;
+        border-radius: 2px !important;
     }
     .team-pill img {
         width: 22px !important;
@@ -1629,7 +1638,7 @@ div[data-testid="stVerticalBlockBorderWrapper"] {
     }
     .epa-stat-box {
         padding: 10px 12px !important;
-        border-radius: 12px !important;
+        border-radius: 2px !important;
     }
     .cb-wr-vs-divider {
         padding: 6px 0 !important;
@@ -1647,7 +1656,7 @@ div[data-testid="stVerticalBlockBorderWrapper"] {
         min-width: 100vw !important;
         max-height: 92vh !important;
         margin: 8vh 0 0 0 !important;
-        border-radius: 22px 22px 0 0 !important;
+        border-radius: 2px 4px 0 0 !important;
         position: fixed !important;
         bottom: 0 !important;
         left: 0 !important;
@@ -1666,7 +1675,7 @@ div[data-testid="stVerticalBlockBorderWrapper"] {
     }
     .player-modal-banner {
         padding: 12px 14px 6px 14px !important;
-        border-radius: 14px !important;
+        border-radius: 2px !important;
         gap: 12px !important;
     }
     .player-modal-left {
@@ -2131,10 +2140,9 @@ def render_compact_bet_action_row(
         if team_color_override
         else (resolve_team_display_color(team_abbr) if team_abbr else "#38BDF8")
     )
-    border_hex = "#34D399" if already_tracked else accent_hex
-    bg_rgba = hex_to_rgba(border_hex, 0.20 if not already_tracked else 0.32)
-    hover_rgba = hex_to_rgba(border_hex, 0.38)
-    border_rgba = hex_to_rgba(border_hex, 0.80)
+    border_hex = "#16A34A" if already_tracked else accent_hex
+    flat_bg = "#15803D" if already_tracked else "#1B1B22"
+    flat_border = "#16A34A" if already_tracked else "#2E2E3A"
 
     clean_line_text = button_text_override.strip() if button_text_override else selection.strip()
     btn_label = f"✓ {clean_line_text}" if already_tracked else clean_line_text
@@ -2148,35 +2156,38 @@ def render_compact_bet_action_row(
         <style>
         div[data-testid="stElementContainer"]:has(.{safe_cls}) + div[data-testid="stElementContainer"] div[data-testid="stButton"] button,
         div.element-container:has(.{safe_cls}) + div.element-container div[data-testid="stButton"] button {{
-            background-color: {bg_rgba} !important;
-            border: 1.5px solid {border_rgba} !important;
-            border-left: 4px solid {border_hex} !important;
-            border-radius: 6px !important;
-            padding: 6px 12px !important;
-            min-height: 36px !important;
+            background-color: {flat_bg} !important;
+            border: 1px solid {flat_border} !important;
+            border-left: 5px solid {border_hex} !important;
+            border-radius: 2px !important;
+            padding: 8px 14px !important;
+            min-height: 40px !important;
             height: auto !important;
             width: 100% !important;
-            color: #F8FAFC !important;
+            color: #FFFFFF !important;
             text-decoration: none !important;
-            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.28) !important;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.50), 0 1px 2px rgba(0, 0, 0, 0.35) !important;
             justify-content: center !important;
             text-align: center !important;
+            transition: background-color 0.14s ease, border-color 0.14s ease, box-shadow 0.14s ease !important;
         }}
         div[data-testid="stElementContainer"]:has(.{safe_cls}) + div[data-testid="stElementContainer"] div[data-testid="stButton"] button p,
         div.element-container:has(.{safe_cls}) + div.element-container div[data-testid="stButton"] button p {{
-            color: #F8FAFC !important;
+            color: #FFFFFF !important;
             font-family: Inter, -apple-system, BlinkMacSystemFont, sans-serif !important; font-variant-numeric: tabular-nums !important;
             font-weight: 800 !important;
-            font-size: 0.85rem !important;
+            font-size: 0.86rem !important;
+            letter-spacing: 0.02em !important;
             text-decoration: none !important;
             line-height: 1.25 !important;
             text-align: center !important;
         }}
         div[data-testid="stElementContainer"]:has(.{safe_cls}) + div[data-testid="stElementContainer"] div[data-testid="stButton"] button:hover,
         div.element-container:has(.{safe_cls}) + div.element-container div[data-testid="stButton"] button:hover {{
-            background-color: {hover_rgba} !important;
+            background-color: {border_hex} !important;
             border-color: {border_hex} !important;
             color: #FFFFFF !important;
+            box-shadow: 0 6px 16px rgba(0, 0, 0, 0.65) !important;
         }}
         </style>
         <span class="{safe_cls}" style="display:none;"></span>
@@ -2353,7 +2364,7 @@ def render_l5_sparkbars_html(values: list[float], line_val: float) -> str:
     cols_html = []
     for v in last5:
         hit = v >= line_val
-        color = "#34D399" if hit else "#F87171"
+        color = "#16A34A" if hit else "#DC2626"
         h_px = max(4, int(round((v / max_v) * 14)))
         v_str = f"{v:.0f}" if v >= 10 or v == int(v) else f"{v:.1f}"
         cols_html.append(
@@ -2505,44 +2516,43 @@ def render_inline_player_trigger(
     tm_hex = color_override if color_override else resolve_team_display_color(tm_clean)
     if not clean_p or "Rotation" in clean_p:
         render_html(
-            f'<span style="display:inline-block; background:{hex_to_rgba(tm_hex, 0.16)}; border:1px solid {hex_to_rgba(tm_hex, 0.55)}; border-left:3px solid {tm_hex}; border-radius:6px; padding:3px 9px; font-family:Inter, -apple-system, BlinkMacSystemFont, sans-serif; font-variant-numeric:tabular-nums; font-size:0.84rem; font-weight:700; color:#F8FAFC;">'
+            f'<span style="display:inline-block; background:#1B1B22; border:1px solid #2E2E3A; border-left:4px solid {tm_hex}; border-radius:2px; padding:4px 10px; box-shadow:0 2px 6px rgba(0,0,0,0.42); font-family:Inter, -apple-system, BlinkMacSystemFont, sans-serif; font-variant-numeric:tabular-nums; font-size:0.84rem; font-weight:800; color:#FFFFFF;">'
             f"{clean_p} {extra_label}</span>"
         )
         return
     disp_text = f"{clean_p} {extra_label}".strip()
     safe_plr_cls = "plr-trig-" + "".join(ch if ch.isalnum() else "-" for ch in f"{key_suffix}_{clean_p}_{tm_clean}").lower()
-    bg_rgba = hex_to_rgba(tm_hex, 0.18)
-    hover_rgba = hex_to_rgba(tm_hex, 0.34)
-    border_rgba = hex_to_rgba(tm_hex, 0.70)
     render_html(
         f"""
         <style>
         div[data-testid="stElementContainer"]:has(.{safe_plr_cls}) + div[data-testid="stElementContainer"] div[data-testid="stButton"] button,
         div.element-container:has(.{safe_plr_cls}) + div.element-container div[data-testid="stButton"] button {{
-            background-color: {bg_rgba} !important;
-            border: 1.5px solid {border_rgba} !important;
+            background-color: #1B1B22 !important;
+            border: 1px solid #2E2E3A !important;
             border-left: 4px solid {tm_hex} !important;
-            border-radius: 6px !important;
-            padding: 4px 10px !important;
-            min-height: 32px !important;
+            border-radius: 2px !important;
+            padding: 5px 11px !important;
+            min-height: 34px !important;
             height: auto !important;
-            color: #F8FAFC !important;
+            color: #FFFFFF !important;
             text-decoration: none !important;
-            box-shadow: 0 1px 4px rgba(0, 0, 0, 0.25) !important;
+            box-shadow: 0 3px 8px rgba(0, 0, 0, 0.45) !important;
+            transition: background-color 0.14s ease, border-color 0.14s ease !important;
         }}
         div[data-testid="stElementContainer"]:has(.{safe_plr_cls}) + div[data-testid="stElementContainer"] div[data-testid="stButton"] button p,
         div.element-container:has(.{safe_plr_cls}) + div.element-container div[data-testid="stButton"] button p {{
             text-decoration: none !important;
-            color: #F8FAFC !important;
+            color: #FFFFFF !important;
             font-family: Inter, -apple-system, BlinkMacSystemFont, sans-serif !important; font-variant-numeric: tabular-nums !important;
-            font-weight: 700 !important;
+            font-weight: 800 !important;
             font-size: 0.85rem !important;
         }}
         div[data-testid="stElementContainer"]:has(.{safe_plr_cls}) + div[data-testid="stElementContainer"] div[data-testid="stButton"] button:hover,
         div.element-container:has(.{safe_plr_cls}) + div.element-container div[data-testid="stButton"] button:hover {{
-            background-color: {hover_rgba} !important;
+            background-color: {tm_hex} !important;
             border-color: {tm_hex} !important;
             color: #FFFFFF !important;
+            box-shadow: 0 5px 14px rgba(0, 0, 0, 0.60) !important;
         }}
         </style>
         <span class="{safe_plr_cls}" style="display:none;"></span>
@@ -2590,15 +2600,13 @@ def render_team_pill(
     cls = "team-pill-lg" if large else "team-pill"
     img_sz = 28 if large else 17
     tm_hex = color_override if color_override else resolve_team_display_color(team_abbr)
-    bg_rgba = hex_to_rgba(tm_hex, 0.16)
-    border_rgba = hex_to_rgba(tm_hex, 0.55)
     role_html = (
-        f'<span style="color:#CBD5E1; font-size:0.75em; font-weight:600;">({role_tag})</span>'
+        f'<span style="color:#D4D4D8; font-size:0.75em; font-weight:700;">({role_tag})</span>'
         if role_tag
         else ""
     )
     return (
-        f'<span class="{cls}" style="background:{bg_rgba}; border:1px solid {border_rgba}; border-left:4px solid {tm_hex};">'
+        f'<span class="{cls}" style="background:#1B1B22; border:1px solid #2E2E3A; border-left:5px solid {tm_hex};">'
         f'<img src="{logo}" width="{img_sz}" height="{img_sz}" style="vertical-align:middle;" onerror="this.style.display=\'none\'">'
         f"{team_abbr} {role_html}</span>"
     )
@@ -3104,7 +3112,7 @@ def render_nfl_division_standings_card(
             ord_sfx = {1: "1st", 2: "2nd", 3: "3rd", 4: "4th"}.get(rk, f"#{rk}")
             tm_c = resolve_team_display_color(tm_code)
             matchup_tags.append(
-                f'<span class="badge-sage" style="border-left:3px solid {tm_c}; background:{hex_to_rgba(tm_c, 0.22)};">{tm_code} • {ord_sfx} ({r["Record"]})</span>'
+                f'<span class="badge-sage" style="border-left:4px solid {tm_c}; background:#1B1B22;">{tm_code} • {ord_sfx} ({r["Record"]})</span>'
             )
 
     header_right_html = (
@@ -3136,18 +3144,10 @@ def render_nfl_division_standings_card(
         pct_num = float(r.get("PCT_num", 0.0))
         bar_w = int(np.clip(round(pct_num * 100.0), 6, 100))
 
-        strip_bg = (
-            f"linear-gradient(90deg, {hex_to_rgba(tm_color, 0.28)} 0%, {hex_to_rgba(tm_color, 0.08)} 100%)"
-            if is_playing
-            else f"linear-gradient(90deg, {hex_to_rgba(tm_color, 0.12)} 0%, #151C28 75%)"
-        )
-        strip_border = (
-            f"1.5px solid {hex_to_rgba(tm_color, 0.85)}"
-            if is_playing
-            else f"1px solid {hex_to_rgba(tm_color, 0.35)}"
-        )
+        strip_bg = "#1D1D26" if is_playing else "#15151B"
+        strip_border = f"1.5px solid {tm_color}" if is_playing else "1px solid #282832"
         playing_pill = (
-            f'<span style="background:{hex_to_rgba(tm_color, 0.30)}; color:#F8FAFC; border:1px solid {tm_color}; padding:1px 6px; border-radius:4px; font-size:0.63rem; font-weight:800; margin-left:5px;">Playing</span>'
+            f'<span style="background:{tm_color}; color:#FFFFFF; padding:2px 7px; border-radius:2px; font-size:0.64rem; font-weight:800; margin-left:5px;">PLAYING</span>'
             if is_playing
             else ""
         )
@@ -3256,10 +3256,10 @@ def render_five_year_h2h_visual(
 
         if su_win == away_tm:
             win_color = away_color
-            win_badge = f'<span style="background:{hex_to_rgba(away_color, 0.28)}; color:#F8FAFC; border:1px solid {away_color}; padding:2px 8px; border-radius:4px; font-size:0.72rem; font-weight:800;">{away_tm} +{abs(hs_g - as_g)}</span>'
+            win_badge = f'<span style="background:{away_color}; color:#FFFFFF; padding:2px 8px; border-radius:2px; font-size:0.72rem; font-weight:800;">{away_tm} +{abs(hs_g - as_g)}</span>'
         elif su_win == home_tm:
             win_color = home_color
-            win_badge = f'<span style="background:{hex_to_rgba(home_color, 0.28)}; color:#F8FAFC; border:1px solid {home_color}; padding:2px 8px; border-radius:4px; font-size:0.72rem; font-weight:800;">{home_tm} +{abs(hs_g - as_g)}</span>'
+            win_badge = f'<span style="background:{home_color}; color:#FFFFFF; padding:2px 8px; border-radius:2px; font-size:0.72rem; font-weight:800;">{home_tm} +{abs(hs_g - as_g)}</span>'
         else:
             win_color = "#64748B"
             win_badge = '<span class="badge-mid">Tie</span>'
@@ -3269,12 +3269,12 @@ def render_five_year_h2h_visual(
         at_score_w = int(round((as_g / max(1, as_g + hs_g)) * 100))
         ht_score_w = 100 - at_score_w
 
-        at_win_style = f"color:#F8FAFC; font-weight:900; font-size:1.02rem;" if su_win == at_g else "color:#94A3B8; font-weight:600; font-size:0.92rem;"
-        ht_win_style = f"color:#F8FAFC; font-weight:900; font-size:1.02rem;" if su_win == ht_g else "color:#94A3B8; font-weight:600; font-size:0.92rem;"
+        at_win_style = f"color:#FFFFFF; font-weight:900; font-size:1.02rem;" if su_win == at_g else "color:#A1A1AA; font-weight:600; font-size:0.92rem;"
+        ht_win_style = f"color:#FFFFFF; font-weight:900; font-size:1.02rem;" if su_win == ht_g else "color:#A1A1AA; font-weight:600; font-size:0.92rem;"
 
         game_cards_html.append(
             f"""
-            <div class="h2h-game-card" style="background:linear-gradient(90deg, {hex_to_rgba(win_color, 0.22)} 0%, #141B28 70%); border:1px solid {hex_to_rgba(win_color, 0.65)}; border-left:5px solid {win_color};">
+            <div class="h2h-game-card" style="background:#1B1B22; border:1px solid #2E2E3A; border-left:5px solid {win_color};">
                 <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px;">
                     <div style="display:flex; align-items:center; gap:8px; flex-wrap:wrap;">
                         <span class="badge-mid">{s_yr} Wk {wk_num}</span>
@@ -3310,7 +3310,7 @@ def render_five_year_h2h_visual(
     cards_joined = "\n".join(game_cards_html)
     render_html(
         f"""
-        <div class="terminal-card" style="border-top:3px solid {series_leader_c}; border-left:4px solid {away_color}; border-right:4px solid {home_color}; background:linear-gradient(90deg, {hex_to_rgba(away_color, 0.12)} 0%, #121722 50%, {hex_to_rgba(home_color, 0.12)} 100%);">
+        <div class="terminal-card" style="border-top:3px solid {series_leader_c}; border-left:4px solid {away_color}; border-right:4px solid {home_color}; background:#15151B;">
             <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px; margin-bottom:6px;">
                 <div>
                     {render_team_pill(away_tm, f"{a_wins} Wins", color_override=away_color)}
@@ -3394,7 +3394,7 @@ def render_nfl_horizontal_ticker(
 
         slot_html = render_slot_badge_html(slot_code)
         active_pill_html = (
-            f'<span style="background:{hex_to_rgba(home_c, 0.30)}; color:#F8FAFC; border:1px solid {home_c}; padding:0px 5px; border-radius:3px; font-size:0.60rem; font-weight:800;">ACTIVE</span>'
+            f'<span style="background:{home_c}; color:#FFFFFF; padding:1px 6px; border-radius:2px; font-size:0.60rem; font-weight:900;">ACTIVE</span>'
             if is_selected
             else slot_html
         )
@@ -3402,9 +3402,9 @@ def render_nfl_horizontal_ticker(
         ou_lbl = f"O/U {total_v:.1f}" if pd.notna(total_v) else ""
         card_cls = "ticker-card-active" if is_selected else "ticker-card"
         active_border_style = (
-            f'style="border:1.5px solid {home_c}; border-top:3px solid {home_c}; background:{hex_to_rgba(home_c, 0.16)};"'
+            f'style="border:1.5px solid {home_c}; border-top:4px solid {home_c}; background:#1E1E28;"'
             if is_selected
-            else f'style="border-top:2px solid {home_c};"'
+            else f'style="border-top:3px solid {home_c}; background:#16161D;"'
         )
 
         with cols[idx]:
@@ -6129,7 +6129,7 @@ def render_player_popup_contents(
             )
 
             p_logs_chart["hit"] = p_logs_chart[stat_col] >= modal_line
-            p_logs_chart["bar_color"] = np.where(p_logs_chart["hit"], "#34D399", "#F87171")
+            p_logs_chart["bar_color"] = np.where(p_logs_chart["hit"], "#16A34A", "#DC2626")
             p_logs_chart["bar_line_color"] = np.where(p_logs_chart["is_similar_def"], "#38BDF8", "rgba(0,0,0,0)")
             p_logs_chart["bar_line_width"] = np.where(p_logs_chart["is_similar_def"], 2.0, 0.0)
             p_logs_chart["rolling_avg"] = p_logs_chart[stat_col].expanding().mean()
@@ -6235,11 +6235,11 @@ def render_player_popup_contents(
             y_max = max(float(p_logs_chart[stat_col].max()), modal_line) * 1.28 + 1.0
             fig_m.update_layout(
                 dragmode=False,
-                paper_bgcolor="#141923",
-                plot_bgcolor="#141923",
+                paper_bgcolor="#15151B",
+                plot_bgcolor="#15151B",
                 font=dict(color="#E2E8F0"),
-                xaxis=dict(title="Week & Opponent (Defense Rank)", gridcolor="#222B3A", fixedrange=True),
-                yaxis=dict(title=sel_mkt, range=[0, y_max], gridcolor="#222B3A", fixedrange=True),
+                xaxis=dict(title="Week & Opponent (Defense Rank)", gridcolor="#282832", fixedrange=True),
+                yaxis=dict(title=sel_mkt, range=[0, y_max], gridcolor="#282832", fixedrange=True),
                 legend=dict(orientation="h", yanchor="bottom", y=1.02, xanchor="right", x=1),
                 height=300,
                 margin=dict(l=16, r=16, t=32, b=24),
@@ -6541,7 +6541,7 @@ def render_underdog_props_and_betslip_modal(
 
     render_html(
         f"""
-        <div class="active-game-spotlight" style="padding:10px 14px; margin:0 0 10px 0; border-left:4px solid {away_color}; border-right:4px solid {home_color}; background:linear-gradient(90deg, {hex_to_rgba(away_color, 0.16)} 0%, #121824 50%, {hex_to_rgba(home_color, 0.16)} 100%);">
+        <div class="active-game-spotlight" style="padding:12px 15px; margin:0 0 10px 0; border-left:5px solid {away_color}; border-right:5px solid {home_color}; background:#15151B;">
             <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px;">
                 <div style="display:flex; align-items:center; gap:8px; flex-wrap:wrap;">
                     {render_team_pill(away_tm, "Away", color_override=away_color)}
@@ -6926,7 +6926,7 @@ def render_underdog_props_and_betslip_modal(
                 with row_l:
                     render_html(
                         f"""
-                        <div style="background:{hex_to_rgba(tm_hex, 0.16)}; border:1px solid {hex_to_rgba(tm_hex, 0.55)}; border-left:4px solid {tm_hex}; border-radius:6px; padding:7px 10px; margin-bottom:5px; font-family:Inter, -apple-system, BlinkMacSystemFont, sans-serif; font-variant-numeric:tabular-nums; font-size:0.78rem;">
+                        <div style="background:#1B1B22; border:1px solid #2E2E3A; border-left:5px solid {tm_hex}; border-radius:2px; box-shadow:0 3px 8px rgba(0,0,0,0.45); padding:8px 12px; margin-bottom:6px; font-family:Inter, -apple-system, BlinkMacSystemFont, sans-serif; font-variant-numeric:tabular-nums; font-size:0.78rem;">
                             <div>{render_inline_logo(tm_code, 15) if tm_code else ""}<b>{item['Selection']}</b> <span style="color:#94A3B8;">({item['Matchup']} • {item['Market Type']})</span></div>
                             <div style="color:#CBD5E1; margin-top:2px;">{item['Model Projection']} • Odds <b>{item['Odds']}</b> • <span style="color:#34D399; font-weight:700;">{item['EV %']:+.1f}% EV</span> • <b>{item['Kelly Stake (u)']:.2f}u Kelly</b></div>
                         </div>
@@ -7542,14 +7542,14 @@ if not is_league_hub:
                             adv_tm = away_tm
                             adv_c = away_color
                             edge_pill = (
-                                f'<span style="background:{hex_to_rgba(adv_c, 0.22)}; color:#F8FAFC; border:1px solid {adv_c}; padding:2px 8px; border-radius:4px; font-size:0.70rem; font-weight:700;">'
+                                f'<span style="background:{adv_c}; color:#FFFFFF; padding:2px 8px; border-radius:2px; font-size:0.70rem; font-weight:800;">'
                                 f'{adv_tm} Edge</span>'
                             )
                         elif away_rk_advantage <= -6 or away_net_edge <= -0.08:
                             adv_tm = home_tm
                             adv_c = home_color
                             edge_pill = (
-                                f'<span style="background:{hex_to_rgba(adv_c, 0.22)}; color:#F8FAFC; border:1px solid {adv_c}; padding:2px 8px; border-radius:4px; font-size:0.70rem; font-weight:700;">'
+                                f'<span style="background:{adv_c}; color:#FFFFFF; padding:2px 8px; border-radius:2px; font-size:0.70rem; font-weight:800;">'
                                 f'{adv_tm} Edge</span>'
                             )
                         else:
@@ -8213,12 +8213,12 @@ if not is_league_hub:
                 depth_url = get_team_depth_chart_url(tm)
                 render_html(
                     f"""
-                    <div class="terminal-card" style="border-left: 4px solid {tm_c}; background: linear-gradient(90deg, {hex_to_rgba(tm_c, 0.14)} 0%, #121722 65%);">
+                    <div class="terminal-card" style="border-left: 5px solid {tm_c}; background: #15151B;">
                         <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:6px;">
                             <div style="display:flex; align-items:center; gap:8px; flex-wrap:wrap;">
                                 <h4 style="margin:0;">{render_inline_logo(tm, 20)}{tm} Injury Report</h4>
                                 <a class="depth-chart-link-btn" href="{depth_url}" target="_blank" rel="noopener noreferrer"
-                                   style="border-color:{hex_to_rgba(tm_c, 0.78)}; background:{hex_to_rgba(tm_c, 0.22)};">
+                                   style="border-color:{tm_c}; background:{tm_c}; color:#FFFFFF;">
                                    {tm} DEPTH CHART &#8599;
                                 </a>
                             </div>
@@ -8609,7 +8609,7 @@ if not is_league_hub:
 
                 window_log = p_log.tail(lookback_n).copy()
                 window_log["hit"] = window_log[stat_col_name] >= prop_threshold
-                window_log["bar_color"] = np.where(window_log["hit"], "#34D399", "#F87171")
+                window_log["bar_color"] = np.where(window_log["hit"], "#16A34A", "#DC2626")
                 window_log["rolling_avg"] = window_log[stat_col_name].expanding().mean()
 
                 hits_count = int(window_log["hit"].sum())
@@ -8749,11 +8749,11 @@ if not is_league_hub:
                     fig_prop.update_layout(
                         dragmode=False,
                         title=dict(text="Weekly Game Log vs. Book Line & Model Projection", font=dict(size=13)),
-                        paper_bgcolor="#141923",
-                        plot_bgcolor="#141923",
+                        paper_bgcolor="#15151B",
+                        plot_bgcolor="#15151B",
                         font=dict(color="#E2E8F0"),
-                        xaxis=dict(title="Game Week & Opponent", gridcolor="#222B3A", fixedrange=True),
-                        yaxis=dict(title=selected_market_label, range=[0, y_upper], gridcolor="#222B3A", fixedrange=True),
+                        xaxis=dict(title="Game Week & Opponent", gridcolor="#282832", fixedrange=True),
+                        yaxis=dict(title=selected_market_label, range=[0, y_upper], gridcolor="#282832", fixedrange=True),
                         legend=dict(orientation="h", yanchor="bottom", y=1.02, xanchor="right", x=1),
                         height=360,
                         margin=dict(l=20, r=20, t=48, b=30),
@@ -8810,11 +8810,11 @@ if not is_league_hub:
                     fig_dist.update_layout(
                         dragmode=False,
                         title=dict(text=f"Projected Outcome Distribution (±{stat_std:.1f} SD)", font=dict(size=13)),
-                        paper_bgcolor="#141923",
-                        plot_bgcolor="#141923",
+                        paper_bgcolor="#15151B",
+                        plot_bgcolor="#15151B",
                         font=dict(color="#E2E8F0"),
-                        xaxis=dict(title=selected_market_label, gridcolor="#222B3A", fixedrange=True),
-                        yaxis=dict(title="Density", showticklabels=False, gridcolor="#222B3A", fixedrange=True),
+                        xaxis=dict(title=selected_market_label, gridcolor="#282832", fixedrange=True),
+                        yaxis=dict(title="Density", showticklabels=False, gridcolor="#282832", fixedrange=True),
                         legend=dict(orientation="h", yanchor="bottom", y=1.02, xanchor="right", x=1),
                         height=360,
                         margin=dict(l=20, r=20, t=48, b=30),
@@ -9237,7 +9237,7 @@ else:
             lg_std = max(lg_std, 1.0 if not lg_is_td else 0.45)
 
             lg_p_log["hit"] = lg_p_log[lg_stat_col] >= lg_line_val
-            lg_p_log["bar_color"] = np.where(lg_p_log["hit"], "#34D399", "#F87171")
+            lg_p_log["bar_color"] = np.where(lg_p_log["hit"], "#16A34A", "#DC2626")
             lg_p_log["rolling_avg"] = lg_p_log[lg_stat_col].expanding().mean()
 
             lg_hits = int(lg_p_log["hit"].sum())
@@ -9291,11 +9291,11 @@ else:
             fig_lg.add_hline(y=lg_line_val, line_width=2, line_dash="dash", line_color="#FBBF24", annotation_text=f"Line: {lg_line_val} ({lg_hit_pct:.0f}% Hit)")
             fig_lg.update_layout(
                 dragmode=False,
-                paper_bgcolor="#141923",
-                plot_bgcolor="#141923",
+                paper_bgcolor="#15151B",
+                plot_bgcolor="#15151B",
                 font=dict(color="#E2E8F0"),
-                xaxis=dict(fixedrange=True, gridcolor="#222B3A"),
-                yaxis=dict(fixedrange=True, gridcolor="#222B3A"),
+                xaxis=dict(fixedrange=True, gridcolor="#282832"),
+                yaxis=dict(fixedrange=True, gridcolor="#282832"),
                 height=340,
                 margin=dict(l=20, r=20, t=36, b=24),
             )
@@ -9375,10 +9375,10 @@ else:
             fig.update_layout(
                 dragmode=False,
                 barmode="group",
-                paper_bgcolor="#141923",
-                plot_bgcolor="#141923",
+                paper_bgcolor="#15151B",
+                plot_bgcolor="#15151B",
                 font=dict(color="#E2E8F0"),
-                xaxis=dict(title="Win / Cover %", range=[0, 100], gridcolor="#222B3A", fixedrange=True),
+                xaxis=dict(title="Win / Cover %", range=[0, 100], gridcolor="#282832", fixedrange=True),
                 yaxis=dict(autorange="reversed", fixedrange=True),
                 legend=dict(orientation="h", yanchor="bottom", y=1.02, xanchor="right", x=1),
                 height=340,
