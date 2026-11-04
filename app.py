@@ -1296,28 +1296,249 @@ div[data-testid="stVerticalBlockBorderWrapper"] {
 }
 
 @media (max-width: 768px) {
+    /* 1. FULL-BLEED APP VIEWPORT & BOTTOM DOCK CLEARANCE */
     .stApp, .main {
         max-width: 100vw !important;
         overflow-x: hidden !important;
+        background-color: #0B0E14 !important;
     }
     .block-container {
-        padding-left: 0.45rem !important;
-        padding-right: 0.45rem !important;
-        padding-top: 0.85rem !important;
-        padding-bottom: 4.5rem !important;
+        padding-left: 0.55rem !important;
+        padding-right: 0.55rem !important;
+        padding-top: 0.65rem !important;
+        padding-bottom: 5.75rem !important;
         max-width: 100vw !important;
         width: 100vw !important;
     }
-    div[data-testid="stVerticalBlockBorderWrapper"] {
-        padding: 10px 11px !important;
+
+    /* 2. THUMB-ZONE FIXED BOTTOM APP NAVIGATION DOCK (PRIMARY TABS) */
+    div[data-baseweb="tab-list"] {
+        position: fixed !important;
+        bottom: 0 !important;
+        left: 0 !important;
+        right: 0 !important;
+        width: 100vw !important;
+        height: 64px !important;
+        margin: 0 !important;
+        padding: 4px 6px calc(4px + env(safe-area-inset-bottom, 0px)) 6px !important;
+        background: rgba(13, 17, 25, 0.96) !important;
+        backdrop-filter: blur(16px) !important;
+        -webkit-backdrop-filter: blur(16px) !important;
+        border: none !important;
+        border-top: 1px solid rgba(255, 255, 255, 0.12) !important;
+        border-radius: 0 !important;
+        box-shadow: 0 -8px 28px rgba(0, 0, 0, 0.65) !important;
+        z-index: 99990 !important;
+        display: flex !important;
+        justify-content: space-around !important;
+        align-items: center !important;
+        gap: 2px !important;
+        overflow-x: hidden !important;
+    }
+    div[data-baseweb="tab-list"] > button[data-baseweb="tab"] {
+        flex: 1 1 0% !important;
+        min-width: 0 !important;
+        height: 54px !important;
+        padding: 4px 2px !important;
+        border-radius: 12px !important;
+        font-size: 0.68rem !important;
+        font-weight: 800 !important;
+        letter-spacing: 0.01em !important;
+        display: flex !important;
+        flex-direction: column !important;
+        align-items: center !important;
+        justify-content: center !important;
+        gap: 2px !important;
+        line-height: 1.1 !important;
+        color: #94A3B8 !important;
+        background: transparent !important;
+        transition: all 0.14s ease !important;
+    }
+    div[data-baseweb="tab-list"] > button[data-baseweb="tab"][aria-selected="true"] {
+        color: #F8FAFC !important;
+        background: rgba(56, 189, 248, 0.16) !important;
+    }
+    /* Large App Icons Stacked Above Bottom Dock Tab Labels */
+    div[data-baseweb="tab-list"] > button[data-baseweb="tab"]:nth-of-type(1)::before {
+        content: "◈";
+        font-size: 1.18rem;
+        line-height: 1;
+    }
+    div[data-baseweb="tab-list"] > button[data-baseweb="tab"]:nth-of-type(2)::before {
+        content: "⇄";
+        font-size: 1.18rem;
+        line-height: 1;
+    }
+    div[data-baseweb="tab-list"] > button[data-baseweb="tab"]:nth-of-type(3)::before {
+        content: "✚";
+        font-size: 1.15rem;
+        line-height: 1;
+    }
+    div[data-baseweb="tab-list"] > button[data-baseweb="tab"]:nth-of-type(4)::before {
+        content: "▤";
+        font-size: 1.15rem;
+        line-height: 1;
+    }
+    div[data-baseweb="tab-list"] > button[data-baseweb="tab"]:nth-of-type(5)::before {
+        content: "★";
+        font-size: 1.15rem;
+        line-height: 1;
+    }
+
+    /* Keep Sub-Tabs (inside tab-panel) and Modal Tabs (inside dialog) as Sleek Segmented Pill Bars in Flow */
+    div[data-baseweb="tab-panel"] div[data-baseweb="tab-list"],
+    div[role="dialog"] div[data-baseweb="tab-list"] {
+        position: relative !important;
+        bottom: auto !important;
+        left: auto !important;
+        right: auto !important;
+        width: 100% !important;
+        height: auto !important;
+        padding: 5px !important;
+        margin-bottom: 10px !important;
+        background: #0E131D !important;
+        border: 1px solid rgba(255, 255, 255, 0.09) !important;
+        border-radius: 14px !important;
+        box-shadow: none !important;
+        z-index: 1 !important;
+        gap: 6px !important;
+    }
+    div[data-baseweb="tab-panel"] div[data-baseweb="tab-list"] > button[data-baseweb="tab"],
+    div[role="dialog"] div[data-baseweb="tab-list"] > button[data-baseweb="tab"] {
+        flex-direction: row !important;
+        height: 42px !important;
+        font-size: 0.88rem !important;
+        padding: 8px 14px !important;
         border-radius: 10px !important;
-        margin-bottom: 6px !important;
+    }
+    div[data-baseweb="tab-panel"] div[data-baseweb="tab-list"] > button[data-baseweb="tab"]::before,
+    div[role="dialog"] div[data-baseweb="tab-list"] > button[data-baseweb="tab"]::before {
+        content: none !important;
+        display: none !important;
+    }
+
+    /* 3. ELEVATE FLOATING CIRCULAR '+' BUTTON ABOVE BOTTOM DOCK IN RIGHT THUMB ZONE */
+    div[data-testid="stElementContainer"]:has(.floating-plus-fab-marker) + div[data-testid="stElementContainer"],
+    div.element-container:has(.floating-plus-fab-marker) + div.element-container {
+        bottom: 76px !important;
+        right: 14px !important;
+        width: 60px !important;
+        height: 60px !important;
+        z-index: 99995 !important;
+    }
+    div[data-testid="stElementContainer"]:has(.floating-plus-fab-marker) + div[data-testid="stElementContainer"] div[data-testid="stButton"] button,
+    div.element-container:has(.floating-plus-fab-marker) + div.element-container div[data-testid="stButton"] button {
+        width: 60px !important;
+        height: 60px !important;
+        min-height: 60px !important;
+    }
+
+    /* 4. SUPERSIZED SNAP-SCROLLING GAME CAROUSEL CARDS & LOGOS */
+    div[data-testid="stHorizontalBlock"]:has(.nfl-ticker-marker) {
+        flex-direction: row !important;
+        flex-wrap: nowrap !important;
+        overflow-x: auto !important;
+        scroll-snap-type: x mandatory !important;
+        gap: 10px !important;
+        padding: 10px 8px 12px 8px !important;
+        margin-left: -4px !important;
+        margin-right: -4px !important;
+        border-radius: 0 0 14px 14px !important;
+    }
+    div[data-testid="stHorizontalBlock"]:has(.nfl-ticker-marker) > div[data-testid="stColumn"],
+    div[data-testid="stHorizontalBlock"]:has(.nfl-ticker-marker) > div[data-testid="column"] {
+        flex: 0 0 224px !important;
+        min-width: 224px !important;
+        max-width: 224px !important;
+        width: 224px !important;
+        scroll-snap-align: start !important;
+    }
+    .ticker-card,
+    .ticker-card-active {
+        padding: 11px 13px !important;
+        border-radius: 14px !important;
+    }
+    .ticker-top-bar {
+        font-size: 0.74rem !important;
+        margin-bottom: 7px !important;
+        padding-bottom: 5px !important;
+    }
+    .ticker-team-row {
+        font-size: 0.98rem !important;
+        margin: 6px 0 !important;
+    }
+    .ticker-team-left {
+        gap: 7px !important;
+    }
+    .ticker-team-left img {
+        width: 26px !important;
+        height: 26px !important;
+    }
+    .ticker-team-record {
+        font-size: 0.78rem !important;
+    }
+    .ticker-score,
+    .ticker-score-win {
+        font-size: 1.04rem !important;
+    }
+    .ticker-footer {
+        font-size: 0.78rem !important;
+        margin-top: 8px !important;
+        padding-top: 6px !important;
+    }
+
+    /* 5. 2x2 BENTO WIDGET GRID & EDGE-TO-EDGE MOBILE APP CARDS */
+    .custom-kpi-grid {
+        grid-template-columns: 1fr 1fr !important;
+        gap: 8px !important;
+        margin-bottom: 10px !important;
+    }
+    .custom-kpi-card {
+        padding: 12px 12px !important;
+        border-radius: 14px !important;
+        min-height: 98px !important;
         width: 100% !important;
     }
+    .custom-kpi-label {
+        font-size: 0.72rem !important;
+    }
+    .custom-kpi-val {
+        font-size: 1.14rem !important;
+        line-height: 1.2 !important;
+        margin-bottom: 6px !important;
+    }
+    .custom-kpi-val img {
+        width: 24px !important;
+        height: 24px !important;
+    }
+    div[data-testid="stVerticalBlockBorderWrapper"] {
+        padding: 12px 13px !important;
+        border-radius: 16px !important;
+        margin-bottom: 8px !important;
+        width: 100% !important;
+    }
+    .cross-unit-row,
+    .div-team-strip,
+    .h2h-game-card,
+    .terminal-card,
+    .terminal-card-elite,
+    .terminal-card-vuln {
+        width: 100% !important;
+        padding: 13px 14px !important;
+        border-radius: 15px !important;
+        margin-bottom: 9px !important;
+    }
+    .active-game-spotlight {
+        padding: 14px 14px !important;
+        border-radius: 16px !important;
+        margin-bottom: 10px !important;
+    }
+
+    /* 6. 54PX FINGER-SIZED PICK BUTTONS & PLAYER TRIGGER TILES */
     div[data-testid="stHorizontalBlock"]:not(:has(.nfl-ticker-marker)):not(:has(.compact-bet-pill)) {
         flex-direction: column !important;
         flex-wrap: nowrap !important;
-        gap: 0.5rem !important;
+        gap: 0.55rem !important;
         width: 100% !important;
     }
     div[data-testid="stHorizontalBlock"]:not(:has(.nfl-ticker-marker)):not(:has(.compact-bet-pill)) > div[data-testid="stColumn"],
@@ -1327,96 +1548,139 @@ div[data-testid="stVerticalBlockBorderWrapper"] {
         max-width: 100% !important;
         flex: 1 1 100% !important;
     }
-    div[data-testid="stHorizontalBlock"]:has(.nfl-ticker-marker) {
-        flex-direction: row !important;
-        flex-wrap: nowrap !important;
-        overflow-x: auto !important;
-        gap: 8px !important;
-        padding: 8px 6px 10px 6px !important;
-        margin-left: -2px !important;
-        margin-right: -2px !important;
+    div[data-testid="stElementContainer"]:has([class^="pick-link-"]) + div[data-testid="stElementContainer"] div[data-testid="stButton"] button,
+    div.element-container:has([class^="pick-link-"]) + div.element-container div[data-testid="stButton"] button {
+        min-height: 54px !important;
+        padding: 12px 16px !important;
+        border-radius: 14px !important;
+        transition: transform 0.1s ease, background-color 0.14s ease !important;
     }
-    div[data-testid="stHorizontalBlock"]:has(.nfl-ticker-marker) > div[data-testid="stColumn"],
-    div[data-testid="stHorizontalBlock"]:has(.nfl-ticker-marker) > div[data-testid="column"] {
-        flex: 0 0 168px !important;
-        min-width: 168px !important;
-        max-width: 168px !important;
-        width: 168px !important;
+    div[data-testid="stElementContainer"]:has([class^="pick-link-"]) + div[data-testid="stElementContainer"] div[data-testid="stButton"] button p,
+    div.element-container:has([class^="pick-link-"]) + div.element-container div[data-testid="stButton"] button p {
+        font-size: 1.02rem !important;
+        font-weight: 800 !important;
+    }
+    div[data-testid="stElementContainer"]:has([class^="pick-link-"]) + div[data-testid="stElementContainer"] div[data-testid="stButton"] button:active,
+    div.element-container:has([class^="pick-link-"]) + div.element-container div[data-testid="stButton"] button:active {
+        transform: scale(0.98) !important;
+    }
+    div[data-testid="stElementContainer"]:has([class^="plr-trig-"]) + div[data-testid="stElementContainer"] div[data-testid="stButton"] button,
+    div.element-container:has([class^="plr-trig-"]) + div.element-container div[data-testid="stButton"] button {
+        min-height: 44px !important;
+        padding: 8px 14px !important;
+        border-radius: 12px !important;
+        width: 100% !important;
+        justify-content: flex-start !important;
+    }
+    div[data-testid="stElementContainer"]:has([class^="plr-trig-"]) + div[data-testid="stElementContainer"] div[data-testid="stButton"] button p,
+    div.element-container:has([class^="plr-trig-"]) + div.element-container div[data-testid="stButton"] button p {
+        font-size: 0.96rem !important;
+        font-weight: 800 !important;
+    }
+    div[data-testid="stButton"] > button {
+        min-height: 46px !important;
+        border-radius: 12px !important;
+    }
+
+    /* 7. SUPERSIZED 68x68 PLAYER CUTOUTS & TEAM LOGOS ON MOBILE */
+    .mismatch-headshot-wrap {
+        width: 68px !important;
+        height: 68px !important;
+        min-width: 68px !important;
+        max-width: 68px !important;
+        border-radius: 12px !important;
+    }
+    .mismatch-headshot-img {
+        width: 68px !important;
+        height: 68px !important;
+        min-width: 68px !important;
+        max-width: 68px !important;
+    }
+    .team-pill-lg {
+        font-size: 1.06rem !important;
+        padding: 6px 12px !important;
+        border-radius: 12px !important;
+        margin: 2px 2px !important;
+    }
+    .team-pill-lg img {
+        width: 32px !important;
+        height: 32px !important;
+    }
+    .team-pill {
+        font-size: 0.86rem !important;
+        padding: 4px 10px !important;
+        border-radius: 10px !important;
+    }
+    .team-pill img {
+        width: 22px !important;
+        height: 22px !important;
+    }
+    .div-team-strip img {
+        width: 28px !important;
+        height: 28px !important;
     }
     .brief-grid,
     .promoted-context-strip {
         grid-template-columns: 1fr !important;
-        gap: 8px !important;
-    }
-    .custom-kpi-grid {
-        grid-template-columns: 1fr !important;
-        gap: 8px !important;
-    }
-    .custom-kpi-card {
-        padding: 12px 14px !important;
-        border-radius: 10px !important;
-        width: 100% !important;
-    }
-    .custom-kpi-val {
-        font-size: 1.24rem !important;
-    }
-    .cross-unit-row,
-    .div-team-strip,
-    .h2h-game-card,
-    .terminal-card,
-    .terminal-card-elite,
-    .terminal-card-vuln {
-        width: 100% !important;
-        padding: 11px 12px !important;
-        border-radius: 10px !important;
-        margin-bottom: 8px !important;
-    }
-    div[data-baseweb="tab-list"] {
-        gap: 4px !important;
-        padding: 5px 6px !important;
-        border-radius: 10px !important;
-        width: 100% !important;
-    }
-    button[data-baseweb="tab"] {
-        font-size: 0.80rem !important;
-        padding: 8px 12px !important;
-        border-radius: 7px !important;
-    }
-    div[data-testid="stButton"] > button {
-        min-height: 42px !important;
+        gap: 10px !important;
     }
     .epa-stat-num {
-        font-size: 1.12rem !important;
+        font-size: 1.18rem !important;
     }
     .epa-stat-box {
-        padding: 8px 10px !important;
-    }
-    .active-game-spotlight {
-        padding: 12px 12px !important;
-        border-radius: 10px !important;
-    }
-    .team-pill-lg {
-        font-size: 1.0rem !important;
-        padding: 4px 10px !important;
-        margin: 2px 2px !important;
-    }
-    .team-pill {
-        font-size: 0.78rem !important;
-        padding: 2px 8px !important;
+        padding: 10px 12px !important;
+        border-radius: 12px !important;
     }
     .cb-wr-vs-divider {
-        padding: 4px 0 !important;
-        margin: 2px 0 !important;
-        text-align: left !important;
-        font-size: 0.75rem !important;
-        border-top: 1px solid rgba(255, 255, 255, 0.06);
-        border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+        padding: 6px 0 !important;
+        margin: 4px 0 !important;
+        text-align: center !important;
+        font-size: 0.80rem !important;
+        border-top: 1px solid rgba(255, 255, 255, 0.07);
+        border-bottom: 1px solid rgba(255, 255, 255, 0.07);
     }
-}
 
-@media (max-width: 480px) {
-    .custom-kpi-grid {
-        grid-template-columns: 1fr !important;
+    /* 8. NATIVE SLIDE-UP BOTTOM SHEET MODALS ON MOBILE */
+    div[role="dialog"] {
+        width: 100vw !important;
+        max-width: 100vw !important;
+        min-width: 100vw !important;
+        max-height: 92vh !important;
+        margin: 8vh 0 0 0 !important;
+        border-radius: 22px 22px 0 0 !important;
+        position: fixed !important;
+        bottom: 0 !important;
+        left: 0 !important;
+        right: 0 !important;
+        box-shadow: 0 -12px 42px rgba(0, 0, 0, 0.82) !important;
+        border-top: 1px solid rgba(255, 255, 255, 0.14) !important;
+    }
+    div[role="dialog"]::before {
+        content: "";
+        display: block;
+        width: 44px;
+        height: 5px;
+        border-radius: 3px;
+        background: rgba(148, 163, 184, 0.38);
+        margin: 8px auto 4px auto;
+    }
+    .player-modal-banner {
+        padding: 12px 14px 6px 14px !important;
+        border-radius: 14px !important;
+        gap: 12px !important;
+    }
+    .player-modal-left {
+        flex-direction: row !important;
+        align-items: flex-end !important;
+        gap: 12px !important;
+    }
+    .player-headshot-wrap {
+        width: 104px !important;
+        height: 92px !important;
+    }
+    .player-headshot-img {
+        height: 92px !important;
+        max-width: 104px !important;
     }
 }
 </style>
@@ -1441,6 +1705,13 @@ components.html(
                     const url = new URL(href, window.parent.location.origin + window.parent.location.pathname);
                     window.parent.history.pushState({}, '', url.toString());
                     window.parent.dispatchEvent(new PopStateEvent('popstate'));
+                    return;
+                }
+                if (window.parent.innerWidth <= 768) {
+                    const tabBtn = e.target.closest('button[data-baseweb="tab"]');
+                    if (tabBtn && !tabBtn.closest('div[data-baseweb="tab-panel"]') && !tabBtn.closest('div[role="dialog"]')) {
+                        window.parent.scrollTo({ top: 0, behavior: 'smooth' });
+                    }
                 }
             }, true);
         }
