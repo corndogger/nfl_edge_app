@@ -1,3 +1,5 @@
+from pathlib import Path
+from typing import Any, Dict, List, Optional, Tuple
 from urllib.parse import quote
 import math
 import time
@@ -3678,120 +3680,246 @@ def evaluate_player_streak_badge(
     )
 
 
+# -----------------------------------------------------------------------------
+# COMPATIBILITY & FORMATTING HELPERS
+# -----------------------------------------------------------------------------
+def get_team_primary_hex(team_abbr: str) -> str:
+    return resolve_team_display_color(team_abbr)
+
+
+def format_spread(val: float) -> str:
+    if pd.isna(val):
+        return "PK"
+    v = float(val)
+    if abs(v) < 0.05:
+        return "PK"
+    return f"{v:+.1f}"
+
+
+def format_american_odds(odds: int | float) -> str:
+    if pd.isna(odds):
+        return "-110"
+    return f"{int(round(float(odds))):+d}"
+
+
+def calculate_ev_percentage(win_prob: float, american_odds: int = -110) -> float:
+    ev_pct, _ = compute_ev_and_kelly(win_prob, american_odds, 0.25)
+    return ev_pct
+
+
+def calculate_quarter_kelly_units(win_prob: float, american_odds: int = -110) -> float:
+    kelly_mult = float(st.session_state.get("kelly_fraction_mult", 0.25))
+    _, units = compute_ev_and_kelly(win_prob, american_odds, kelly_mult)
+    return units
+
+
+def get_confidence_tier(ev_pct: float, win_prob: float) -> tuple[str, str]:
+    if ev_pct >= 6.0 or win_prob >= 0.62:
+        return "ELITE EDGE", "badge-hot"
+    if ev_pct >= 3.0 or win_prob >= 0.56:
+        return "STRONG PLAY", "badge-elite"
+    if ev_pct > 0.0:
+        return "LEAN", "badge-sage"
+    return "PASS", "badge-mid"
+
+
+def clear_bet_slip() -> None:
+    st.session_state["bet_slip"] = []
+
+def _safe_num_series(df: pd.DataFrame, col: str, default: float = 0.0) -> pd.Series:
+    if df is None or df.empty or col not in df.columns:
+        idx = df.index if (df is not None and hasattr(df, "index")) else []
+        return pd.Series(default, index=idx, dtype=float)
+    return pd.to_numeric(df[col], errors="coerce").fillna(default)
+
+
+# -----------------------------------------------------------------------------
+# LIVE NFLVERSE DATA LOADERS (WITH AUTOMATIC SEASON FALLBACKS)
+# -----------------------------------------------------------------------------
 @st.cache_data(ttl=3600)
 def load_master_games_csv() -> pd.DataFrame:
-    candidates = [
-        Path("data/nfl_master_games.csv"),
-        Path("nfl_master_games.csv"),
-    ]
-    for path in candidates:
-        if path.exists():
+    """Loads the complete nflverse historical games.csv master file."""
+    master_url = "https://github.com/nflverse/nflverse-data/releases/download/schedules/games.csv"
+    df = pd.DataFrame()
+    for local_cand in [Path("data/nfl_master_games.csv"), Path("nfl_master_games.csv")]:
+        if local_cand.exists():
             try:
-                df = pd.read_csv(path)
-                if not df.empty:
-                    return df
+                df = pd.read_csv(local_cand, low_memory=False)
+                break
             except Exception:
                 pass
-    try:
-        url = "https://github.com/nflverse/nfldata/raw/master/data/games.csv"
-        df = pd.read_csv(url)
-        return df
-    except Exception:
-        return pd.DataFrame()
+    if df.empty:
+        try:
+            df = pd.read_csv(master_url, low_memory=False)
+        except Exception:
+            return pd.DataFrame()
+
+    if {"home_rest", "away_rest"}.issubset(df.columns):
+        df["rest_edge_home"] = pd.to_numeric(df["home_rest"], errors="coerce").fillna(7) - pd.to_numeric(df["away_rest"], errors="coerce").fillna(7)
+    if "spread_line" in df.columns:
+        df["home_spread"] = pd.to_numeric(df["spread_line"], errors="coerce") * -1.0
+    if "home_team" in df.columns:
+        df["home_team"] = df["home_team"].astype(str).str.strip().str.upper().replace({"LA": "LAR", "WSH": "WAS"})
+    if "away_team" in df.columns:
+        df["away_team"] = df["away_team"].astype(str).str.strip().str.upper().replace({"LA": "LAR", "WSH": "WAS"})
+    return df
 
 
 @st.cache_data(ttl=3600)
 def load_season_schedule(season: int) -> pd.DataFrame:
-    df = load_master_games_csv()
-    if df.empty or "season" not in df.columns:
+    """Fetches the season schedule from nflverse release data or master games.csv."""
+    master_df = load_master_games_csv()
+    sched_url = f"https://github.com/nflverse/nflverse-data/releases/download/schedules/schedule_{int(season)}.csv"
+    df = pd.DataFrame()
+    try:
+        df = pd.read_csv(sched_url, low_memory=False)
+    except Exception:
+        df = pd.DataFrame()
+
+    if df.empty and not master_df.empty and "season" in master_df.columns:
+        df = master_df[pd.to_numeric(master_df["season"], errors="coerce") == int(season)].copy()
+
+    if df.empty and not master_df.empty and "season" in master_df.columns:
+        latest_yr = int(pd.to_numeric(master_df["season"], errors="coerce").dropna().max())
+        df = master_df[pd.to_numeric(master_df["season"], errors="coerce") == latest_yr].copy()
+
+    if df.empty:
         return pd.DataFrame()
-    sub = df[df["season"] == int(season)].copy()
-    if "game_type" in sub.columns:
-        reg = sub[sub["game_type"] == "REG"]
+
+    if "home_team" in df.columns:
+        df["home_team"] = df["home_team"].astype(str).str.strip().str.upper().replace({"LA": "LAR", "WSH": "WAS"})
+    if "away_team" in df.columns:
+        df["away_team"] = df["away_team"].astype(str).str.strip().str.upper().replace({"LA": "LAR", "WSH": "WAS"})
+
+    if not master_df.empty and "game_id" in df.columns and "game_id" in master_df.columns:
+        fill_cols = [c for c in ["home_score", "away_score", "spread_line", "total_line", "away_moneyline", "home_moneyline", "home_rest", "away_rest"] if c in master_df.columns]
+        if fill_cols:
+            m_sub = master_df[["game_id"] + fill_cols].drop_duplicates(subset=["game_id"])
+            df = df.merge(m_sub, on="game_id", how="left", suffixes=("", "_master"))
+            for c in fill_cols:
+                mc = f"{c}_master"
+                if mc in df.columns:
+                    if c in df.columns:
+                        df[c] = df[c].combine_first(df[mc])
+                    else:
+                        df[c] = df[mc]
+                    df.drop(columns=[mc], inplace=True)
+
+    if "game_type" in df.columns:
+        reg = df[df["game_type"].astype(str).str.upper() == "REG"].copy()
         if not reg.empty:
-            sub = reg
-    return sub.reset_index(drop=True)
+            df = reg
+
+    if "spread_line" in df.columns:
+        df["home_spread"] = pd.to_numeric(df["spread_line"], errors="coerce") * -1.0
+    elif "home_spread" not in df.columns:
+        df["home_spread"] = -2.5
+
+    if "total_line" in df.columns:
+        df["total_line"] = pd.to_numeric(df["total_line"], errors="coerce").fillna(44.5)
+    else:
+        df["total_line"] = 44.5
+
+    if {"home_rest", "away_rest"}.issubset(df.columns):
+        df["rest_edge_home"] = pd.to_numeric(df["home_rest"], errors="coerce").fillna(7) - pd.to_numeric(df["away_rest"], errors="coerce").fillna(7)
+    else:
+        df["rest_edge_home"] = 0.0
+
+    if "game_id" not in df.columns:
+        df["game_id"] = (
+            df.get("season", season).astype(str)
+            + "_"
+            + df.get("week", 1).astype(str)
+            + "_"
+            + df["away_team"].astype(str)
+            + "_"
+            + df["home_team"].astype(str)
+        )
+
+    df["broadcast_slot"] = df.apply(classify_primetime_code, axis=1)
+    df["away_logo"] = df["away_team"].apply(get_team_logo_url)
+    df["home_logo"] = df["home_team"].apply(get_team_logo_url)
+    df["away_label"] = df["away_team"].astype(str)
+    df["home_label"] = df["home_team"].astype(str)
+    return df.reset_index(drop=True)
 
 
 @st.cache_data(ttl=3600)
 def load_team_efficiency_csv(season: int) -> pd.DataFrame:
-    candidates = [
-        Path(f"data/team_efficiency_{season}.csv"),
-        Path("data/team_efficiency.csv"),
-        Path("team_efficiency.csv"),
-    ]
-    for path in candidates:
-        if path.exists():
-            try:
-                df = pd.read_csv(path)
-                if "season" in df.columns:
-                    df = df[df["season"] == int(season)].copy()
-                if not df.empty:
-                    return df.reset_index(drop=True)
-            except Exception:
-                pass
-
+    """Computes team offensive/defensive EPA & efficiency metrics from schedule and player stats."""
     sched = load_season_schedule(season)
-    teams = sorted(list(NFL_TEAM_NAMES.keys()))
+    pstats = load_player_stats_csv(season)
+
+    team_pts: dict[str, list[tuple[float, float]]] = {tm: [] for tm in NFL_TEAM_NAMES if tm not in ("LA", "WSH")}
+    if not sched.empty and {"home_team", "away_team", "home_score", "away_score"}.issubset(sched.columns):
+        comp = sched.dropna(subset=["home_score", "away_score"])
+        for _, r in comp.iterrows():
+            ht = normalize_team_code(str(r["home_team"]))
+            at = normalize_team_code(str(r["away_team"]))
+            hs = float(r["home_score"])
+            as_ = float(r["away_score"])
+            team_pts.setdefault(ht, []).append((hs, as_))
+            team_pts.setdefault(at, []).append((as_, hs))
+
+    pass_epa_map: dict[str, float] = {}
+    rush_epa_map: dict[str, float] = {}
+    if not pstats.empty and "team" in pstats.columns:
+        for tm, grp in pstats.groupby("team"):
+            tm_clean = normalize_team_code(str(tm))
+            gp = max(int(grp["week"].nunique()) if "week" in grp.columns else 8, 1)
+            p_epa = _safe_num_series(grp, "passing_epa", 0.0).sum()
+            r_epa = _safe_num_series(grp, "rushing_epa", 0.0).sum()
+            att = max(_safe_num_series(grp, "attempts", 0.0).sum(), gp * 30.0)
+            car = max(_safe_num_series(grp, "carries", 0.0).sum(), gp * 24.0)
+            pass_epa_map[tm_clean] = float(np.clip(p_epa / att, -0.25, 0.30))
+            rush_epa_map[tm_clean] = float(np.clip(r_epa / car, -0.25, 0.25))
+
     rows = []
-    for idx, team in enumerate(teams):
-        seed_val = sum(ord(c) for c in f"{team}_{season}")
+    for tm in sorted(team_pts.keys()):
+        games = team_pts.get(tm, [])
+        seed_val = sum(ord(c) for c in f"{tm}_{season}")
         rng = np.random.default_rng(seed_val)
-        gp = 8
-        pts_for = float(np.round(rng.uniform(18.5, 29.5), 1))
-        pts_against = float(np.round(rng.uniform(17.5, 28.0), 1))
-        off_epa = float(np.round((pts_for - 22.8) * 0.022, 3))
-        def_epa = float(np.round((pts_against - 22.8) * 0.021, 3))
-        pass_off_epa = float(np.round(off_epa * 1.15 + rng.uniform(-0.04, 0.04), 3))
-        rush_off_epa = float(np.round(off_epa * 0.75 + rng.uniform(-0.04, 0.04), 3))
-        pass_def_epa = float(np.round(def_epa * 1.10 + rng.uniform(-0.04, 0.04), 3))
-        rush_def_epa = float(np.round(def_epa * 0.80 + rng.uniform(-0.04, 0.04), 3))
+        if games:
+            gp = len(games)
+            pf = float(np.mean([g[0] for g in games]))
+            pa = float(np.mean([g[1] for g in games]))
+        else:
+            gp = 8
+            pf = float(np.round(rng.uniform(19.0, 28.5), 1))
+            pa = float(np.round(rng.uniform(18.5, 27.5), 1))
+
+        off_epa = float(np.round((pf - 22.4) * 0.021, 3))
+        def_epa = float(np.round((pa - 22.4) * 0.020, 3))
+        p_off = float(np.round(pass_epa_map.get(tm, off_epa * 1.18), 3))
+        r_off = float(np.round(rush_epa_map.get(tm, off_epa * 0.78), 3))
+        p_def = float(np.round(def_epa * 1.10 + rng.uniform(-0.03, 0.03), 3))
+        r_def = float(np.round(def_epa * 0.85 + rng.uniform(-0.03, 0.03), 3))
+
         rows.append(
             {
-                "team": team,
+                "team": tm,
                 "season": int(season),
                 "games_played": gp,
-                "points_per_game": pts_for,
-                "points_allowed_per_game": pts_against,
+                "points_per_game": round(pf, 1),
+                "points_allowed_per_game": round(pa, 1),
+                "off_epa": off_epa,
+                "def_epa": def_epa,
                 "off_epa_per_play": off_epa,
                 "def_epa_per_play": def_epa,
-                "pass_off_epa": pass_off_epa,
-                "rush_off_epa": rush_off_epa,
-                "pass_def_epa": pass_def_epa,
-                "rush_def_epa": rush_def_epa,
-                "off_success_rate": float(np.round(0.44 + off_epa * 0.35, 3)),
-                "def_success_rate": float(np.round(0.44 + def_epa * 0.35, 3)),
-                "pass_rate_over_expected": float(np.round(rng.uniform(-0.055, 0.065), 3)),
-                "redzone_td_pct": float(np.round(rng.uniform(0.48, 0.68), 3)),
-                "def_redzone_td_pct": float(np.round(rng.uniform(0.47, 0.67), 3)),
-                "third_down_conv_pct": float(np.round(rng.uniform(0.35, 0.49), 3)),
-                "def_third_down_conv_pct": float(np.round(rng.uniform(0.35, 0.48), 3)),
-                "explosive_play_rate": float(np.round(rng.uniform(0.085, 0.145), 3)),
-                "def_explosive_play_rate": float(np.round(rng.uniform(0.085, 0.145), 3)),
-                "sack_rate_allowed": float(np.round(rng.uniform(0.045, 0.095), 3)),
-                "def_sack_rate": float(np.round(rng.uniform(0.050, 0.098), 3)),
-                "turnover_margin_per_game": float(np.round(rng.uniform(-0.8, 0.9), 2)),
+                "pass_off_epa": p_off,
+                "rush_off_epa": r_off,
+                "pass_def_epa": p_def,
+                "rush_def_epa": r_def,
             }
         )
+
     df_eff = pd.DataFrame(rows)
-    df_eff["off_rank"] = (
-        df_eff["off_epa_per_play"].rank(ascending=False, method="min").astype(int)
-    )
-    df_eff["def_rank"] = (
-        df_eff["def_epa_per_play"].rank(ascending=True, method="min").astype(int)
-    )
-    df_eff["pass_off_rank"] = (
-        df_eff["pass_off_epa"].rank(ascending=False, method="min").astype(int)
-    )
-    df_eff["rush_off_rank"] = (
-        df_eff["rush_off_epa"].rank(ascending=False, method="min").astype(int)
-    )
-    df_eff["pass_def_rank"] = (
-        df_eff["pass_def_epa"].rank(ascending=True, method="min").astype(int)
-    )
-    df_eff["rush_def_rank"] = (
-        df_eff["rush_def_epa"].rank(ascending=True, method="min").astype(int)
-    )
+    df_eff["off_rank"] = df_eff["off_epa_per_play"].rank(ascending=False, method="min").astype(int)
+    df_eff["def_rank"] = df_eff["def_epa_per_play"].rank(ascending=True, method="min").astype(int)
+    df_eff["pass_off_rank"] = df_eff["pass_off_epa"].rank(ascending=False, method="min").astype(int)
+    df_eff["rush_off_rank"] = df_eff["rush_off_epa"].rank(ascending=False, method="min").astype(int)
+    df_eff["pass_def_rank"] = df_eff["pass_def_epa"].rank(ascending=True, method="min").astype(int)
+    df_eff["rush_def_rank"] = df_eff["rush_def_epa"].rank(ascending=True, method="min").astype(int)
     return df_eff
 
 
@@ -3799,11 +3927,6 @@ def load_team_efficiency_csv(season: int) -> pd.DataFrame:
 def load_team_coverage_and_shell_splits(
     season: int, eff_df: pd.DataFrame
 ) -> pd.DataFrame:
-    """
-    Returns team-by-team defensive shell (1-High vs 2-High), coverage family
-    (Man vs Zone), and run-box tendency (Light Box vs Stacked Box) along with
-    EPA/play allowed and league ranks for each tendency.
-    """
     if eff_df is None or eff_df.empty:
         eff_df = load_team_efficiency_csv(season)
 
@@ -3846,35 +3969,12 @@ def load_team_coverage_and_shell_splits(
             two_h = float(np.round(100.0 - one_h, 1))
             man_r = float(np.round(rng.uniform(22.0, 40.0), 1))
             zone_r = float(np.round(100.0 - man_r, 1))
-            light_b = float(
-                np.round(np.clip(two_h * 0.92 + rng.uniform(-4.0, 4.0), 38.0, 64.0), 1)
-            )
+            light_b = float(np.round(np.clip(two_h * 0.92 + rng.uniform(-4.0, 4.0), 38.0, 64.0), 1))
             shell_str = "2-High" if two_h >= 52.0 else "1-High"
             cov_str = "Man-Heavy" if man_r >= 35.0 else "Zone"
             label = f"{shell_str} {cov_str}"
 
         stacked_b = float(np.round(100.0 - light_b, 1))
-
-        epa_vs_1high = float(
-            np.round(pass_def_epa + (0.015 if one_h < 46 else -0.012), 3)
-        )
-        epa_vs_2high = float(
-            np.round(pass_def_epa + (-0.014 if two_h >= 54 else 0.012), 3)
-        )
-        epa_vs_man = float(
-            np.round(pass_def_epa + (-0.018 if man_r >= 35 else 0.015), 3)
-        )
-        epa_vs_zone = float(
-            np.round(pass_def_epa + (-0.012 if zone_r >= 70 else 0.012), 3)
-        )
-
-        rush_ypc_allowed = float(
-            np.round(np.clip(4.35 + rush_def_epa * 3.8, 3.5, 5.3), 2)
-        )
-        pass_ypa_allowed = float(
-            np.round(np.clip(7.05 + pass_def_epa * 4.5, 5.8, 8.5), 2)
-        )
-
         rows.append(
             {
                 "team": tm,
@@ -3885,12 +3985,6 @@ def load_team_coverage_and_shell_splits(
                 "zone_pct": zone_r,
                 "light_box_pct": light_b,
                 "stacked_box_pct": stacked_b,
-                "epa_vs_1high": epa_vs_1high,
-                "epa_vs_2high": epa_vs_2high,
-                "epa_vs_man": epa_vs_man,
-                "epa_vs_zone": epa_vs_zone,
-                "rush_ypc_allowed": rush_ypc_allowed,
-                "pass_ypa_allowed": pass_ypa_allowed,
                 "def_epa_per_play": def_epa,
                 "pass_def_epa": pass_def_epa,
                 "rush_def_epa": rush_def_epa,
@@ -3899,22 +3993,7 @@ def load_team_coverage_and_shell_splits(
                 "rush_def_rank": int(erow.get("rush_def_rank", 16)),
             }
         )
-
-    cov_df = pd.DataFrame(rows)
-    if not cov_df.empty:
-        cov_df["rank_vs_1high"] = (
-            cov_df["epa_vs_1high"].rank(ascending=True, method="min").astype(int)
-        )
-        cov_df["rank_vs_2high"] = (
-            cov_df["epa_vs_2high"].rank(ascending=True, method="min").astype(int)
-        )
-        cov_df["rank_vs_man"] = (
-            cov_df["epa_vs_man"].rank(ascending=True, method="min").astype(int)
-        )
-        cov_df["rank_vs_zone"] = (
-            cov_df["epa_vs_zone"].rank(ascending=True, method="min").astype(int)
-        )
-    return cov_df
+    return pd.DataFrame(rows)
 
 
 def compute_defense_similarity(
@@ -3923,15 +4002,10 @@ def compute_defense_similarity(
     cov_df: pd.DataFrame,
     is_rush_prop: bool = False,
 ) -> Tuple[int, str]:
-    """
-    Computes a 0-100% defensive similarity score between target_opp (e.g., ARI)
-    and candidate_opp (e.g., PHI or GB), weighting Rush Def Rank + Box Count
-    for rushing props and Pass Def Rank + 1-High/2-High + Man/Zone for passing/receiving.
-    """
     if cov_df is None or cov_df.empty:
         return 75, "Balanced Profile"
-    t_rows = cov_df[cov_df["team"] == target_opp]
-    c_rows = cov_df[cov_df["team"] == candidate_opp]
+    t_rows = cov_df[cov_df["team"] == normalize_team_code(target_opp)]
+    c_rows = cov_df[cov_df["team"] == normalize_team_code(candidate_opp)]
     if t_rows.empty or c_rows.empty:
         return 72, "Standard Match"
 
@@ -3961,85 +4035,155 @@ def compute_defense_similarity(
 
 @st.cache_data(ttl=3600)
 def load_player_stats_csv(season: int) -> pd.DataFrame:
-    candidates = [
-        Path(f"data/player_stats_{season}.csv"),
-        Path("data/player_stats.csv"),
-        Path("player_stats.csv"),
-    ]
-    for path in candidates:
-        if path.exists():
+    """Loads weekly player-level statistical logs from nflverse release data."""
+    candidate_years = []
+    for yr in [int(season), int(season) - 1, 2025, 2024]:
+        if yr not in candidate_years and yr >= 2020:
+            candidate_years.append(yr)
+
+    for yr in candidate_years:
+        urls = [
+            f"https://github.com/nflverse/nflverse-data/releases/download/stats_player/stats_player_week_{yr}.csv.gz",
+            f"https://github.com/nflverse/nflverse-data/releases/download/player_stats/player_stats_{yr}.csv.gz",
+            f"https://github.com/nflverse/nflverse-data/releases/download/player_stats/player_stats_{yr}.csv",
+        ]
+        for url in urls:
             try:
-                df = pd.read_csv(path)
-                if "season" in df.columns:
-                    sub = df[df["season"] == int(season)].copy()
-                    if not sub.empty:
-                        return normalize_dataframe_guard_positions(sub.reset_index(drop=True))
+                df = pd.read_csv(url, low_memory=False)
                 if not df.empty:
+                    if "recent_team" in df.columns and "team" not in df.columns:
+                        df["team"] = df["recent_team"]
+                    if "team" in df.columns:
+                        df["team"] = df["team"].astype(str).str.strip().str.upper().replace({"LA": "LAR", "WSH": "WAS"})
+                    if "recent_team" in df.columns:
+                        df["recent_team"] = df["recent_team"].astype(str).str.strip().str.upper().replace({"LA": "LAR", "WSH": "WAS"})
+                    if "opponent_team" in df.columns:
+                        df["opponent_team"] = df["opponent_team"].astype(str).str.strip().str.upper().replace({"LA": "LAR", "WSH": "WAS"})
                     return normalize_dataframe_guard_positions(df.reset_index(drop=True))
             except Exception:
-                pass
+                continue
     return pd.DataFrame()
 
 
 @st.cache_data(ttl=3600)
 def load_snap_counts_csv(season: int) -> pd.DataFrame:
-    candidates = [
-        Path(f"data/snap_counts_{season}.csv"),
-        Path("data/snap_counts.csv"),
-        Path("snap_counts.csv"),
-    ]
-    for path in candidates:
-        if path.exists():
+    """Loads weekly player snap counts from nflverse release data."""
+    candidate_years = []
+    for yr in [int(season), int(season) - 1, 2025, 2024]:
+        if yr not in candidate_years and yr >= 2020:
+            candidate_years.append(yr)
+
+    for yr in candidate_years:
+        for url in [
+            f"https://github.com/nflverse/nflverse-data/releases/download/snap_counts/snap_counts_{yr}.csv",
+            f"https://github.com/nflverse/nflverse-data/releases/download/snap_counts/snap_counts_{yr}.csv.gz",
+        ]:
             try:
-                df = pd.read_csv(path)
-                if "season" in df.columns:
-                    sub = df[df["season"] == int(season)].copy()
-                    if not sub.empty:
-                        return normalize_dataframe_guard_positions(sub.reset_index(drop=True))
+                df = pd.read_csv(url, low_memory=False)
                 if not df.empty:
-                    return normalize_dataframe_guard_positions(df.reset_index(drop=True))
+                    if "team" in df.columns:
+                        df["team"] = df["team"].astype(str).str.strip().str.upper().replace({"LA": "LAR", "WSH": "WAS"})
+                    return normalize_dataframe_guard_positions(df.reset_index(drop=True), pos_col="position", name_col="player")
             except Exception:
-                pass
+                continue
     return pd.DataFrame()
 
 
 @st.cache_data(ttl=3600)
-def load_injuries_csv(season: int) -> pd.DataFrame:
-    candidates = [
-        Path(f"data/injuries_{season}.csv"),
-        Path("data/injuries.csv"),
-        Path("injuries.csv"),
-    ]
-    for path in candidates:
-        if path.exists():
+def load_injuries_csv(season: int, refresh_token: int = 0) -> pd.DataFrame:
+    """Loads weekly NFL injury report data and weekly roster designations from nflverse."""
+    candidate_years = []
+    for yr in [int(season), int(season) - 1, 2025, 2024]:
+        if yr not in candidate_years and yr >= 2020:
+            candidate_years.append(yr)
+
+    inj_df = pd.DataFrame()
+    loaded_yr = int(season)
+    for yr in candidate_years:
+        for url in [
+            f"https://github.com/nflverse/nflverse-data/releases/download/injuries/injuries_{yr}.csv",
+            f"https://github.com/nflverse/nflverse-data/releases/download/injuries/injuries_{yr}.csv.gz",
+        ]:
             try:
-                df = pd.read_csv(path)
-                if "season" in df.columns:
-                    sub = df[df["season"] == int(season)].copy()
-                    if not sub.empty:
-                        return normalize_dataframe_guard_positions(sub.reset_index(drop=True))
+                df = pd.read_csv(url, low_memory=False)
                 if not df.empty:
-                    return normalize_dataframe_guard_positions(df.reset_index(drop=True))
+                    inj_df = df
+                    loaded_yr = yr
+                    break
             except Exception:
-                pass
-    return pd.DataFrame()
+                continue
+        if not inj_df.empty:
+            break
+
+    if not inj_df.empty:
+        if "team" in inj_df.columns:
+            inj_df["team"] = inj_df["team"].astype(str).str.strip().str.upper().replace({"LA": "LAR", "WSH": "WAS"})
+        if "week" in inj_df.columns:
+            inj_df["week"] = pd.to_numeric(inj_df["week"], errors="coerce").fillna(1).astype(int)
+        name_col = "full_name" if "full_name" in inj_df.columns else ("player_name" if "player_name" in inj_df.columns else "player")
+        if name_col not in inj_df.columns:
+            inj_df["full_name"] = "Unknown Player"
+            name_col = "full_name"
+        inj_df = normalize_dataframe_guard_positions(inj_df, pos_col="position", name_col=name_col)
+
+    # Also merge weekly roster IR/INA/PUP designations if injuries CSV is sparse for latest season
+    try:
+        w_url = f"https://github.com/nflverse/nflverse-data/releases/download/weekly_rosters/roster_weekly_{loaded_yr}.csv.gz"
+        w_df = pd.read_csv(w_url, low_memory=False)
+        if not w_df.empty and {"team", "status"}.issubset(w_df.columns):
+            w_df["team"] = w_df["team"].astype(str).str.strip().str.upper().replace({"LA": "LAR", "WSH": "WAS"})
+            w_name = "full_name" if "full_name" in w_df.columns else "player_name"
+            ir_sub = w_df[w_df["status"].astype(str).str.upper().isin(["RES", "IR", "PUP", "NFI", "INA", "OUT"])].copy()
+            if not ir_sub.empty and w_name in ir_sub.columns:
+                ir_sub["report_status"] = np.where(
+                    ir_sub["status"].astype(str).str.upper().isin(["RES", "IR", "PUP", "NFI"]),
+                    "IR",
+                    "Out",
+                )
+                ir_sub["practice_status"] = "Did Not Participate In Practice"
+                ir_sub["report_primary_injury"] = np.where(
+                    ir_sub["report_status"] == "IR",
+                    "Injured Reserve",
+                    "Inactive / Out",
+                )
+                ir_sub["week"] = _safe_num_series(ir_sub, "week", 1.0).astype(int)
+                keep_cols = [c for c in ["team", "week", w_name, "position", "report_status", "practice_status", "report_primary_injury"] if c in ir_sub.columns]
+                ir_clean = ir_sub[keep_cols].rename(columns={w_name: "full_name"})
+                if inj_df.empty:
+                    inj_df = ir_clean
+                else:
+                    if "full_name" not in inj_df.columns and "player_name" in inj_df.columns:
+                        inj_df["full_name"] = inj_df["player_name"]
+                    inj_df = pd.concat([inj_df, ir_clean], ignore_index=True)
+                    inj_df = inj_df.drop_duplicates(subset=["team", "full_name", "week"], keep="first")
+    except Exception:
+        pass
+
+    return inj_df.reset_index(drop=True) if not inj_df.empty else pd.DataFrame()
 
 
 @st.cache_data(ttl=3600)
 def load_rosters_headshots_csv(season: int) -> pd.DataFrame:
-    candidates = [
-        Path(f"data/rosters_{season}.csv"),
-        Path("data/rosters.csv"),
-        Path("rosters.csv"),
-    ]
-    for path in candidates:
-        if path.exists():
+    """Loads NFL roster details and headshot URLs from nflverse release data."""
+    candidate_years = []
+    for yr in [int(season), int(season) - 1, 2025, 2024]:
+        if yr not in candidate_years and yr >= 2020:
+            candidate_years.append(yr)
+
+    for yr in candidate_years:
+        for url in [
+            f"https://github.com/nflverse/nflverse-data/releases/download/rosters/roster_{yr}.csv",
+            f"https://github.com/nflverse/nflverse-data/releases/download/weekly_rosters/roster_weekly_{yr}.csv.gz",
+        ]:
             try:
-                df = pd.read_csv(path)
+                df = pd.read_csv(url, low_memory=False)
                 if not df.empty:
-                    return normalize_dataframe_guard_positions(df.reset_index(drop=True))
+                    if "team" in df.columns:
+                        df["team"] = df["team"].astype(str).str.strip().str.upper().replace({"LA": "LAR", "WSH": "WAS"})
+                    name_col = "full_name" if "full_name" in df.columns else "player_name"
+                    return normalize_dataframe_guard_positions(df.reset_index(drop=True), pos_col="position", name_col=name_col)
             except Exception:
-                pass
+                continue
     return pd.DataFrame()
 
 
@@ -4062,7 +4206,7 @@ def build_headshot_lookup(season: int) -> Dict[str, Dict[str, Any]]:
                     continue
                 pos_raw = str(row.get("position", "")).strip()
                 depth_pos = str(row.get("depth_chart_position", pos_raw)).strip()
-                pos_clean = normalize_guard_position(pos_raw, nm, depth_pos)
+                pos_clean = normalize_guard_position(pos_raw, depth_pos, nm, str(row.get("team", "")))
                 lookup[nm.lower()] = {
                     "headshot_url": str(row.get("headshot_url", "") or ""),
                     "team": str(row.get("team", "") or ""),
@@ -4085,12 +4229,11 @@ def build_headshot_lookup(season: int) -> Dict[str, Dict[str, Any]]:
                 key = nm.lower()
                 if key not in lookup or not lookup[key].get("headshot_url"):
                     pos_raw = str(row.get("position", "")).strip()
-                    pos_clean = normalize_guard_position(pos_raw, nm)
+                    tm_r = str(row.get("recent_team", row.get("team", "")) or "")
+                    pos_clean = normalize_guard_position(pos_raw, "", nm, tm_r)
                     lookup[key] = {
                         "headshot_url": str(row.get("headshot_url", "") or ""),
-                        "team": str(
-                            row.get("recent_team", row.get("team", "")) or ""
-                        ),
+                        "team": tm_r,
                         "position": pos_clean,
                         "jersey_number": row.get("jersey_number", ""),
                         "college": str(row.get("college", "") or ""),
@@ -4107,10 +4250,10 @@ def get_player_headshot_and_meta(
     key = str(player_name or "").strip().lower()
     found = headshot_lookup.get(key, {})
     url = str(found.get("headshot_url", "") or "").strip()
-    if not url or url.lower() in ("nan", "none"):
+    if not url or url.lower() in ("nan", "none") or not url.startswith("http"):
         url = "https://static.www.nfl.com/image/private/f_auto,q_auto/league/mdrlzgankqabpbx39c1g"
     pos_final = normalize_guard_position(
-        position or found.get("position", "NFL"), player_name
+        position or found.get("position", "NFL"), "", player_name, team_abbr
     )
     return {
         "headshot_url": url,
@@ -4130,10 +4273,8 @@ def render_mismatch_headshot_html(
     meta = get_player_headshot_and_meta(
         player_name, team_abbr, position, headshot_lookup
     )
-    hex_col = get_team_primary_hex(team_abbr)
-    r = int(hex_col[1:3], 16)
-    g = int(hex_col[3:5], 16)
-    b = int(hex_col[5:7], 16)
+    hex_col = resolve_team_display_color(team_abbr)
+    r, g, b = hex_to_rgb(hex_col)
     bg_grad = (
         f"linear-gradient(180deg, rgba(16,16,22,0.95) 0%, "
         f"rgba({r},{g},{b},0.18) 60%, rgba({r},{g},{b},0.42) 100%)"
@@ -4142,91 +4283,65 @@ def render_mismatch_headshot_html(
     return (
         f'<img src="{img_url}" class="mismatch-headshot-img" '
         f'style="background:{bg_grad};border-color:{hex_col}88;" '
-        f'alt="{player_name}" />'
+        f'alt="{player_name}" onerror="this.style.display=\'none\'" />'
     )
 
 
 def get_five_year_h2h_history(
     master_df: pd.DataFrame, away_team: str, home_team: str, max_season: int
-) -> Dict[str, Any]:
+) -> pd.DataFrame:
+    """Returns a DataFrame formatted for render_five_year_h2h_visual."""
     if master_df.empty:
-        return {"games_count": 0, "games": []}
-    min_season = max_season - 5
+        return pd.DataFrame()
+    min_season = int(max_season) - 5
+    at_norm = normalize_team_code(away_team)
+    ht_norm = normalize_team_code(home_team)
     sub = master_df[
-        (master_df["season"] >= min_season)
-        & (master_df["season"] <= max_season)
+        (pd.to_numeric(master_df["season"], errors="coerce") >= min_season)
+        & (pd.to_numeric(master_df["season"], errors="coerce") <= int(max_season))
         & (
-            (
-                (master_df["away_team"] == away_team)
-                & (master_df["home_team"] == home_team)
-            )
-            | (
-                (master_df["away_team"] == home_team)
-                & (master_df["home_team"] == away_team)
-            )
+            ((master_df["away_team"] == at_norm) & (master_df["home_team"] == ht_norm))
+            | ((master_df["away_team"] == ht_norm) & (master_df["home_team"] == at_norm))
         )
     ].copy()
     sub = sub.dropna(subset=["away_score", "home_score"])
     if sub.empty:
-        return {"games_count": 0, "games": []}
+        return pd.DataFrame()
 
-    sub = sub.sort_values(by=["season", "week"], ascending=[False, False])
-    away_wins = 0
-    home_wins = 0
-    ties = 0
-    total_pts = []
-    margins = []
-    games_list = []
+    sub = sub.sort_values(by=["season", "week"], ascending=[False, False]).head(8).copy()
+    sub["away_score"] = pd.to_numeric(sub["away_score"], errors="coerce").fillna(0).astype(int)
+    sub["home_score"] = pd.to_numeric(sub["home_score"], errors="coerce").fillna(0).astype(int)
+    sub["Total Pts"] = sub["away_score"] + sub["home_score"]
 
+    su_winners = []
+    ats_results = []
     for _, r in sub.iterrows():
-        g_away = str(r.get("away_team", ""))
-        g_home = str(r.get("home_team", ""))
-        a_sc = int(float(r.get("away_score", 0)))
-        h_sc = int(float(r.get("home_score", 0)))
-        tot = a_sc + h_sc
-        total_pts.append(tot)
-
+        g_aw = str(r["away_team"]).strip().upper()
+        g_hm = str(r["home_team"]).strip().upper()
+        a_sc = int(r["away_score"])
+        h_sc = int(r["home_score"])
         if a_sc > h_sc:
-            winner = g_away
+            su_winners.append(g_aw)
         elif h_sc > a_sc:
-            winner = g_home
+            su_winners.append(g_hm)
         else:
-            winner = "TIE"
+            su_winners.append("TIE")
 
-        if winner == away_team:
-            away_wins += 1
-        elif winner == home_team:
-            home_wins += 1
+        h_sp = r.get("home_spread", np.nan)
+        if pd.notna(h_sp):
+            margin = (h_sc - a_sc) + float(h_sp)
+            if margin > 0:
+                ats_results.append(f"{g_hm} Covered ({float(h_sp):+.1f})")
+            elif margin < 0:
+                ats_results.append(f"{g_aw} Covered ({-float(h_sp):+.1f})")
+            else:
+                ats_results.append("Push")
         else:
-            ties += 1
+            ats_results.append("N/A")
 
-        team_a_sc = a_sc if g_away == away_team else h_sc
-        team_h_sc = h_sc if g_home == home_team else a_sc
-        margins.append(team_h_sc - team_a_sc)
-
-        games_list.append(
-            {
-                "season": int(r.get("season", max_season)),
-                "week": int(r.get("week", 1)),
-                "gameday": str(r.get("gameday", "")),
-                "away_team": g_away,
-                "home_team": g_home,
-                "away_score": a_sc,
-                "home_score": h_sc,
-                "winner": winner,
-                "total": tot,
-            }
-        )
-
-    return {
-        "games_count": len(games_list),
-        "away_team_wins": away_wins,
-        "home_team_wins": home_wins,
-        "ties": ties,
-        "avg_total": float(np.mean(total_pts)) if total_pts else 44.5,
-        "avg_margin": float(np.mean(margins)) if margins else 0.0,
-        "games": games_list,
-    }
+    sub["SU Winner"] = su_winners
+    sub["ATS Result"] = ats_results
+    return sub.reset_index(drop=True)
 
 
 def prepare_matchup_player_prop_logs(
@@ -4234,15 +4349,16 @@ def prepare_matchup_player_prop_logs(
 ) -> pd.DataFrame:
     if pstats_df.empty:
         return pd.DataFrame()
-    team_col = (
-        "recent_team" if "recent_team" in pstats_df.columns else "team"
-    )
+    team_col = "team" if "team" in pstats_df.columns else "recent_team"
     if team_col not in pstats_df.columns:
         return pd.DataFrame()
-    sub = pstats_df[
-        pstats_df[team_col].isin([away_team, home_team])
-        & (pstats_df["week"] < max_week)
-    ].copy()
+    at_norm = normalize_team_code(away_team)
+    ht_norm = normalize_team_code(home_team)
+    sub = pstats_df[pstats_df[team_col].isin([at_norm, ht_norm])].copy()
+    if "week" in sub.columns:
+        w_filtered = sub[pd.to_numeric(sub["week"], errors="coerce") <= int(max_week)]
+        if not w_filtered.empty:
+            sub = w_filtered
     return normalize_dataframe_guard_positions(sub.reset_index(drop=True))
 
 
@@ -4251,10 +4367,9 @@ def aggregate_team_skill_usage(
 ) -> pd.DataFrame:
     if prop_logs.empty:
         return pd.DataFrame()
-    team_col = (
-        "recent_team" if "recent_team" in prop_logs.columns else "team"
-    )
-    sub = prop_logs[prop_logs[team_col] == team_abbr].copy()
+    team_col = "team" if "team" in prop_logs.columns else "recent_team"
+    tm_norm = normalize_team_code(team_abbr)
+    sub = prop_logs[prop_logs[team_col] == tm_norm].copy()
     if sub.empty:
         return pd.DataFrame()
 
@@ -4295,7 +4410,7 @@ def aggregate_team_skill_usage(
         .rename(columns={name_col: "Player", "position": "Pos"})
     )
     grp["Pos"] = grp.apply(
-        lambda r: normalize_guard_position(r["Pos"], r["Player"]), axis=1
+        lambda r: normalize_guard_position(r["Pos"], "", r["Player"], tm_norm), axis=1
     )
     tot_tgts = max(float(grp["targets"].sum()), 1.0)
     tot_car = max(float(grp["carries"].sum()), 1.0)
@@ -4322,24 +4437,24 @@ def build_top_player_picks(
 ) -> List[Dict[str, Any]]:
     if prop_logs.empty:
         return []
-    team_col = (
-        "recent_team" if "recent_team" in prop_logs.columns else "team"
-    )
+    team_col = "team" if "team" in prop_logs.columns else "recent_team"
     name_col = (
         "player_display_name"
         if "player_display_name" in prop_logs.columns
         else "player_name"
     )
+    at_norm = normalize_team_code(away_team)
+    ht_norm = normalize_team_code(home_team)
+    odds_val = int(st.session_state.get("default_odds_american", -110))
+    kelly_mult = float(st.session_state.get("kelly_fraction_mult", 0.25))
 
     picks: List[Dict[str, Any]] = []
-    for (p_name, pos, tm), grp in prop_logs.groupby(
-        [name_col, "position", team_col]
-    ):
+    for (p_name, pos, tm), grp in prop_logs.groupby([name_col, "position", team_col]):
         if len(grp) < 2:
             continue
         grp = grp.sort_values("week")
-        opp_tm = home_team if tm == away_team else away_team
-        opp_eff = home_eff if tm == away_team else away_eff
+        opp_tm = ht_norm if tm == at_norm else at_norm
+        opp_eff = home_eff if tm == at_norm else away_eff
 
         if pos == "QB":
             stat_col = "passing_yards"
@@ -4360,9 +4475,7 @@ def build_top_player_picks(
             continue
         vals = pd.to_numeric(grp[stat_col], errors="coerce").fillna(0.0)
         season_avg = float(vals.mean())
-        if (pos == "QB" and season_avg < 140) or (
-            pos != "QB" and season_avg < 24
-        ):
+        if (pos == "QB" and season_avg < 130) or (pos != "QB" and season_avg < 22):
             continue
 
         l3_avg = float(vals.tail(3).mean())
@@ -4382,20 +4495,20 @@ def build_top_player_picks(
                 0.76,
             )
         )
-        ev_pct = calculate_ev_percentage(win_prob, -110)
-        kelly_u = calculate_quarter_kelly_units(win_prob, -110)
+        ev_pct, kelly_u = compute_ev_and_kelly(win_prob, odds_val, kelly_mult)
         tier_lbl, tier_cls = get_confidence_tier(ev_pct, win_prob)
-        meta = get_player_headshot_and_meta(p_name, tm, pos, headshot_lookup)
+        meta = get_player_headshot_and_meta(str(p_name), str(tm), str(pos), headshot_lookup)
 
         picks.append(
             {
-                "player": p_name,
-                "team": tm,
+                "player": str(p_name),
+                "team": str(tm),
                 "opp": opp_tm,
-                "pos": pos,
+                "pos": str(pos),
                 "market": market_lbl,
                 "line": line_val,
                 "proj": proj,
+                "edge_score": round(abs(diff), 1),
                 "season_avg": round(season_avg, 1),
                 "l3_avg": round(l3_avg, 1),
                 "hit_str": f"{hits}/{gp} ({hit_rate*100:.0f}%)",
@@ -4427,18 +4540,18 @@ def build_cb_wr_matchup_battles(
     if prop_logs.empty:
         return battles
 
-    team_col = (
-        "recent_team" if "recent_team" in prop_logs.columns else "team"
-    )
+    team_col = "team" if "team" in prop_logs.columns else "recent_team"
     name_col = (
         "player_display_name"
         if "player_display_name" in prop_logs.columns
         else "player_name"
     )
+    at_norm = normalize_team_code(away_team)
+    ht_norm = normalize_team_code(home_team)
 
     for off_team, def_team, def_eff in [
-        (away_team, home_team, home_eff),
-        (home_team, away_team, away_eff),
+        (at_norm, ht_norm, home_eff),
+        (ht_norm, at_norm, away_eff),
     ]:
         wrs = prop_logs[
             (prop_logs[team_col] == off_team)
@@ -4461,19 +4574,13 @@ def build_cb_wr_matchup_battles(
 
         cbs: List[str] = []
         if not rosters_df.empty and "team" in rosters_df.columns:
-            r_name = (
-                "full_name"
-                if "full_name" in rosters_df.columns
-                else "player_name"
-            )
+            r_name = "full_name" if "full_name" in rosters_df.columns else "player_name"
             cb_rows = rosters_df[
                 (rosters_df["team"] == def_team)
                 & (rosters_df["position"].isin(["CB", "DB", "SAF", "S"]))
             ]
             if not cb_rows.empty and r_name in cb_rows.columns:
-                cbs = (
-                    cb_rows[r_name].dropna().astype(str).unique().tolist()[:3]
-                )
+                cbs = cb_rows[r_name].dropna().astype(str).unique().tolist()[:3]
         while len(cbs) < 3:
             cbs.append(f"{def_team} CB{len(cbs)+1}")
 
@@ -4485,9 +4592,7 @@ def build_cb_wr_matchup_battles(
             ypg = float(wr_row["yds"]) / gp
             tpg = float(wr_row["tgts"]) / gp
             cb_name = cbs[min(idx, len(cbs) - 1)]
-            edge_score = float(
-                np.round((ypg - 48.0) * 0.35 + (pass_def_rk - 16.5) * 0.95, 1)
-            )
+            edge_score = float(np.round((ypg - 48.0) * 0.35 + (pass_def_rk - 16.5) * 0.95, 1))
             if edge_score >= 4.0:
                 adv_lbl = f"{off_team} WR Edge (+{edge_score:.1f})"
                 adv_cls = "badge-hot"
@@ -4502,9 +4607,7 @@ def build_cb_wr_matchup_battles(
                 {
                     "off_team": off_team,
                     "def_team": def_team,
-                    "slot_label": f"WR{idx+1} vs CB{idx+1}"
-                    if wr_pos == "WR"
-                    else "TE1 vs Nickel/S",
+                    "slot_label": f"WR{idx+1} vs CB{idx+1}" if wr_pos == "WR" else "TE1 vs Nickel/S",
                     "wr_name": wr_name,
                     "wr_pos": wr_pos,
                     "wr_ypg": round(ypg, 1),
@@ -4521,22 +4624,7 @@ def build_cb_wr_matchup_battles(
 
 def classify_unit_side(pos: str) -> str:
     p = str(pos or "").upper().strip()
-    if p in (
-        "QB",
-        "RB",
-        "FB",
-        "WR",
-        "TE",
-        "OL",
-        "OT",
-        "LT",
-        "RT",
-        "LG",
-        "RG",
-        "G",
-        "C",
-        "T",
-    ):
+    if p in ("QB", "RB", "FB", "WR", "TE", "OL", "OT", "LT", "RT", "LG", "RG", "G", "C", "T"):
         return "Offense"
     if p in ("K", "P", "LS"):
         return "Special Teams"
@@ -4552,9 +4640,12 @@ def build_roster_usage_table(
 ) -> pd.DataFrame:
     if snaps_df.empty:
         return pd.DataFrame()
-    sub = snaps_df[
-        (snaps_df["team"] == team_abbr) & (snaps_df["week"] < max_week)
-    ].copy()
+    tm_norm = normalize_team_code(team_abbr)
+    sub = snaps_df[snaps_df["team"] == tm_norm].copy()
+    if "week" in sub.columns:
+        w_sub = sub[pd.to_numeric(sub["week"], errors="coerce") <= int(max_week)]
+        if not w_sub.empty:
+            sub = w_sub
     if sub.empty:
         return pd.DataFrame()
 
@@ -4583,7 +4674,7 @@ def build_roster_usage_table(
         .rename(columns={p_col: "Player", "position": "Pos"})
     )
     agg["Pos"] = agg.apply(
-        lambda r: normalize_guard_position(r["Pos"], r["Player"]), axis=1
+        lambda r: normalize_guard_position(r["Pos"], "", r["Player"], tm_norm), axis=1
     )
     agg["Side"] = agg["Pos"].apply(classify_unit_side)
     agg["Snap %"] = agg["Snap_Pct"].round(1)
@@ -4605,16 +4696,15 @@ def build_injury_impact_report(
 ) -> List[Dict[str, Any]]:
     if inj_df.empty or "team" not in inj_df.columns:
         return []
+    tm_norm = normalize_team_code(team_abbr)
     sub = inj_df[
-        (inj_df["team"] == team_abbr) & (inj_df["week"] == int(week_num))
+        (inj_df["team"] == tm_norm) & (pd.to_numeric(inj_df["week"], errors="coerce") == int(week_num))
     ].copy()
     if sub.empty:
-        avail_weeks = inj_df[inj_df["team"] == team_abbr]["week"].dropna()
+        avail_weeks = pd.to_numeric(inj_df[inj_df["team"] == tm_norm]["week"], errors="coerce").dropna()
         if not avail_weeks.empty:
-            latest_wk = int(avail_weeks.max())
-            sub = inj_df[
-                (inj_df["team"] == team_abbr) & (inj_df["week"] == latest_wk)
-            ].copy()
+            target_wk = int(avail_weeks[avail_weeks <= int(week_num)].max()) if (avail_weeks <= int(week_num)).any() else int(avail_weeks.max())
+            sub = inj_df[(inj_df["team"] == tm_norm) & (pd.to_numeric(inj_df["week"], errors="coerce") == target_wk)].copy()
     if sub.empty:
         return []
 
@@ -4626,9 +4716,7 @@ def build_injury_impact_report(
 
     snap_map: Dict[str, float] = {}
     if not snaps_df.empty and "team" in snaps_df.columns:
-        s_sub = snaps_df[
-            (snaps_df["team"] == team_abbr) & (snaps_df["week"] < int(week_num))
-        ].copy()
+        s_sub = snaps_df[snaps_df["team"] == tm_norm].copy()
         if not s_sub.empty:
             sp_col = "player" if "player" in s_sub.columns else "player_name"
             for c in ["offense_pct", "defense_pct"]:
@@ -4650,32 +4738,21 @@ def build_injury_impact_report(
         seen_players.add(p_name.lower())
 
         pos_raw = str(row.get("position", "NFL")).strip()
-        pos = normalize_guard_position(pos_raw, p_name)
-        rep_status = str(
-            row.get("report_status", row.get("game_status", "")) or ""
-        ).strip()
-        prac_status = str(
-            row.get("practice_status", "") or ""
-        ).strip()
-        prim_inj = str(
-            row.get("report_primary_injury", row.get("primary_injury", ""))
-            or ""
-        ).strip()
-        if not prim_inj or prim_inj.lower() in ("nan", "none"):
-            prim_inj = "Undisclosed / Rest"
+        pos = normalize_guard_position(pos_raw, "", p_name, tm_norm)
+        rep_status = str(row.get("report_status", row.get("game_status", "")) or "").strip()
+        prac_status = str(row.get("practice_status", "") or "").strip()
+        prim_inj = extract_combined_injury_name(row)
+        if not prim_inj or prim_inj.lower() in ("nan", "none", "undisclosed"):
+            prim_inj = str(row.get("report_primary_injury", row.get("primary_injury", "")) or "Undisclosed / Rest").strip()
 
         snap_pct = round(snap_map.get(p_name.lower(), 35.0), 1)
-        wed_p, thu_p, fri_p, main_tag, main_cls = (
-            derive_daily_practice_progression(
-                rep_status, prac_status, p_name, int(week_num)
-            )
+        wed_p, thu_p, fri_p, main_tag, main_cls = derive_daily_practice_progression(
+            rep_status, prac_status, p_name, int(week_num)
         )
         strip_html = render_wed_thu_fri_practice_strip_html(
             rep_status, prac_status, p_name, int(week_num)
         )
-        meta = get_player_headshot_and_meta(
-            p_name, team_abbr, pos, headshot_lookup
-        )
+        meta = get_player_headshot_and_meta(p_name, tm_norm, pos, headshot_lookup)
 
         severity_order = {
             "OUT": 0,
@@ -4709,6 +4786,27 @@ def build_injury_impact_report(
     return items
 
 
+def compute_team_injury_penalties(
+    inj_items: List[Dict[str, Any]]
+) -> tuple[float, float]:
+    """Computes offensive and defensive EPA/play penalties from active team injury report items."""
+    off_pen = 0.0
+    def_pen = 0.0
+    for item in inj_items:
+        tag = item.get("main_tag", "CLEARED")
+        if tag == "CLEARED":
+            continue
+        mult = 1.0 if tag in ("OUT", "IR") else (0.75 if tag == "DOUBTFUL" else 0.35)
+        snap_weight = float(item.get("snap_pct", 30.0)) / 100.0
+        pos = str(item.get("pos", "")).upper()
+        pos_w = 0.045 if pos == "QB" else (0.018 if pos in ("LT", "RT", "WR", "CB", "EDGE", "DE") else 0.012)
+        if item.get("side") == "Offense":
+            off_pen += mult * snap_weight * pos_w
+        elif item.get("side") == "Defense":
+            def_pen += mult * snap_weight * pos_w
+    return round(min(off_pen, 0.085), 4), round(min(def_pen, 0.085), 4)
+
+
 def get_player_season_injury_history(
     inj_df: pd.DataFrame,
     snaps_df: pd.DataFrame,
@@ -4723,7 +4821,7 @@ def get_player_season_injury_history(
         else ("player_name" if "player_name" in inj_df.columns else "player")
     )
     sub = inj_df[
-        inj_df[name_col].astype(str).str.lower() == player_name.strip().lower()
+        inj_df[name_col].astype(str).str.strip().str.lower() == player_name.strip().lower()
     ].copy()
     if sub.empty:
         return []
@@ -4732,15 +4830,15 @@ def get_player_season_injury_history(
     if not snaps_df.empty:
         sp_col = "player" if "player" in snaps_df.columns else "player_name"
         s_sub = snaps_df[
-            snaps_df[sp_col].astype(str).str.lower()
+            snaps_df[sp_col].astype(str).str.strip().str.lower()
             == player_name.strip().lower()
         ].copy()
         for _, srow in s_sub.iterrows():
-            wk = int(srow.get("week", 0))
-            osn = float(srow.get("offense_snaps", 0) or 0)
-            dsn = float(srow.get("defense_snaps", 0) or 0)
-            opct = float(srow.get("offense_pct", 0) or 0)
-            dpct = float(srow.get("defense_pct", 0) or 0)
+            wk = int(pd.to_numeric(srow.get("week", 0), errors="coerce") or 0)
+            osn = float(pd.to_numeric(srow.get("offense_snaps", 0), errors="coerce") or 0)
+            dsn = float(pd.to_numeric(srow.get("defense_snaps", 0), errors="coerce") or 0)
+            opct = float(pd.to_numeric(srow.get("offense_pct", 0), errors="coerce") or 0)
+            dpct = float(pd.to_numeric(srow.get("defense_pct", 0), errors="coerce") or 0)
             pct = max(opct, dpct)
             if pct <= 1.05:
                 pct *= 100.0
@@ -4749,20 +4847,15 @@ def get_player_season_injury_history(
     sub = sub.sort_values("week", ascending=False)
     records: List[Dict[str, Any]] = []
     for _, row in sub.iterrows():
-        wk = int(row.get("week", 1))
-        rep_st = str(
-            row.get("report_status", row.get("game_status", "")) or ""
-        ).strip()
+        wk = int(pd.to_numeric(row.get("week", 1), errors="coerce") or 1)
+        rep_st = str(row.get("report_status", row.get("game_status", "")) or "").strip()
         prac_st = str(row.get("practice_status", "") or "").strip()
-        inj_body = str(
-            row.get("report_primary_injury", row.get("primary_injury", ""))
-            or "Undisclosed"
-        ).strip()
+        inj_body = extract_combined_injury_name(row)
         if not inj_body or inj_body.lower() in ("nan", "none"):
             inj_body = "Rest / Coach Decision"
 
-        wed_p, thu_p, fri_p, main_tag, main_cls = (
-            derive_daily_practice_progression(rep_st, prac_st, player_name, wk)
+        wed_p, thu_p, fri_p, main_tag, main_cls = derive_daily_practice_progression(
+            rep_st, prac_st, player_name, wk
         )
         strip_html = render_wed_thu_fri_practice_strip_html(
             rep_st, prac_st, player_name, wk
@@ -4800,41 +4893,49 @@ def build_slate_best_bets_leaderboard(
 ) -> pd.DataFrame:
     if sched_df.empty or eff_df.empty:
         return pd.DataFrame()
-    eff_map = {
-        str(r["team"]): r for _, r in eff_df.iterrows() if "team" in r
-    }
+    eff_map = {str(r["team"]): r for _, r in eff_df.iterrows() if "team" in r}
+    odds_val = int(st.session_state.get("default_odds_american", -110))
+    kelly_mult = float(st.session_state.get("kelly_fraction_mult", 0.25))
     rows = []
     for _, g in sched_df.iterrows():
-        aw = str(g.get("away_team", ""))
-        hm = str(g.get("home_team", ""))
-        wk = int(g.get("week", 1))
+        aw = normalize_team_code(str(g.get("away_team", "")))
+        hm = normalize_team_code(str(g.get("home_team", "")))
+        wk = int(pd.to_numeric(g.get("week", 1), errors="coerce") or 1)
         if aw not in eff_map or hm not in eff_map:
             continue
-        mod = compute_model_fair_line_and_totals(eff_map[aw], eff_map[hm], g)
-        sp_pick = (
-            f"{hm} {format_spread(mod['vegas_spread'])}"
-            if mod["spread_edge"] >= 0
-            else f"{aw} {format_spread(-mod['vegas_spread'])}"
+        mod = compute_model_fair_line_and_totals(
+            a_eff=eff_map[aw],
+            h_eff=eff_map[hm],
+            away_off_pen=0.0,
+            away_def_pen=0.0,
+            home_off_pen=0.0,
+            home_def_pen=0.0,
+            away_tm=aw,
+            home_tm=hm,
+            market_home_spread=g.get("home_spread", np.nan),
+            market_total=g.get("total_line", np.nan),
+            rest_edge_home=float(g.get("rest_edge_home", 0.0) or 0.0),
+            roof_str=str(g.get("roof", "Outdoors") or "Outdoors"),
         )
+        ev_sp, kelly_sp = compute_ev_and_kelly(mod["spread_cover_prob"], odds_val, kelly_mult)
+        tier_lbl, _ = get_confidence_tier(ev_sp, mod["spread_cover_prob"])
         rows.append(
             {
                 "Week": wk,
                 "Matchup": f"{aw} @ {hm}",
                 "Market": "Spread",
-                "Best Pick": sp_pick,
-                "Model Line": mod["model_fair_label"],
-                "Edge": f"{abs(mod['spread_edge']):.1f} pts",
-                "Win Prob": f"{mod['spread_win_prob']*100:.1f}%",
-                "EV %": round(mod["spread_ev"], 1),
-                "Kelly": f"{mod['spread_kelly']:.2f}u",
-                "Tier": mod["spread_tier"][0],
+                "Best Pick": mod["backed_spread_line_str"],
+                "Model Fair Line": mod["fair_spread_str"],
+                "Edge": f"{mod['spread_edge_pts']:.1f} pts",
+                "Win Prob": f"{mod['spread_cover_prob']*100:.1f}%",
+                "EV %": ev_sp,
+                "Kelly": f"{kelly_sp:.2f}u",
+                "Tier": tier_lbl,
             }
         )
     df_out = pd.DataFrame(rows)
     if not df_out.empty:
-        df_out = df_out.sort_values(by="EV %", ascending=False).reset_index(
-            drop=True
-        )
+        df_out = df_out.sort_values(by="EV %", ascending=False).reset_index(drop=True)
     return df_out
 
 
@@ -4842,10 +4943,10 @@ def run_season_backtest(
     sched_df: pd.DataFrame, eff_df: pd.DataFrame
 ) -> Dict[str, Any]:
     if sched_df.empty or eff_df.empty:
-        return {"wins": 0, "losses": 0, "roi": 0.0, "units": 0.0, "df": pd.DataFrame()}
+        return {"wins": 0, "losses": 0, "win_pct": 0.0, "roi": 0.0, "units": 0.0, "df": pd.DataFrame()}
     completed = sched_df.dropna(subset=["away_score", "home_score"]).copy()
     if completed.empty:
-        return {"wins": 0, "losses": 0, "roi": 0.0, "units": 0.0, "df": pd.DataFrame()}
+        return {"wins": 0, "losses": 0, "win_pct": 0.0, "roi": 0.0, "units": 0.0, "df": pd.DataFrame()}
 
     eff_map = {str(r["team"]): r for _, r in eff_df.iterrows()}
     wins = 0
@@ -4853,19 +4954,32 @@ def run_season_backtest(
     units = 0.0
     log_rows = []
     for _, g in completed.iterrows():
-        aw = str(g.get("away_team", ""))
-        hm = str(g.get("home_team", ""))
+        aw = normalize_team_code(str(g.get("away_team", "")))
+        hm = normalize_team_code(str(g.get("home_team", "")))
         if aw not in eff_map or hm not in eff_map:
             continue
-        mod = compute_model_fair_line_and_totals(eff_map[aw], eff_map[hm], g)
-        if abs(mod["spread_edge"]) < 1.5:
+        mod = compute_model_fair_line_and_totals(
+            a_eff=eff_map[aw],
+            h_eff=eff_map[hm],
+            away_off_pen=0.0,
+            away_def_pen=0.0,
+            home_off_pen=0.0,
+            home_def_pen=0.0,
+            away_tm=aw,
+            home_tm=hm,
+            market_home_spread=g.get("home_spread", np.nan),
+            market_total=g.get("total_line", np.nan),
+            rest_edge_home=float(g.get("rest_edge_home", 0.0) or 0.0),
+            roof_str=str(g.get("roof", "Outdoors") or "Outdoors"),
+        )
+        if mod["spread_edge_pts"] < 1.5 or pd.isna(g.get("home_spread", np.nan)):
             continue
         a_sc = float(g.get("away_score", 0))
         h_sc = float(g.get("home_score", 0))
         actual_margin = h_sc - a_sc
-        home_line = mod["vegas_spread"]
+        home_line = float(g.get("home_spread", 0.0))
         covered_home = (actual_margin + home_line) > 0
-        pick_home = mod["spread_edge"] >= 0
+        pick_home = mod["backed_spread_team"] == hm
         won = (pick_home and covered_home) or (not pick_home and not covered_home)
         if won:
             wins += 1
@@ -4875,13 +4989,11 @@ def run_season_backtest(
             units -= 1.0
         log_rows.append(
             {
-                "Week": int(g.get("week", 1)),
+                "Week": int(pd.to_numeric(g.get("week", 1), errors="coerce") or 1),
                 "Game": f"{aw} @ {hm}",
                 "Score": f"{int(a_sc)}-{int(h_sc)}",
-                "Model Pick": f"{hm} {format_spread(home_line)}"
-                if pick_home
-                else f"{aw} {format_spread(-home_line)}",
-                "Edge": f"{abs(mod['spread_edge']):.1f} pts",
+                "Model Pick": mod["backed_spread_line_str"],
+                "Edge": f"{mod['spread_edge_pts']:.1f} pts",
                 "Result": "WIN" if won else "LOSS",
                 "Net Units": "+0.91u" if won else "-1.00u",
             }
@@ -4898,6 +5010,9 @@ def run_season_backtest(
     }
 
 
+# -----------------------------------------------------------------------------
+# PLAYER DOSSIER & PROP EXPLORER MODALS
+# -----------------------------------------------------------------------------
 def render_player_popup_contents(
     player_name: str,
     team_abbr: str,
@@ -4910,17 +5025,19 @@ def render_player_popup_contents(
     eff_df: pd.DataFrame,
     headshot_lookup: Dict[str, Dict[str, Any]],
 ) -> None:
+    tm_norm = normalize_team_code(team_abbr)
+    opp_norm = normalize_team_code(opp_team)
     meta = get_player_headshot_and_meta(
-        player_name, team_abbr, "", headshot_lookup
+        player_name, tm_norm, "", headshot_lookup
     )
-    pos = normalize_guard_position(meta["position"], player_name)
+    pos = normalize_guard_position(meta["position"], "", player_name, tm_norm)
     side = classify_unit_side(pos)
     jersey = meta.get("jersey_number", "")
     college = meta.get("college", "") or "NFL"
     jersey_str = f"#{int(float(jersey))} · " if str(jersey).replace(".", "").isdigit() else ""
 
     inj_hist = get_player_season_injury_history(
-        inj_df, snaps_df, player_name, team_abbr
+        inj_df, snaps_df, player_name, tm_norm
     )
     latest_inj = inj_hist[0] if inj_hist else None
 
@@ -4939,19 +5056,19 @@ def render_player_popup_contents(
         f"""
         <div class="player-modal-banner">
             <div class="player-headshot-wrap">
-                <img src="{meta['headshot_url']}" class="player-headshot-img" alt="{player_name}" />
+                <img src="{meta['headshot_url']}" class="player-headshot-img" alt="{player_name}" onerror="this.style.display='none'" />
             </div>
             <div style="flex:1;min-width:220px;">
                 <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
                     <span style="font-family:'Plus Jakarta Sans',sans-serif;font-size:1.35rem;font-weight:900;color:#FFFFFF;text-transform:uppercase;">
                         {player_name}
                     </span>
-                    {render_team_pill(team_abbr)}
+                    {render_team_pill(tm_norm)}
                     <span class="badge-mid">{pos}</span>
                     <span class="badge-sage">{side}</span>
                 </div>
                 <div style="font-size:0.80rem;color:#A1A1AA;margin-top:3px;font-weight:600;">
-                    {jersey_str}{season} Season · vs {opp_team} · {college}
+                    {jersey_str}{season} Season · vs {opp_norm} · {college}
                 </div>
                 {status_strip_html}
             </div>
@@ -4967,26 +5084,30 @@ def render_player_popup_contents(
     )
     p_logs = pd.DataFrame()
     if not pstats_df.empty and name_col in pstats_df.columns:
-        p_logs = pstats_df[
-            (pstats_df[name_col].astype(str).str.lower() == player_name.strip().lower())
-            & (pstats_df["week"] < int(week_num))
-        ].sort_values("week")
+        p_all = pstats_df[
+            pstats_df[name_col].astype(str).str.strip().str.lower() == player_name.strip().lower()
+        ].copy()
+        if not p_all.empty:
+            w_sub = p_all[pd.to_numeric(p_all["week"], errors="coerce") <= int(week_num)]
+            p_logs = (w_sub if not w_sub.empty else p_all).sort_values("week")
 
     gp = len(p_logs) if not p_logs.empty else 0
     total_snaps = 0
     avg_snap_pct = 0.0
     if not snaps_df.empty:
         sp_col = "player" if "player" in snaps_df.columns else "player_name"
-        s_logs = snaps_df[
-            (snaps_df[sp_col].astype(str).str.lower() == player_name.strip().lower())
-            & (snaps_df["week"] < int(week_num))
-        ]
-        if not s_logs.empty:
-            osn = pd.to_numeric(s_logs.get("offense_snaps", 0), errors="coerce").fillna(0).sum()
-            dsn = pd.to_numeric(s_logs.get("defense_snaps", 0), errors="coerce").fillna(0).sum()
+        s_all = snaps_df[
+            snaps_df[sp_col].astype(str).str.strip().str.lower() == player_name.strip().lower()
+        ].copy()
+        if not s_all.empty:
+            s_logs = s_all[pd.to_numeric(s_all["week"], errors="coerce") <= int(week_num)]
+            if s_logs.empty:
+                s_logs = s_all
+            osn = _safe_num_series(s_logs, "offense_snaps", 0.0).sum()
+            dsn = _safe_num_series(s_logs, "defense_snaps", 0.0).sum()
             total_snaps = int(osn + dsn)
-            opct = pd.to_numeric(s_logs.get("offense_pct", 0), errors="coerce").fillna(0)
-            dpct = pd.to_numeric(s_logs.get("defense_pct", 0), errors="coerce").fillna(0)
+            opct = _safe_num_series(s_logs, "offense_pct", 0.0)
+            dpct = _safe_num_series(s_logs, "defense_pct", 0.0)
             pct_series = np.maximum(opct, dpct)
             if pct_series.max() <= 1.05:
                 pct_series = pct_series * 100.0
@@ -4996,14 +5117,14 @@ def render_player_popup_contents(
     tot_tds = 0
     tot_touches = 0
     if not p_logs.empty:
-        ry = pd.to_numeric(p_logs.get("rushing_yards", 0), errors="coerce").fillna(0).sum()
-        recy = pd.to_numeric(p_logs.get("receiving_yards", 0), errors="coerce").fillna(0).sum()
-        py = pd.to_numeric(p_logs.get("passing_yards", 0), errors="coerce").fillna(0).sum()
-        rtd = pd.to_numeric(p_logs.get("rushing_tds", 0), errors="coerce").fillna(0).sum()
-        rectd = pd.to_numeric(p_logs.get("receiving_tds", 0), errors="coerce").fillna(0).sum()
-        ptd = pd.to_numeric(p_logs.get("passing_tds", 0), errors="coerce").fillna(0).sum()
-        car = pd.to_numeric(p_logs.get("carries", 0), errors="coerce").fillna(0).sum()
-        rec = pd.to_numeric(p_logs.get("receptions", 0), errors="coerce").fillna(0).sum()
+        ry = _safe_num_series(p_logs, "rushing_yards", 0.0).sum()
+        recy = _safe_num_series(p_logs, "receiving_yards", 0.0).sum()
+        py = _safe_num_series(p_logs, "passing_yards", 0.0).sum()
+        rtd = _safe_num_series(p_logs, "rushing_tds", 0.0).sum()
+        rectd = _safe_num_series(p_logs, "receiving_tds", 0.0).sum()
+        ptd = _safe_num_series(p_logs, "passing_tds", 0.0).sum()
+        car = _safe_num_series(p_logs, "carries", 0.0).sum()
+        rec = _safe_num_series(p_logs, "receptions", 0.0).sum()
         tot_yds = int(py if pos == "QB" else (ry + recy))
         tot_tds = int(ptd if pos == "QB" else (rtd + rectd))
         tot_touches = int(car + rec)
@@ -5039,9 +5160,7 @@ def render_player_popup_contents(
                 )
             stat_col = market_options[sel_mkt_label]
             is_rush_prop = stat_col in ("rushing_yards", "carries")
-            vals_all = pd.to_numeric(
-                p_logs.get(stat_col, 0.0), errors="coerce"
-            ).fillna(0.0)
+            vals_all = _safe_num_series(p_logs, stat_col, 0.0)
             season_avg = float(vals_all.mean()) if len(vals_all) else 25.0
             default_line = float(np.floor(max(season_avg * 0.92, 0.5)) + 0.5)
 
@@ -5057,7 +5176,7 @@ def render_player_popup_contents(
             with c_flt:
                 opp_filter_mode = st.radio(
                     "Opponent Filter",
-                    ["All Past Games", f"Similar to {opp_team} Def"],
+                    ["All Past Games", f"Similar to {opp_norm} Def"],
                     horizontal=True,
                     key=f"dlg_opp_flt_{player_name}_{stat_col}",
                 )
@@ -5077,7 +5196,7 @@ def render_player_popup_contents(
             for _, r_log in p_logs_chart.iterrows():
                 past_opp = str(r_log.get(opp_col, "OPP"))
                 sc, tg = compute_defense_similarity(
-                    opp_team, past_opp, cov_df, is_rush_prop=is_rush_prop
+                    opp_norm, past_opp, cov_df, is_rush_prop=is_rush_prop
                 )
                 sim_scores.append(sc)
                 sim_tags.append(tg)
@@ -5087,22 +5206,22 @@ def render_player_popup_contents(
             if opp_filter_mode.startswith("Similar"):
                 filtered = p_logs_chart[p_logs_chart["sim_score"] >= 68].copy()
                 if filtered.empty:
-                    filtered = p_logs_chart.sort_values(
-                        "sim_score", ascending=False
-                    ).head(3).sort_values("week")
+                    filtered = (
+                        p_logs_chart.sort_values("sim_score", ascending=False)
+                        .head(3)
+                        .sort_values("week")
+                    )
                 p_logs_chart = filtered
 
-            vals = pd.to_numeric(
-                p_logs_chart.get(stat_col, 0.0), errors="coerce"
-            ).fillna(0.0)
+            vals = _safe_num_series(p_logs_chart, stat_col, 0.0)
             hits = int((vals > user_line).sum())
             tot_g = max(len(vals), 1)
             hit_pct = hits / tot_g * 100.0
             l3_avg = float(vals.tail(3).mean()) if len(vals) else 0.0
 
             opp_cov_row = (
-                cov_df[cov_df["team"] == opp_team].iloc[0]
-                if not cov_df.empty and (cov_df["team"] == opp_team).any()
+                cov_df[cov_df["team"] == opp_norm].iloc[0]
+                if not cov_df.empty and (cov_df["team"] == opp_norm).any()
                 else None
             )
             def_rk = (
@@ -5127,25 +5246,36 @@ def render_player_popup_contents(
                 f"{l3_avg - season_avg:+.1f} vs {season_avg:.1f} Avg",
             )
             pm3.metric(
-                f"vs {opp_team} Defense",
+                f"vs {opp_norm} Defense",
                 f"Rank #{def_rk}",
                 "Favorable" if def_rk >= 20 else ("Tough" if def_rk <= 10 else "Neutral"),
             )
 
             side_pick = "OVER" if l3_avg >= user_line else "UNDER"
-            win_p = float(np.clip(0.53 + abs(l3_avg - user_line) / max(user_line, 12.0) * 0.25, 0.51, 0.74))
-            ev_p = calculate_ev_percentage(win_p, -110)
-            kelly_p = calculate_quarter_kelly_units(win_p, -110)
+            win_p = float(
+                np.clip(
+                    0.53 + abs(l3_avg - user_line) / max(user_line, 12.0) * 0.25,
+                    0.51,
+                    0.74,
+                )
+            )
+            odds_val = int(st.session_state.get("default_odds_american", -110))
+            kelly_mult = float(st.session_state.get("kelly_fraction_mult", 0.25))
+            ev_p, kelly_p = compute_ev_and_kelly(win_p, odds_val, kelly_mult)
             render_compact_bet_action_row(
-                bet_id=f"dlg_prop_{player_name}_{stat_col}_{user_line}",
-                matchup_label=f"{team_abbr} vs {opp_team}",
-                market_type=f"Player Prop ({sel_mkt_label})",
-                selection_label=f"{player_name} {side_pick} {user_line:.1f} {sel_mkt_label}",
-                odds_str="-110",
-                edge_str=f"L3 {l3_avg:.1f} vs {user_line:.1f}",
+                key_prefix=f"dlg_prop_{player_name}_{stat_col}",
+                season=int(season),
+                week=int(week_num),
+                matchup=f"{tm_norm} vs {opp_norm}",
+                category=f"Player Prop ({sel_mkt_label})",
+                selection=f"{player_name} {side_pick} {user_line:.1f} {sel_mkt_label}",
+                market_line=f"{user_line:.1f}",
+                model_proj=f"L3 {l3_avg:.1f}",
+                american_odds=odds_val,
+                edge_score=round(abs(l3_avg - user_line), 1),
                 ev_pct=ev_p,
-                kelly_u=kelly_p,
-                tier_label="STRONG PLAY" if ev_p >= 4.0 else "LEAN",
+                kelly_units=kelly_p,
+                team_abbr=tm_norm,
                 button_text_override=f"{side_pick} {user_line:.1f} {sel_mkt_label}",
             )
 
@@ -5177,7 +5307,7 @@ def render_player_popup_contents(
                     hovertemplate=(
                         "<b>%{x}</b><br>"
                         f"{sel_mkt_label}: <b>%{{y}}</b><br>"
-                        f"Similarity to {opp_team}: <b>%{{customdata[1]}}%</b> (%{{customdata[2]}})"
+                        f"Similarity to {opp_norm}: <b>%{{customdata[1]}}%</b> (%{{customdata[2]}})"
                         "<extra></extra>"
                     ),
                 )
@@ -5244,23 +5374,23 @@ def render_player_popup_contents(
                     else len(past_opps_unique) - 1
                 )
                 sel_cmp_opp = st.selectbox(
-                    f"Compare Past Opponent Defense vs Upcoming {opp_team} Defense (or click any bar above)",
+                    f"Compare Past Opponent Defense vs Upcoming {opp_norm} Defense (or click any bar above)",
                     past_opps_unique,
                     index=default_cmp_idx,
                     key=f"cmp_opp_sel_{player_name}_{stat_col}",
                 )
-                cmp_rows = cov_df[cov_df["team"] == sel_cmp_opp]
+                cmp_rows = cov_df[cov_df["team"] == normalize_team_code(sel_cmp_opp)]
                 if not cmp_rows.empty:
                     c_row = cmp_rows.iloc[0]
                     sim_sc, sim_tg = compute_defense_similarity(
-                        opp_team, sel_cmp_opp, cov_df, is_rush_prop=is_rush_prop
+                        opp_norm, sel_cmp_opp, cov_df, is_rush_prop=is_rush_prop
                     )
                     st.markdown(
                         f"""
                         <div class="glass-card" style="padding:12px 14px;margin-top:6px;border-left:4px solid #013369;">
                             <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;margin-bottom:8px;">
                                 <span style="font-weight:800;font-size:0.86rem;color:#FFFFFF;text-transform:uppercase;">
-                                    Defensive Comparison: Past Opponent ({sel_cmp_opp}) vs Upcoming ({opp_team})
+                                    Defensive Comparison: Past Opponent ({sel_cmp_opp}) vs Upcoming ({opp_norm})
                                 </span>
                                 <span class="badge-elite">{sim_sc}% Match · {sim_tg}</span>
                             </div>
@@ -5269,28 +5399,28 @@ def render_player_popup_contents(
                                     <div style="color:#A1A1AA;font-weight:700;text-transform:uppercase;font-size:0.66rem;">Rush & Pass Def Ranks</div>
                                     <div style="color:#FFFFFF;font-weight:800;margin-top:3px;">
                                         {sel_cmp_opp}: Rush #{int(c_row['rush_def_rank'])} · Pass #{int(c_row['pass_def_rank'])}<br/>
-                                        {opp_team}: Rush #{int(opp_cov_row['rush_def_rank'])} · Pass #{int(opp_cov_row['pass_def_rank'])}
+                                        {opp_norm}: Rush #{int(opp_cov_row['rush_def_rank'])} · Pass #{int(opp_cov_row['pass_def_rank'])}
                                     </div>
                                 </div>
                                 <div style="background:#0E0E12;padding:8px 10px;border:1px solid #2A2A35;">
                                     <div style="color:#A1A1AA;font-weight:700;text-transform:uppercase;font-size:0.66rem;">Safety Shell (1-High vs 2-High)</div>
                                     <div style="color:#FFFFFF;font-weight:800;margin-top:3px;">
                                         {sel_cmp_opp}: {c_row['one_high_pct']:.0f}% 1-Hi / {c_row['two_high_pct']:.0f}% 2-Hi<br/>
-                                        {opp_team}: {opp_cov_row['one_high_pct']:.0f}% 1-Hi / {opp_cov_row['two_high_pct']:.0f}% 2-Hi
+                                        {opp_norm}: {opp_cov_row['one_high_pct']:.0f}% 1-Hi / {opp_cov_row['two_high_pct']:.0f}% 2-Hi
                                     </div>
                                 </div>
                                 <div style="background:#0E0E12;padding:8px 10px;border:1px solid #2A2A35;">
                                     <div style="color:#A1A1AA;font-weight:700;text-transform:uppercase;font-size:0.66rem;">Coverage (Man vs Zone)</div>
                                     <div style="color:#FFFFFF;font-weight:800;margin-top:3px;">
                                         {sel_cmp_opp}: {c_row['man_pct']:.0f}% Man / {c_row['zone_pct']:.0f}% Zone<br/>
-                                        {opp_team}: {opp_cov_row['man_pct']:.0f}% Man / {opp_cov_row['zone_pct']:.0f}% Zone
+                                        {opp_norm}: {opp_cov_row['man_pct']:.0f}% Man / {opp_cov_row['zone_pct']:.0f}% Zone
                                     </div>
                                 </div>
                                 <div style="background:#0E0E12;padding:8px 10px;border:1px solid #2A2A35;">
                                     <div style="color:#A1A1AA;font-weight:700;text-transform:uppercase;font-size:0.66rem;">Box Count & Scheme</div>
                                     <div style="color:#FFFFFF;font-weight:800;margin-top:3px;">
                                         {sel_cmp_opp}: {c_row['light_box_pct']:.0f}% Light Box ({c_row['scheme_family']})<br/>
-                                        {opp_team}: {opp_cov_row['light_box_pct']:.0f}% Light Box ({opp_cov_row['scheme_family']})
+                                        {opp_norm}: {opp_cov_row['light_box_pct']:.0f}% Light Box ({opp_cov_row['scheme_family']})
                                     </div>
                                 </div>
                             </div>
@@ -5373,7 +5503,10 @@ def render_underdog_props_and_betslip_modal(
     away_eff: pd.Series,
     home_eff: pd.Series,
     headshot_lookup: Dict[str, Dict[str, Any]],
+    season: int,
+    week_num: int,
 ) -> None:
+    odds_val = int(st.session_state.get("default_odds_american", -110))
     tab_board, tab_slip = st.tabs(
         [
             "Picks & Props",
@@ -5393,20 +5526,25 @@ def render_underdog_props_and_betslip_modal(
                     render_inline_player_trigger(
                         player_name=pk["player"],
                         team_abbr=pk["team"],
-                        subtitle_text=f"{pk['pos']} · Proj {pk['proj']} vs {pk['line']} ({pk['hit_str']})",
+                        pos=pk["pos"],
                         key_suffix=f"ud_modal_{idx}_{pk['player']}",
+                        extra_label=f"({pk['pos']} · Proj {pk['proj']} vs {pk['line']})",
                     )
                 with c_b:
                     render_compact_bet_action_row(
-                        bet_id=f"ud_modal_bet_{idx}_{pk['player']}",
-                        matchup_label=f"{away_team} @ {home_team}",
-                        market_type=f"Prop ({pk['market']})",
-                        selection_label=f"{pk['player']} {pk['side']} {pk['line']} {pk['market']}",
-                        odds_str="-110",
-                        edge_str=f"Proj {pk['proj']}",
+                        key_prefix=f"ud_modal_bet_{idx}_{pk['player']}",
+                        season=int(season),
+                        week=int(week_num),
+                        matchup=f"{away_team} @ {home_team}",
+                        category=f"Prop ({pk['market']})",
+                        selection=f"{pk['player']} {pk['side']} {pk['line']} {pk['market']}",
+                        market_line=f"{pk['line']}",
+                        model_proj=f"{pk['proj']}",
+                        american_odds=odds_val,
+                        edge_score=pk["edge_score"],
                         ev_pct=pk["ev_pct"],
-                        kelly_u=pk["kelly_u"],
-                        tier_label=pk["tier_lbl"],
+                        kelly_units=pk["kelly_u"],
+                        team_abbr=pk["team"],
                         button_text_override=f"{pk['side']} {pk['line']} {pk['market']}",
                     )
     with tab_slip:
@@ -5415,26 +5553,46 @@ def render_underdog_props_and_betslip_modal(
             st.info("Your Bet Slip is currently empty. Click any line button to add plays.")
         else:
             df_slip = pd.DataFrame(slip)
-            st.dataframe(df_slip, use_container_width=True, hide_index=True)
+            disp_cols = [c for c in df_slip.columns if c != "pick_id"]
+            st.dataframe(df_slip[disp_cols], use_container_width=True, hide_index=True)
             if st.button("Clear All Tracked Bets", key="modal_clear_slip_btn"):
                 clear_bet_slip()
                 st.rerun()
 
 
+# -----------------------------------------------------------------------------
+# MAIN APPLICATION WORKSPACE
+# -----------------------------------------------------------------------------
 def main() -> None:
     master_df = load_master_games_csv()
     avail_seasons = (
-        sorted(master_df["season"].dropna().astype(int).unique().tolist(), reverse=True)
+        sorted(
+            pd.to_numeric(master_df["season"], errors="coerce")
+            .dropna()
+            .astype(int)
+            .unique()
+            .tolist(),
+            reverse=True,
+        )
         if not master_df.empty and "season" in master_df.columns
         else [2025, 2024, 2023]
     )
+
+    # Check query parameters for inline player links
+    qp = st.query_params
+    if "inspect_player" in qp and qp["inspect_player"]:
+        p_qp = str(qp["inspect_player"]).strip()
+        t_qp = str(qp.get("inspect_team", "")).strip().upper()
+        pos_qp = str(qp.get("inspect_pos", "")).strip().upper()
+        st.query_params.clear()
+        trigger_player_popup(p_qp, t_qp, pos_qp)
 
     with st.sidebar:
         st.markdown(
             """
             <div style="padding:8px 0 12px 0;border-bottom:2px solid #262630;margin-bottom:12px;">
                 <div style="font-family:'Plus Jakarta Sans',sans-serif;font-size:1.20rem;font-weight:900;color:#FFFFFF;letter-spacing:0.04em;text-transform:uppercase;">
-                    FOOTBALL LEDGER
+                    FOOTBALL EDGER
                 </div>
                 <div style="font-size:0.72rem;color:#A1A1AA;font-weight:700;text-transform:uppercase;letter-spacing:0.06em;">
                     NFL Matchup & Prop Desk
@@ -5444,38 +5602,38 @@ def main() -> None:
             unsafe_allow_html=True,
         )
         sel_season = st.selectbox("Season", avail_seasons, index=0)
-        sched_df = load_season_schedule(sel_season)
+        sched_df = load_season_schedule(int(sel_season))
         avail_weeks = (
-            sorted(sched_df["week"].dropna().astype(int).unique().tolist())
+            sorted(
+                pd.to_numeric(sched_df["week"], errors="coerce")
+                .dropna()
+                .astype(int)
+                .unique()
+                .tolist()
+            )
             if not sched_df.empty and "week" in sched_df.columns
             else list(range(1, 19))
         )
-        sel_week = st.selectbox("Week", avail_weeks, index=min(7, len(avail_weeks) - 1))
+        default_wk_idx = get_default_nfl_week_index(sched_df, avail_weeks)
+        sel_week = st.selectbox("Week (Auto-Synced)", avail_weeks, index=default_wk_idx)
 
-        wk_games = (
-            sched_df[sched_df["week"] == int(sel_week)].reset_index(drop=True)
-            if not sched_df.empty
-            else pd.DataFrame()
+        odds_choices = [-105, -110, -115, -120, -125, 100, 105]
+        cur_odds = int(st.session_state.get("default_odds_american", -110))
+        sel_odds = st.selectbox(
+            "Default Market Odds (Vig)",
+            odds_choices,
+            index=odds_choices.index(cur_odds) if cur_odds in odds_choices else 1,
+            format_func=lambda x: f"{x:+d}",
         )
-        game_labels = [
-            f"{r['away_team']} @ {r['home_team']}" for _, r in wk_games.iterrows()
-        ]
-        if not game_labels:
-            game_labels = ["DAL @ ARI"]
+        st.session_state["default_odds_american"] = int(sel_odds)
 
-        current_matchup = st.session_state.get("selected_matchup_label")
-        if current_matchup not in game_labels:
-            current_matchup = game_labels[0]
-            st.session_state["selected_matchup_label"] = current_matchup
-
-        sel_game_label = st.selectbox(
-            "Active Matchup",
-            game_labels,
-            index=game_labels.index(current_matchup),
-        )
-        if sel_game_label != st.session_state.get("selected_matchup_label"):
-            st.session_state["selected_matchup_label"] = sel_game_label
-            st.rerun()
+        kelly_map = {
+            "Quarter-Kelly (0.25x)": 0.25,
+            "Half-Kelly (0.50x)": 0.50,
+            "Full-Kelly (1.00x)": 1.00,
+        }
+        sel_kelly_lbl = st.selectbox("Kelly Stake Multiplier", list(kelly_map.keys()), index=0)
+        st.session_state["kelly_fraction_mult"] = kelly_map[sel_kelly_lbl]
 
         st.markdown("#### Quick Bet Slip")
         slip_items = st.session_state.get("bet_slip", [])
@@ -5483,92 +5641,134 @@ def main() -> None:
         if slip_items:
             for item in slip_items[:5]:
                 st.markdown(
-                    f"- **{item['Selection']}** (`{item['Odds']}` · `{item['Kelly']}`)"
+                    f"- **{item.get('Selection', '')}** (`{item.get('Odds', '-110')}` · `{item.get('Kelly Stake (u)', 0.0)}u`)"
                 )
             if st.button("Clear Slip", key="sidebar_clear_slip"):
                 clear_bet_slip()
                 st.rerun()
 
-    eff_df = load_team_efficiency_csv(sel_season)
-    cov_df = load_team_coverage_and_shell_splits(sel_season, eff_df)
-    pstats_df = load_player_stats_csv(sel_season)
-    snaps_df = load_snap_counts_csv(sel_season)
-    inj_df = load_injuries_csv(sel_season)
-    rosters_df = load_rosters_headshots_csv(sel_season)
-    headshot_lookup = build_headshot_lookup(sel_season)
-
-    render_nfl_horizontal_ticker(
-        wk_games=wk_games,
-        eff_df=eff_df,
-        selected_label=st.session_state["selected_matchup_label"],
-        week_num=int(sel_week),
-    )
-
-    active_label = st.session_state["selected_matchup_label"]
-    parts = active_label.split(" @ ")
-    away_team = parts[0].strip() if len(parts) == 2 else "DAL"
-    home_team = parts[1].strip() if len(parts) == 2 else "ARI"
-
-    game_row_matches = (
-        wk_games[
-            (wk_games["away_team"] == away_team)
-            & (wk_games["home_team"] == home_team)
-        ]
-        if not wk_games.empty
+    wk_games = (
+        sched_df[pd.to_numeric(sched_df["week"], errors="coerce") == int(sel_week)].reset_index(drop=True)
+        if not sched_df.empty
         else pd.DataFrame()
     )
+
+    if not wk_games.empty:
+        valid_gids = wk_games["game_id"].astype(str).tolist()
+        if st.session_state.get("selected_game") not in valid_gids:
+            def_g_idx = get_default_next_game_index(wk_games)
+            def_g_idx = min(max(0, def_g_idx), len(valid_gids) - 1)
+            st.session_state["selected_game"] = valid_gids[def_g_idx]
+            st.session_state["selected_game_idx"] = def_g_idx
+
+    team_records = compute_team_records(sched_df, through_week=int(sel_week))
+    eff_df = load_team_efficiency_csv(int(sel_season))
+    cov_df = load_team_coverage_and_shell_splits(int(sel_season), eff_df)
+    pstats_df = load_player_stats_csv(int(sel_season))
+    snaps_df = load_snap_counts_csv(int(sel_season))
+    inj_df = load_injuries_csv(
+        int(sel_season), int(st.session_state.get("injury_refresh_token", 0))
+    )
+    rosters_df = load_rosters_headshots_csv(int(sel_season))
+    headshot_lookup = build_headshot_lookup(int(sel_season))
+
+    render_nfl_horizontal_ticker(week_games=wk_games, team_records=team_records)
+
+    selected_gid = st.session_state.get("selected_game", "")
+    game_row_matches = (
+        wk_games[wk_games["game_id"].astype(str) == str(selected_gid)]
+        if not wk_games.empty and "game_id" in wk_games.columns
+        else pd.DataFrame()
+    )
+    if game_row_matches.empty and not wk_games.empty:
+        game_row_matches = wk_games.iloc[[0]]
+
     game_row = (
         game_row_matches.iloc[0]
         if not game_row_matches.empty
         else pd.Series(
             {
-                "away_team": away_team,
-                "home_team": home_team,
-                "spread_line": -3.0,
+                "game_id": f"{sel_season}_{sel_week}_DAL_ARI",
+                "away_team": "DAL",
+                "home_team": "ARI",
+                "home_spread": -3.0,
                 "total_line": 45.5,
+                "rest_edge_home": 0.0,
                 "week": sel_week,
             }
         )
     )
 
+    away_team = normalize_team_code(str(game_row.get("away_team", "DAL")))
+    home_team = normalize_team_code(str(game_row.get("home_team", "ARI")))
+
     away_eff_rows = eff_df[eff_df["team"] == away_team]
     home_eff_rows = eff_df[eff_df["team"] == home_team]
-    away_eff = (
-        away_eff_rows.iloc[0]
-        if not away_eff_rows.empty
-        else eff_df.iloc[0]
-    )
+    away_eff = away_eff_rows.iloc[0] if not away_eff_rows.empty else eff_df.iloc[0]
     home_eff = (
         home_eff_rows.iloc[0]
         if not home_eff_rows.empty
         else eff_df.iloc[min(1, len(eff_df) - 1)]
     )
 
-    model_eval = compute_model_fair_line_and_totals(away_eff, home_eff, game_row)
-    mkt_splits = estimate_line_movement_and_splits(game_row, model_eval)
+    away_inj_list = build_injury_impact_report(
+        inj_df, snaps_df, rosters_df, away_team, int(sel_week), headshot_lookup
+    )
+    home_inj_list = build_injury_impact_report(
+        inj_df, snaps_df, rosters_df, home_team, int(sel_week), headshot_lookup
+    )
+    away_off_pen, away_def_pen = compute_team_injury_penalties(away_inj_list)
+    home_off_pen, home_def_pen = compute_team_injury_penalties(home_inj_list)
+
+    model_eval = compute_model_fair_line_and_totals(
+        a_eff=away_eff,
+        h_eff=home_eff,
+        away_off_pen=away_off_pen,
+        away_def_pen=away_def_pen,
+        home_off_pen=home_off_pen,
+        home_def_pen=home_def_pen,
+        away_tm=away_team,
+        home_tm=home_team,
+        market_home_spread=game_row.get("home_spread", np.nan),
+        market_total=game_row.get("total_line", np.nan),
+        rest_edge_home=float(game_row.get("rest_edge_home", 0.0) or 0.0),
+        roof_str=str(game_row.get("roof", "Outdoors") or "Outdoors"),
+    )
+    mkt_splits = estimate_line_movement_and_splits(
+        game_row=game_row,
+        model_projection=model_eval,
+        away_tm=away_team,
+        home_tm=home_team,
+    )
     prop_logs = prepare_matchup_player_prop_logs(
         pstats_df, away_team, home_team, int(sel_week)
     )
 
+    odds_val = int(st.session_state.get("default_odds_american", -110))
+    kelly_mult = float(st.session_state.get("kelly_fraction_mult", 0.25))
+
     top_matchup_tab, top_hub_tab = st.tabs(["Matchup", "League Hub"])
 
     with top_matchup_tab:
-        away_hex = get_team_primary_hex(away_team)
-        home_hex = get_team_primary_hex(home_team)
+        away_hex, home_hex = get_matchup_team_colors(away_team, home_team)
+        fair_sp_num = float(model_eval["fair_home_spread"])
+        fav_tm = home_team if fair_sp_num <= 0 else away_team
+        model_fair_plain = f"Model: {fav_tm} by {abs(fair_sp_num):.1f} ({model_eval['spread_edge_pts']:+.1f} pt edge)"
+
         st.markdown(
             f"""
             <div class="glass-card" style="padding:14px 18px;margin-bottom:14px;border-top:4px solid {away_hex};border-bottom:4px solid {home_hex};">
                 <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px;">
                     <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
-                        {render_team_pill(away_team)}
+                        {render_team_pill(away_team, team_records.get(away_team, "0-0"), color_override=away_hex)}
                         <span style="font-family:'Plus Jakarta Sans',sans-serif;font-weight:900;font-size:1.25rem;color:#FFFFFF;">
                             {NFL_TEAM_NAMES.get(away_team, away_team)} @ {NFL_TEAM_NAMES.get(home_team, home_team)}
                         </span>
-                        {render_team_pill(home_team)}
+                        {render_team_pill(home_team, team_records.get(home_team, "0-0"), color_override=home_hex)}
                     </div>
                     <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
-                        <span class="badge-elite">{model_eval['model_fair_label']}</span>
-                        <span class="badge-mid">Total Proj: {model_eval['fair_total']:.1f} (Mkt {model_eval['vegas_total']:.1f})</span>
+                        <span class="badge-elite">{model_fair_plain}</span>
+                        <span class="badge-mid">Proj Score: {away_team} {model_eval['away_proj_pts']:.1f} - {home_team} {model_eval['home_proj_pts']:.1f} (Total {model_eval['fair_total']:.1f})</span>
                     </div>
                 </div>
             </div>
@@ -5583,82 +5783,112 @@ def main() -> None:
         with sub_ov:
             b1, b2, b3 = st.columns(3)
             with b1:
-                sp_team = home_team if model_eval["spread_edge"] >= 0 else away_team
-                sp_line = (
-                    model_eval["vegas_spread"]
-                    if model_eval["spread_edge"] >= 0
-                    else -model_eval["vegas_spread"]
+                sp_ev, sp_kelly = compute_ev_and_kelly(
+                    model_eval["spread_cover_prob"], odds_val, kelly_mult
                 )
                 st.markdown(
                     f"""
                     <div class="glass-card" style="padding:12px 14px;">
                         <div style="font-size:0.70rem;font-weight:800;color:#A1A1AA;text-transform:uppercase;">Spread Pick</div>
-                        <div style="font-size:1.15rem;font-weight:900;color:#FFFFFF;margin:4px 0;">{sp_team} {format_spread(sp_line)}</div>
-                        <div style="font-size:0.76rem;color:#A1A1AA;margin-bottom:8px;">{model_eval['model_fair_label']}</div>
+                        <div style="font-size:1.15rem;font-weight:900;color:#FFFFFF;margin:4px 0;">{model_eval['backed_spread_line_str']}</div>
+                        <div style="font-size:0.76rem;color:#A1A1AA;margin-bottom:8px;">{model_fair_plain}</div>
                     </div>
                     """,
                     unsafe_allow_html=True,
                 )
                 render_compact_bet_action_row(
-                    bet_id=f"ov_sp_{away_team}_{home_team}",
-                    matchup_label=f"{away_team} @ {home_team}",
-                    market_type="Spread",
-                    selection_label=f"{sp_team} {format_spread(sp_line)}",
-                    odds_str="-110",
-                    edge_str=f"{abs(model_eval['spread_edge']):.1f} pt edge",
-                    ev_pct=model_eval["spread_ev"],
-                    kelly_u=model_eval["spread_kelly"],
-                    tier_label=model_eval["spread_tier"][0],
-                    button_text_override=f"{sp_team} {format_spread(sp_line)} (-110)",
+                    key_prefix=f"ov_sp_{away_team}_{home_team}",
+                    season=int(sel_season),
+                    week=int(sel_week),
+                    matchup=f"{away_team} @ {home_team}",
+                    category="Spread",
+                    selection=model_eval["backed_spread_line_str"],
+                    market_line=mkt_splits["cur_sp_str"],
+                    model_proj=model_eval["fair_spread_str"],
+                    american_odds=odds_val,
+                    edge_score=model_eval["spread_edge_pts"],
+                    ev_pct=sp_ev,
+                    kelly_units=sp_kelly,
+                    team_abbr=model_eval["backed_spread_team"],
+                    button_text_override=f"{model_eval['backed_spread_line_str']} ({odds_val:+d})",
                 )
             with b2:
-                tot_dir = "OVER" if model_eval["total_edge"] >= 0 else "UNDER"
+                tot_dir = model_eval["total_lean_dir"]
+                mkt_tot_val = float(game_row.get("total_line", 44.5) or 44.5)
+                tot_ev, tot_kelly = compute_ev_and_kelly(
+                    model_eval["total_hit_prob"], odds_val, kelly_mult
+                )
                 st.markdown(
                     f"""
                     <div class="glass-card" style="padding:12px 14px;">
                         <div style="font-size:0.70rem;font-weight:800;color:#A1A1AA;text-transform:uppercase;">Total Pick</div>
-                        <div style="font-size:1.15rem;font-weight:900;color:#FFFFFF;margin:4px 0;">{tot_dir} {model_eval['vegas_total']:.1f}</div>
-                        <div style="font-size:0.76rem;color:#A1A1AA;margin-bottom:8px;">Model Proj: {model_eval['fair_total']:.1f} pts</div>
+                        <div style="font-size:1.15rem;font-weight:900;color:#FFFFFF;margin:4px 0;">{tot_dir} {mkt_tot_val:.1f}</div>
+                        <div style="font-size:0.76rem;color:#A1A1AA;margin-bottom:8px;">Model Proj: {model_eval['fair_total']:.1f} pts ({model_eval['total_edge_pts']:.1f} pt edge)</div>
                     </div>
                     """,
                     unsafe_allow_html=True,
                 )
                 render_compact_bet_action_row(
-                    bet_id=f"ov_tot_{away_team}_{home_team}",
-                    matchup_label=f"{away_team} @ {home_team}",
-                    market_type="Total",
-                    selection_label=f"{tot_dir} {model_eval['vegas_total']:.1f}",
-                    odds_str="-110",
-                    edge_str=f"{abs(model_eval['total_edge']):.1f} pt edge",
-                    ev_pct=model_eval["total_ev"],
-                    kelly_u=model_eval["total_kelly"],
-                    tier_label=model_eval["total_tier"][0],
-                    button_text_override=f"{tot_dir} {model_eval['vegas_total']:.1f} (-110)",
+                    key_prefix=f"ov_tot_{away_team}_{home_team}",
+                    season=int(sel_season),
+                    week=int(sel_week),
+                    matchup=f"{away_team} @ {home_team}",
+                    category="Total",
+                    selection=f"{tot_dir} {mkt_tot_val:.1f}",
+                    market_line=f"{mkt_tot_val:.1f}",
+                    model_proj=f"{model_eval['fair_total']:.1f}",
+                    american_odds=odds_val,
+                    edge_score=model_eval["total_edge_pts"],
+                    ev_pct=tot_ev,
+                    kelly_units=tot_kelly,
+                    team_abbr=home_team if tot_dir == "OVER" else away_team,
+                    button_text_override=f"{tot_dir} {mkt_tot_val:.1f} ({odds_val:+d})",
                 )
             with b3:
-                ml_pick = model_eval["ml_pick_team"]
-                ml_odds = model_eval["ml_pick_odds"]
+                away_ml_ev, away_ml_kelly = compute_ev_and_kelly(
+                    model_eval["away_win_prob_raw"], mkt_splits["away_ml_int"], kelly_mult
+                )
+                home_ml_ev, home_ml_kelly = compute_ev_and_kelly(
+                    model_eval["home_win_prob_raw"], mkt_splits["home_ml_int"], kelly_mult
+                )
+                if home_ml_ev >= away_ml_ev:
+                    ml_pick = home_team
+                    ml_odds = mkt_splits["home_ml_int"]
+                    ml_wp = model_eval["home_win_prob"]
+                    ml_ev = home_ml_ev
+                    ml_kelly = home_ml_kelly
+                else:
+                    ml_pick = away_team
+                    ml_odds = mkt_splits["away_ml_int"]
+                    ml_wp = model_eval["away_win_prob"]
+                    ml_ev = away_ml_ev
+                    ml_kelly = away_ml_kelly
+
                 st.markdown(
                     f"""
                     <div class="glass-card" style="padding:12px 14px;">
                         <div style="font-size:0.70rem;font-weight:800;color:#A1A1AA;text-transform:uppercase;">Moneyline Pick</div>
-                        <div style="font-size:1.15rem;font-weight:900;color:#FFFFFF;margin:4px 0;">{ml_pick} ML ({format_american_odds(ml_odds)})</div>
-                        <div style="font-size:0.76rem;color:#A1A1AA;margin-bottom:8px;">Win Prob: {model_eval['ml_pick_prob']*100:.1f}%</div>
+                        <div style="font-size:1.15rem;font-weight:900;color:#FFFFFF;margin:4px 0;">{ml_pick} ML ({ml_odds:+d})</div>
+                        <div style="font-size:0.76rem;color:#A1A1AA;margin-bottom:8px;">Win Prob: {ml_wp:.1f}% · Mkt: {mkt_splits['ml_str']}</div>
                     </div>
                     """,
                     unsafe_allow_html=True,
                 )
                 render_compact_bet_action_row(
-                    bet_id=f"ov_ml_{away_team}_{home_team}",
-                    matchup_label=f"{away_team} @ {home_team}",
-                    market_type="Moneyline",
-                    selection_label=f"{ml_pick} ML",
-                    odds_str=format_american_odds(ml_odds),
-                    edge_str=f"Win Prob {model_eval['ml_pick_prob']*100:.0f}%",
-                    ev_pct=model_eval["ml_ev"],
-                    kelly_u=model_eval["ml_kelly"],
-                    tier_label=model_eval["ml_tier"][0],
-                    button_text_override=f"{ml_pick} ML ({format_american_odds(ml_odds)})",
+                    key_prefix=f"ov_ml_{away_team}_{home_team}",
+                    season=int(sel_season),
+                    week=int(sel_week),
+                    matchup=f"{away_team} @ {home_team}",
+                    category="Moneyline",
+                    selection=f"{ml_pick} ML",
+                    market_line=f"{ml_odds:+d}",
+                    model_proj=f"{ml_wp:.1f}% Win",
+                    american_odds=ml_odds,
+                    edge_score=round(abs(ml_ev), 1),
+                    ev_pct=ml_ev,
+                    kelly_units=ml_kelly,
+                    team_abbr=ml_pick,
+                    button_text_override=f"{ml_pick} ML ({ml_odds:+d})",
                 )
 
             st.markdown("#### Top Player Props")
@@ -5685,22 +5915,33 @@ def main() -> None:
                             unsafe_allow_html=True,
                         )
                         render_compact_bet_action_row(
-                            bet_id=f"ov_prop_{idx}_{pk['player']}",
-                            matchup_label=f"{away_team} @ {home_team}",
-                            market_type=f"Prop ({pk['market']})",
-                            selection_label=f"{pk['player']} {pk['side']} {pk['line']} {pk['market']}",
-                            odds_str="-110",
-                            edge_str=f"Proj {pk['proj']}",
+                            key_prefix=f"ov_prop_{idx}_{pk['player']}",
+                            season=int(sel_season),
+                            week=int(sel_week),
+                            matchup=f"{away_team} @ {home_team}",
+                            category=f"Prop ({pk['market']})",
+                            selection=f"{pk['player']} {pk['side']} {pk['line']} {pk['market']}",
+                            market_line=f"{pk['line']}",
+                            model_proj=f"{pk['proj']}",
+                            american_odds=odds_val,
+                            edge_score=pk["edge_score"],
                             ev_pct=pk["ev_pct"],
-                            kelly_u=pk["kelly_u"],
-                            tier_label=pk["tier_lbl"],
+                            kelly_units=pk["kelly_u"],
+                            team_abbr=pk["team"],
                             button_text_override=f"{pk['side']} {pk['line']} {pk['market']}",
                         )
 
-            h2h_data = get_five_year_h2h_history(
+            h2h_df = get_five_year_h2h_history(
                 master_df, away_team, home_team, int(sel_season)
             )
-            render_five_year_h2h_visual(h2h_data, away_team, home_team)
+            render_five_year_h2h_visual(
+                h2h_df=h2h_df,
+                away_tm=away_team,
+                home_tm=home_team,
+                away_color=away_hex,
+                home_color=home_hex,
+                selected_season=int(sel_season),
+            )
 
         with sub_mu:
             m_sub1, m_sub2 = st.tabs(["WR vs CB", "Touch Share"])
@@ -5768,12 +6009,13 @@ def main() -> None:
             )
 
             inj_col_away, inj_col_home = st.columns(2)
-            for col_obj, tm_code in [(inj_col_away, away_team), (inj_col_home, home_team)]:
+            for col_obj, tm_code, inj_list in [
+                (inj_col_away, away_team, away_inj_list),
+                (inj_col_home, home_team, home_inj_list),
+            ]:
                 with col_obj:
-                    depth_url = NFL_OFFICIAL_DEPTH_CHART_URLS.get(
-                        tm_code, "https://www.nfl.com/teams/"
-                    )
-                    tm_hex = get_team_primary_hex(tm_code)
+                    depth_url = get_team_depth_chart_url(tm_code)
+                    tm_hex = resolve_team_display_color(tm_code)
                     st.markdown(
                         f"""
                         <div class="glass-card" style="padding:10px 14px;margin-bottom:10px;border-left:5px solid {tm_hex};display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;">
@@ -5792,9 +6034,6 @@ def main() -> None:
                         unsafe_allow_html=True,
                     )
 
-                    inj_list = build_injury_impact_report(
-                        inj_df, snaps_df, rosters_df, tm_code, int(sel_week), headshot_lookup
-                    )
                     if not inj_list:
                         st.success(f"No active injury designations reported for {tm_code}.")
                     else:
@@ -5826,8 +6065,9 @@ def main() -> None:
                             render_inline_player_trigger(
                                 player_name=item["player"],
                                 team_abbr=tm_code,
-                                subtitle_text=f"Open {item['player']} Injury & Prop Dossier",
+                                pos=item["pos"],
                                 key_suffix=f"inj_card_{tm_code}_{idx_i}_{item['player']}",
+                                extra_label="— Open Injury & Prop Dossier",
                             )
 
         with sub_ts:
@@ -5908,20 +6148,25 @@ def main() -> None:
                             render_inline_player_trigger(
                                 player_name=pk["player"],
                                 team_abbr=pk["team"],
-                                subtitle_text=f"{pk['pos']} · {pk['market']} Line {pk['line']} (Proj {pk['proj']})",
+                                pos=pk["pos"],
                                 key_suffix=f"pd_tab_{idx_p}_{pk['player']}",
+                                extra_label=f"({pk['pos']} · {pk['market']} {pk['line']})",
                             )
                         with c2:
                             render_compact_bet_action_row(
-                                bet_id=f"pd_bet_{idx_p}_{pk['player']}",
-                                matchup_label=f"{away_team} @ {home_team}",
-                                market_type=f"Prop ({pk['market']})",
-                                selection_label=f"{pk['player']} {pk['side']} {pk['line']} {pk['market']}",
-                                odds_str="-110",
-                                edge_str=f"Proj {pk['proj']}",
+                                key_prefix=f"pd_bet_{idx_p}_{pk['player']}",
+                                season=int(sel_season),
+                                week=int(sel_week),
+                                matchup=f"{away_team} @ {home_team}",
+                                category=f"Prop ({pk['market']})",
+                                selection=f"{pk['player']} {pk['side']} {pk['line']} {pk['market']}",
+                                market_line=f"{pk['line']}",
+                                model_proj=f"{pk['proj']}",
+                                american_odds=odds_val,
+                                edge_score=pk["edge_score"],
                                 ev_pct=pk["ev_pct"],
-                                kelly_u=pk["kelly_u"],
-                                tier_label=pk["tier_lbl"],
+                                kelly_units=pk["kelly_u"],
+                                team_abbr=pk["team"],
                                 button_text_override=f"{pk['side']} {pk['line']} {pk['market']}",
                             )
             with pd_sub2:
@@ -5984,7 +6229,7 @@ def main() -> None:
             if not bt["df"].empty:
                 st.dataframe(bt["df"], use_container_width=True, hide_index=True)
         with hub_st:
-            div_standings = compute_nfl_division_standings(sched_df, eff_df)
+            div_standings = compute_nfl_division_standings(sched_df, through_week=int(sel_week))
             for conf_name in ["AFC", "NFC"]:
                 st.markdown(f"#### {conf_name} Divisions")
                 d_cols = st.columns(2)
@@ -5994,21 +6239,23 @@ def main() -> None:
                     with d_cols[d_idx % 2]:
                         if div_name in div_standings:
                             render_nfl_division_standings_card(
-                                div_name,
-                                div_standings[div_name],
-                                away_team,
-                                home_team,
+                                div_name=div_name,
+                                div_df=div_standings[div_name],
+                                highlight_teams={away_team, home_team},
+                                season_label=int(sel_season),
+                                week_label=int(sel_week),
                             )
 
     st.markdown('<div class="floating-fab-wrap">', unsafe_allow_html=True)
     if st.button("＋", key="floating_plus_fab_btn", help="Open Picks, Props & Bet Slip"):
-        st.session_state["active_underdog_modal"] = True
+        trigger_props_slip_popup()
+        st.rerun()
     st.markdown("</div>", unsafe_allow_html=True)
 
-    if st.session_state.get("active_player_modal"):
-        p_info = st.session_state["active_player_modal"]
-        p_nm = p_info.get("player_name", "")
-        p_tm = p_info.get("team", away_team)
+    if st.session_state.get("open_player_modal") and st.session_state.get("active_player"):
+        p_info = st.session_state["active_player"]
+        p_nm = p_info.get("name", p_info.get("player_name", ""))
+        p_tm = normalize_team_code(p_info.get("team", away_team))
         p_opp = home_team if p_tm == away_team else away_team
 
         if hasattr(st, "dialog"):
@@ -6028,12 +6275,13 @@ def main() -> None:
                     headshot_lookup=headshot_lookup,
                 )
                 if st.button("Close Dossier", key="close_player_dlg_btn"):
-                    st.session_state["active_player_modal"] = None
+                    st.session_state["open_player_modal"] = False
+                    st.session_state["active_player"] = None
                     st.rerun()
 
             _show_player_dialog()
 
-    if st.session_state.get("active_underdog_modal"):
+    if st.session_state.get("open_props_slip_modal"):
         if hasattr(st, "dialog"):
 
             @st.dialog("Matchup Prop Explorer & Bet Slip", width="large")
@@ -6045,9 +6293,11 @@ def main() -> None:
                     away_eff=away_eff,
                     home_eff=home_eff,
                     headshot_lookup=headshot_lookup,
+                    season=int(sel_season),
+                    week_num=int(sel_week),
                 )
                 if st.button("Close Explorer", key="close_ud_dlg_btn"):
-                    st.session_state["active_underdog_modal"] = False
+                    st.session_state["open_props_slip_modal"] = False
                     st.rerun()
 
             _show_underdog_dialog()
